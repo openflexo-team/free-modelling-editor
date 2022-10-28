@@ -1,0 +1,19 @@
+dependencies {
+  // openflexo dep
+  implementation flexoFoundation()
+  implementation flexoUi()
+  implementation fmlRtTechnologyAdapterUi()
+  implementation diagramConnector()
+  implementation diagramConnectorUi()
+  implementation powerpointConnector()
+  implementation powerpointConnectorUi()
+  runtimeOnly flexoOntology()
+  runtimeOnly flexoOntologyUi()
+  // external dep
+  // testing dep
+  testImplementation testUtils()
+  testImplementation ginaTest()
+  testImplementation flexoFoundationTest()
+  testImplementation flexoUiTest()
+  testRuntimeOnly flexoTestResources()
+}

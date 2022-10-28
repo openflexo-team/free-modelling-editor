@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Panel layout="twocols" darkLevel="0" data="" dataClassName="org.openflexo.foundation.FlexoProject"
+       controllerClassName="org.openflexo.fme.controller.FMEFIBController" visible="">
+	<Browser root="data" iteratorClassName="java.lang.Object" visibleRowCount="5" rowHeight="18" boundToSelectionManager="true"
+	         selectionMode="DiscontiguousTreeSelection" selected="" showFooter="true" rootVisible="true" showRootsHandle="true"
+	         localize="true" manageDynamicModel="true" clickAction="controller.singleClick(ProjectBrowser.selected)"
+	         doubleClickAction="controller.doubleClick(ProjectBrowser.selected)"
+	         rightClickAction="controller.rightClick(ProjectBrowser.selected,event)" name="ProjectBrowser" index="0"
+	         constraints="twocols(expandHorizontally=true;expandVertically=true;index=0;insetsBottom=0;insetsLeft=2;insetsRight=2;insetsTop=0;location=center)"
+	         visible="!data.hasNature('org.openflexo.fme.model.FreeModellingProjectNature')">
+		<BrowserElement dataClassName="org.openflexo.foundation.FlexoProject" label="project.name" icon="controller.iconForObject(project)"
+		                isEditable="false" filtered="false" defaultVisible="true" name="project">
+		</BrowserElement>
+	</Browser>
+	<Browser root="data.getNature('org.openflexo.fme.model.FreeModellingProjectNature')" iteratorClassName="java.lang.Object"
+	         visibleRowCount="5" rowHeight="18" boundToSelectionManager="true" selectionMode="DiscontiguousTreeSelection" selected=""
+	         showFooter="true" rootVisible="true" showRootsHandle="true" localize="true" manageDynamicModel="true"
+	         clickAction="controller.singleClick(FreeModellingProjectBrowser.selected)"
+	         doubleClickAction="controller.doubleClick(FreeModellingProjectBrowser.selected)"
+	         rightClickAction="controller.rightClick(FreeModellingProjectBrowser.selected,event)" name="FreeModellingProjectBrowser"
+	         index="0"
+	         constraints="twocols(expandHorizontally=true;expandVertically=true;index=0;insetsBottom=0;insetsLeft=2;insetsRight=2;insetsTop=0;location=center)"
+	         visible="data.hasNature('org.openflexo.fme.model.FreeModellingProjectNature')">
+		<BrowserElement dataClassName="org.openflexo.fme.model.FreeModellingProjectNature" label="nature.owner.name"
+		                icon="controller.iconForObject(nature)" isEditable="false" filtered="false" defaultVisible="true" name="nature">
+			<Children data="nature.conceptualModel" name="conceptualModel"/>
+			<Children data="nature.sampleData" name="sampleData"/>
+			<Children data="nature.freeModels" name="freeModels"/>
+		</BrowserElement>
+		<BrowserElement dataClassName="org.openflexo.fme.model.FMEConceptualModel" label="conceptualModel.name" icon="controller.iconForObject(conceptualModel)"
+		                isEditable="false" filtered="false" defaultVisible="true" name="conceptualModel">
+			<Children data="conceptualModel.children" name="children"/>
+		</BrowserElement>
+		<BrowserElement dataClassName="org.openflexo.fme.model.FMESampleData" label="sampleData.name" icon="controller.iconForObject(sampleData)"
+		                isEditable="false" filtered="false" defaultVisible="true" name="sampleData">
+			<Children data="sampleData.children" name="children"/>
+		</BrowserElement>
+		<BrowserElement dataClassName="org.openflexo.fme.model.FMEFreeModel" label="freeModel.name" icon="controller.iconForObject(freeModel)"
+		                isEditable="false" filtered="false" defaultVisible="true" name="freeModel">
+		                <Children data="freeModel.freeModelInstances" name="freeModels"/>
+		</BrowserElement>
+		<BrowserElement dataClassName="org.openflexo.fme.model.FMEFreeModelInstance" label="freeModelInstance.name" icon="controller.iconForObject(freeModelInstance)"
+		                isEditable="false" filtered="false" defaultVisible="true" name="freeModelInstance">
+		</BrowserElement>
+	
+
+		<!--   <BrowserElement dataClassName="org.openflexo.foundation.resource.FileSystemBasedResourceCenter" label="fsResourceCenter.name" icon="controller.iconForObject(fsResourceCenter)" isEditable="false" filtered="false" defaultVisible="true" name="fsResourceCenter">
+			  <Children data="fsResourceCenter.rootFolder.children" name="subFolders" />
+			  <Children data="fsResourceCenter.rootFolder.resources" name="resources" />
+			</BrowserElement> -->
+		<!--   <BrowserElement dataClassName="org.openflexo.foundation.resource.RepositoryFolder" label="folder.name" icon="controller.iconForObject(folder)" isEditable="false" filtered="false" defaultVisible="true" name="folder">
+			  <Children data="folder.children" name="subFolders" />
+			  <Children data="folder.resources" name="resources" />
+			</BrowserElement>
+			<BrowserElement dataClassName="org.openflexo.foundation.resource.FlexoResource" label="resource.name" icon="controller.iconForObject(resource)" isEditable="false" filtered="false" defaultVisible="true" name="resource" enabled="resource.isLoaded" /> -->
+	</Browser>
+	<LocalizedDictionary/>
+</Panel>

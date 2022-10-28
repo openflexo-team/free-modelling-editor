@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Panel id="0" align="left" borderTop="0" flowAlignment="LEADING" borderLeft="0" imageFile="../Icons/FMEBackground.png" trackViewPortHeight="true" trackViewPortWidth="true" borderBottom="0" border="empty" imageWidth="626" sizeAdjustment="FitToAvailableSize" imageHeight="417" layout="twocols" borderRight="0" vGap="5" hGap="5" controllerClassName="org.openflexo.fme.view.FMEProjectNatureModuleView$FMEProjectNatureModuleViewFIBController">
+  <Panel id="1" align="left" borderTop="0" borderTitle="Panel" flowAlignment="CENTER" borderLeft="0" trackViewPortHeight="true" trackViewPortWidth="true" borderBottom="0" border="empty" sizeAdjustment="OriginalSize" layout="flow" borderRight="0" vGap="5" hGap="5" constraints="twocols(anchor=south;expandHorizontally=true;expandVertically=false;fill=both;gridHeight=1;gridWidth=0;gridX=-1;gridY=-1;insetsBottom=0;insetsLeft=10;insetsRight=10;insetsTop=50;location=center;padX=0;padY=0;weightX=1.0;weightY=0.0)" name="FIBPanel2">
+    <Image id="2" imageWidth="80" sizeAdjustment="OriginalSize" imageFile="../Icons/FreeModel_64x64.png" align="left" imageHeight="46" data="controller.projectIcon.image" constraints="flow()" name="Image2" />
+    <Label id="3" label="" align="center" data="(data.owner.name + &quot;.prj&quot;)" constraints="flow(anchor=center;fill=horizontal;gridHeight=1;gridWidth=0;gridX=-1;gridY=-1;insetsBottom=0;insetsLeft=10;insetsRight=10;insetsTop=50;location=center;padX=0;padY=0;weightX=1.0;weightY=0.0)" font="ArialMT,0,30" name="Label" />
+  </Panel>
+  <Label id="4" label="" align="left" constraints="twocols(expandHorizontally=true;expandVertically=true;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=right)" name="Label4" />
+  <Label id="5" label="conceptual_model" align="left" localize="true" constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=30;insetsRight=10;insetsTop=0;location=left)" font="ArialMT,0,16" name="Label2" />
+  <Custom id="6" componentClassName="org.openflexo.fml.controller.widget.FIBVirtualModelSelector" dataClassForComponent="org.openflexo.foundation.fml.rm.VirtualModelResource" manageDynamicModel="true" data="data.conceptualModel.accessedVirtualModelResource" constraints="twocols(anchor=center;expandHorizontally=true;expandVertically=false;fill=horizontal;gridHeight=1;gridWidth=1;gridX=1;gridY=2;index=1;insetsBottom=0;insetsLeft=0;insetsRight=50;insetsTop=0;location=right;padX=0;padY=0;weightX=0.0;weightY=0.0)" index="6" controllerClassName="org.openflexo.gina.controller.FIBController" name="virtualModelSelector">
+    <Assignment id="7" variable="component.containerVirtualModel" mandatory="true" />
+    <Assignment id="8" variable="component.serviceManager" mandatory="true" />
+    <Assignment id="9" variable="component.flexoController" mandatory="true" />
+    <Assignment id="10" variable="component.selectableCondition" mandatory="true" />
+    <Assignment id="11" variable="component.virtualModelLibrary" value="controller.editor.serviceManager.virtualModelLibrary" mandatory="true" />
+  </Custom>
+  <Label id="12" label="sample_data" align="left" localize="true" constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=30;insetsRight=10;insetsTop=10;location=left)" font="ArialMT,0,16" name="Label3" />
+  <Custom id="13" componentClassName="org.openflexo.fml.rt.controller.widget.FIBVirtualModelInstanceResourceSelector" dataClassForComponent="org.openflexo.foundation.fml.rt.rm.FMLRTVirtualModelInstanceResource" manageDynamicModel="true" data="data.sampleData.accessedVirtualModelInstanceResource" constraints="twocols(anchor=center;expandHorizontally=true;expandVertically=false;fill=horizontal;gridHeight=1;gridWidth=1;gridX=1;gridY=2;index=1;insetsBottom=0;insetsLeft=0;insetsRight=50;insetsTop=10;location=right;padX=0;padY=0;weightX=0.0;weightY=0.0)" index="6" controllerClassName="org.openflexo.gina.controller.FIBController" name="virtualModelSelector">
+    <Assignment id="14" variable="component.virtualModel" mandatory="true" />
+    <Assignment id="15" variable="component.containerVirtualModelInstance" mandatory="true" />
+    <Assignment id="16" variable="component.virtualModelInstanceRepository" mandatory="true" />
+    <Assignment id="17" variable="component.project" mandatory="true" />
+    <Assignment id="18" variable="component.serviceManager" value="controller.editor.serviceManager" mandatory="true" />
+    <Assignment id="19" variable="component.flexoController" mandatory="true" />
+    <Assignment id="20" variable="component.selectableCondition" mandatory="true" />
+  </Custom>
+  <Label id="21" label="free_models" align="left" localize="true" constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=10;insetsTop=10;location=left)" font="ArialMT,0,16" name="Label6" />
+  <Panel id="22" align="left" borderTop="0" borderTitle="Panel" borderLeft="0" trackViewPortHeight="true" trackViewPortWidth="true" borderBottom="0" cols="2" border="empty" sizeAdjustment="OriginalSize" rows="1" layout="grid" borderRight="0" vGap="5" hGap="5" constraints="twocols(expandHorizontally=true;expandVertically=true;insetsBottom=0;insetsLeft=0;insetsRight=50;insetsTop=10;location=right)" name="FIBPanel3">
+    <Table id="23" visibleRowCount="5" backgroundNonSelectionColor="255,255,255" iteratorClassName="org.openflexo.fme.model.FMEFreeModel" showHeader="false" backgroundSecondarySelectionColor="178,215,255" autoSelectFirstRow="true" lookAndFeel="Classic" selectionMode="MultipleIntervalSelection" rowHeight="25" manageDynamicModel="true" doubleClickAction="controller.selectFreeModel(Table.selected)" data="data.freeModels" constraints="grid(expandHorizontally=true;expandVertically=true;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=left;x=0;y=0)" name="Table">
+      <IconColumn id="24" data="controller.iconForObject(iterator)" resizable="false" title="icon" displayTitle="false" columnWidth="25" showIcon="false" name="icon" />
+      <LabelColumn id="25" data="iterator.name" resizable="true" title="free_model" displayTitle="true" columnWidth="200" showIcon="false" name="name" />
+      <AddAction id="26" method="controller.createNewDiagramFreeModel(data)" name="add_action" />
+    </Table>
+    <Table id="27" visibleRowCount="5" backgroundNonSelectionColor="255,255,255" iteratorClassName="org.openflexo.fme.model.FMEFreeModelInstance" showHeader="false" backgroundSecondarySelectionColor="178,215,255" lookAndFeel="Classic" selectionMode="MultipleIntervalSelection" rowHeight="18" manageDynamicModel="true" data="Table.selected.freeModelInstances" constraints="grid(expandHorizontally=true;expandVertically=true;insetsBottom=0;insetsLeft=10;insetsRight=0;insetsTop=0;location=right;x=1;y=0)" name="Table3">
+      <IconColumn id="28" data="controller.iconForObject(iterator)" resizable="false" title="icon" displayTitle="false" columnWidth="25" showIcon="false" name="icon" />
+      <LabelColumn id="29" data="iterator.name" resizable="true" title="label" displayTitle="true" columnWidth="300" showIcon="false" name="label" />
+      <AddAction id="30" isAvailable="(Table.selected != null)" method="controller.instantiateNewDiagram(Table.selected)" name="add_action" />
+    </Table>
+  </Panel>
+  <Label id="31" label="label" align="left" data="((Table.selected.description != null) ? ((&quot;&lt;html&gt;&quot; + Table.selected.description) + &quot;&lt;/html&gt;&quot;) : &quot;&quot;)" constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=50;insetsTop=10;location=right)" name="Label7" />
+  <Label id="32" label="" align="left" constraints="twocols(expandHorizontally=true;expandVertically=true;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=center)" name="Label5" />
+  <Panel id="33" align="left" borderTop="10" borderTitle="Panel" flowAlignment="CENTER" borderLeft="0" trackViewPortHeight="true" trackViewPortWidth="true" borderBottom="20" border="empty" sizeAdjustment="OriginalSize" layout="flow" borderRight="0" vGap="5" hGap="5" constraints="twocols(anchor=east;expandHorizontally=true;expandVertically=false;fill=both;gridHeight=-1;gridWidth=0;gridX=-1;gridY=-1;insetsBottom=30;insetsLeft=20;insetsRight=20;insetsTop=0;location=center;padX=0;padY=0;weightX=1.0;weightY=0.1)" name="FIBPanel">
+    <Button id="34" buttonType="Trigger" action="controller.createNewDiagram(data)" label="new_diagram" localize="true" constraints="flow(anchor=east;fill=vertical;gridHeight=1;gridWidth=1;gridX=-1;gridY=-1;insetsBottom=30;insetsLeft=20;insetsRight=20;insetsTop=0;location=center;padX=0;padY=0;weightX=1.0;weightY=0.1)" height="50" width="180" name="Button" />
+    <Button id="35" buttonType="Trigger" action="data.openProject()" label="import_ppt_slide" localize="true" constraints="flow()" height="50" width="180" name="Button2" />
+    <Button id="36" buttonType="Trigger" label="import_excel" localize="true" constraints="flow()" height="50" width="180" name="Button3" />
+  </Panel>
+  <LocalizedDictionary id="37">
+    <Localized id="38" lang="Dutch" value="new_project" key="new_project" />
+    <Localized id="39" lang="French" value="Nouveau projet" key="new_project" />
+    <Localized id="40" lang="English" value="Open project" key="open_project" />
+    <Localized id="41" lang="Dutch" value="open_project" key="open_project" />
+    <Localized id="42" lang="French" value="Ouvrir un projet" key="open_project" />
+    <Localized id="43" lang="English" value="&lt;html&gt;&#xA;  &lt;head&gt;&#xA;    &#xA;  &lt;/head&gt;&#xA;  &lt;body&gt;&#xA;    Welcome to the Free Modelling Editor&#xA;  &lt;/body&gt;&#xA;&lt;/html&gt;&#xA;" key="welcome_to _the_free_modelling_editor" />
+    <Localized id="44" lang="Dutch" value="&lt;html&gt;&#xA;&lt;head&gt;&#xA;&lt;/head&gt;&#xA;&lt;body&gt;&#xA;welcome_to _the_free_modelling_editor&#xA;&lt;/body&gt;&#xA;&lt;/html&gt;" key="welcome_to _the_free_modelling_editor" />
+    <Localized id="45" lang="French" value="&lt;html&gt;&#xA;  &lt;head&gt;&#xA;    &#xA;  &lt;/head&gt;&#xA;  &lt;body&gt;&#xA;    Bienvenue dans le FreeModellingEditor&#xA;  &lt;/body&gt;&#xA;&lt;/html&gt;&#xA;" key="welcome_to _the_free_modelling_editor" />
+    <Localized id="46" lang="English" value="&lt;html&gt;&#xA;  &lt;head&gt;&#xA;    &#xA;  &lt;/head&gt;&#xA;  &lt;body&gt;&#xA;    Free Modeling Editor is a graphical modelling tool allowing to make &#xA;    emergence of business concepts out of existings drawings and data. &#xA;The Free Modelling Editor offers you following features:&#xA;&#xA;    &lt;ul&gt;&#xA;      &lt;li&gt;&#xA;        Identification and definition of new concepts from drawings or exising &#xA;        data&#xA;      &lt;/li&gt;&#xA;      &lt;li&gt;&#xA;        Create graphical editors allowing to manipulate emerging concepts&#xA;      &lt;/li&gt;&#xA;      &lt;li&gt;&#xA;        Import drawings from PowerPoint slide&#xA;      &lt;/li&gt;&#xA;      &lt;li&gt;&#xA;        Definition and import of data from Excel workbooks&#xA;      &lt;/li&gt;&#xA;    &lt;/ul&gt;&#xA;    Your graphical editor can then be completed using Openflexo Modeller tool &#xA;    to fairly connect  your concepts to your data.&#xA;Click to discover the Free Modelling Editor !&#xA;  &lt;/body&gt;&#xA;&lt;/html&gt;&#xA;" key="welcome_informations" />
+    <Localized id="47" lang="Dutch" value="&lt;html&gt;&#xA;&lt;head&gt;&#xA;&lt;/head&gt;&#xA;&lt;body&gt;&#xA;welcome_informations&#xA;&lt;/body&gt;&#xA;&lt;/html&gt;" key="welcome_informations" />
+    <Localized id="48" lang="French" value="&lt;html&gt;&#xA;  &lt;head&gt;&#xA;    &#xA;  &lt;/head&gt;&#xA;  &lt;body&gt;&#xA;    Le Free Modeling Editor est un outil de dessin vous permettant de faire &#xA;    &amp;#233;merger vos concepts m&amp;#233;tiers &amp;#224; partir des donn&amp;#233;es que vous avez d&amp;#233;j&amp;#224;. Le &#xA;    FME vous offre la possibilit&amp;#233; de :&#xA;&#xA;    &lt;ul&gt;&#xA;      &lt;li&gt;&#xA;        Identifier et d&amp;#233;finir des concepts &amp;#224; partir de dessins ou de donn&amp;#233;es &#xA;        existantes&#xA;      &lt;/li&gt;&#xA;      &lt;li&gt;&#xA;        Cr&amp;#233;er des &amp;#233;diteurs graphiques li&amp;#233;s &amp;#224; vos nouveaux concepts&#xA;      &lt;/li&gt;&#xA;      &lt;li&gt;&#xA;        Importer des dessins directement d'une diapositive PowerPoint&#xA;      &lt;/li&gt;&#xA;      &lt;li&gt;&#xA;        D&amp;#233;finir et importer des donn&amp;#233;es &amp;#224; partir d'un tableau Excel&#xA;      &lt;/li&gt;&#xA;    &lt;/ul&gt;&#xA;    Votre &amp;#233;diteur graphique peut ensuite &amp;#234;tre compl&amp;#233;t&amp;#233; gr&amp;#226;ce aux outils de &#xA;    l'Openflexo Modeler afin de connecter intelligement vos concepts &amp;#224; vos &#xA;    donn&amp;#233;es. Cliquer pour commencer !&#xA;  &lt;/body&gt;&#xA;&lt;/html&gt;&#xA;" key="welcome_informations" />
+    <Localized id="49" lang="English" value="Conceptual model" key="conceptual_model" />
+    <Localized id="50" lang="Dutch" value="conceptual_model" key="conceptual_model" />
+    <Localized id="51" lang="French" value="Modèle conceptuel" key="conceptual_model" />
+    <Localized id="52" lang="English" value="Sample data" key="sample_data" />
+    <Localized id="53" lang="Dutch" value="sample_data" key="sample_data" />
+    <Localized id="54" lang="French" value="Jeu de données" key="sample_data" />
+    <Localized id="55" lang="English" value="New diagram" key="new_diagram" />
+    <Localized id="56" lang="Dutch" value="new_diagram" key="new_diagram" />
+    <Localized id="57" lang="French" value="Nouveau diagramme" key="new_diagram" />
+    <Localized id="58" lang="English" value="Import ppt slide" key="import_ppt_slide" />
+    <Localized id="59" lang="Dutch" value="import_ppt_slide" key="import_ppt_slide" />
+    <Localized id="60" lang="French" value="Import powerpoint" key="import_ppt_slide" />
+    <Localized id="61" lang="English" value="Import excel" key="import_excel" />
+    <Localized id="62" lang="Dutch" value="import_excel" key="import_excel" />
+    <Localized id="63" lang="French" value="Import excel" key="import_excel" />
+    <Localized id="64" lang="English" value="Free models" key="free_models" />
+    <Localized id="65" lang="Dutch" value="free_models" key="free_models" />
+    <Localized id="66" lang="French" value="Free Models" key="free_models" />
+    <Localized id="67" lang="English" value="Icon" key="icon" />
+    <Localized id="68" lang="Dutch" value="Icon" key="icon" />
+    <Localized id="69" lang="French" value="Icône" key="icon" />
+    <Localized id="70" lang="English" value="Free model" key="free_model" />
+    <Localized id="71" lang="Dutch" value="free_model" key="free_model" />
+    <Localized id="72" lang="French" value="Free Model" key="free_model" />
+  </LocalizedDictionary>
+  <FIBVariable id="73" type="org.openflexo.fme.model.FreeModellingProjectNature" name="data" />
+</Panel>

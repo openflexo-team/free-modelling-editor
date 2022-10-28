@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Panel id="0" align="left" borderTop="0" borderLeft="0" trackViewPortHeight="true" trackViewPortWidth="true" borderBottom="0" border="empty" imageWidth="960" sizeAdjustment="FitToAvailableSize" titleFont="Lucida Grande,0,13" imageHeight="640" layout="twocols" borderRight="0" opaque="false" controllerClassName="org.openflexo.view.controller.FlexoFIBController">
+  <Image id="1" imageWidth="80" sizeAdjustment="OriginalSize" imageFile="../../Icons/Help_32x32.png" align="left" imageHeight="46" constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=20;insetsTop=25;location=left)" name="Image" />
+  <Label id="2" label="step_description" align="center" localize="true" constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=20;insetsLeft=0;insetsRight=40;insetsTop=20;location=right)" font="SansSerif,0,12" name="Label2" />
+  <Label id="3" label="what_would_you_like_to_do" align="left" localize="true" constraints="twocols(anchor=center;expandHorizontally=false;expandVertically=false;fill=none;gridHeight=1;gridWidth=1;gridX=-1;gridY=-1;insetsBottom=0;insetsLeft=80;insetsRight=10;insetsTop=0;location=left;padX=0;padY=0;weightX=0.0;weightY=0.0)" name="Label" />
+  <RadioButtonList id="4" autoSelectFirstRow="true" iteratorClassName="org.openflexo.fme.model.action.GivesFMENature$SampleDataChoice" showText="true" showIcon="false" localize="true" manageDynamicModel="true" data="data.sampleDataChoice" constraints="twocols(anchor=center;expandHorizontally=false;expandVertically=false;fill=none;gridHeight=1;gridWidth=1;gridX=-1;gridY=-1;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=right;padX=0;padY=0;weightX=0.0;weightY=0.0)" name="ChoiceSelector" />
+  <Label id="5" label="new_virtual_model_instance_name" align="right" localize="true" constraints="twocols(anchor=east;expandHorizontally=false;expandVertically=false;fill=none;gridHeight=1;gridWidth=1;gridX=-1;gridY=-1;index=1;insetsBottom=0;insetsLeft=20;insetsRight=10;insetsTop=20;location=left;padX=0;padY=0;weightX=0.0;weightY=0.0)" visible="(ChoiceSelector.selectedIndex == 0)" index="1" name="NameLabel" />
+  <TextField id="6" columns="40" text="TextField" data="data.sampleDataName" constraints="twocols(anchor=center;expandHorizontally=true;expandVertically=false;fill=horizontal;gridHeight=1;gridWidth=0;gridX=-1;gridY=-1;index=2;insetsBottom=0;insetsLeft=0;insetsRight=50;insetsTop=20;location=right;padX=0;padY=0;weightX=1.0;weightY=0.0)" visible="(ChoiceSelector.selectedIndex == 0)" index="2" name="NameTextField" />
+  <Label id="7" label="relative_path" align="right" localize="true" constraints="twocols(anchor=north_east;expandHorizontally=false;expandVertically=false;fill=none;gridHeight=1;gridWidth=1;gridX=-1;gridY=-1;index=12;insetsBottom=0;insetsLeft=20;insetsRight=10;insetsTop=0;location=left;padX=0;padY=0;weightX=0.0;weightY=0.0)" visible="(ChoiceSelector.selectedIndex == 0)" index="12" name="DescriptionLabel" />
+  <TextField id="8" columns="7" data="data.sampleDataRelativePath" constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=50;insetsTop=0;location=right)" visible="(ChoiceSelector.selectedIndex == 0)" name="TextField" />
+  <Label id="9" label="virtual_model_instance" align="center" localize="true" constraints="twocols(anchor=center;expandHorizontally=false;expandVertically=false;fill=none;gridHeight=1;gridWidth=1;gridX=0;gridY=2;index=1;insetsBottom=0;insetsLeft=20;insetsRight=10;insetsTop=20;location=left;padX=0;padY=0;weightX=0.0;weightY=0.0)" visible="(ChoiceSelector.selectedIndex == 1)" index="6" controllerClassName="org.openflexo.gina.controller.FIBController" name="VirtualModelLabel" />
+  <Custom id="10" componentClassName="org.openflexo.fml.rt.controller.widget.FIBVirtualModelInstanceResourceSelector" dataClassForComponent="org.openflexo.foundation.fml.rt.rm.FMLRTVirtualModelInstanceResource" manageDynamicModel="true" data="data.existingSampleDataResource" constraints="twocols(anchor=center;expandHorizontally=true;expandVertically=false;fill=horizontal;gridHeight=1;gridWidth=1;gridX=1;gridY=2;index=1;insetsBottom=0;insetsLeft=0;insetsRight=50;insetsTop=20;location=right;padX=0;padY=0;weightX=0.0;weightY=0.0)" visible="(ChoiceSelector.selectedIndex == 1)" index="6" controllerClassName="org.openflexo.gina.controller.FIBController" name="virtualModelSelector">
+    <Assignment id="11" variable="component.project" value="data.action.editor.project" mandatory="true" />
+    <Assignment id="12" variable="component.serviceManager" value="data.action.serviceManager" mandatory="true" />
+    <Assignment id="13" variable="component.flexoController" mandatory="true" />
+    <Assignment id="14" variable="component.selectableCondition" mandatory="true" />
+  </Custom>
+  <LocalizedDictionary id="15">
+    <Localized id="16" lang="English" value="&lt;html&gt;&#xA;  &lt;head&gt;&#xA;    &#xA;  &lt;/head&gt;&#xA;  &lt;body&gt;&#xA;    You define here the link to sample data to feed. You can either choose an &#xA;    existing VirtualModelInstance, in this current project or elsewhere in &#xA;    Openflexo environment, or you can choose to create a new &#xA;    VirtualModelInstance (recommanded option if you are starting a new &#xA;    project), while explicting the name and location where to store the newly &#xA;    created VirtualModelInstance (keep default values when starting a new &#xA;    project. In this case, you will start with a new data set.&#xA;  &lt;/body&gt;&#xA;&lt;/html&gt;&#xA;" key="step_description" />
+    <Localized id="17" lang="Dutch" value="&lt;html&gt;&#xA;&lt;head&gt;&#xA;&lt;/head&gt;&#xA;&lt;body&gt;&#xA;step_description&#xA;&lt;/body&gt;&#xA;&lt;/html&gt;" key="step_description" />
+    <Localized id="18" lang="French" value="&lt;html&gt;&#xA;  &lt;head&gt;&#xA;    &#xA;  &lt;/head&gt;&#xA;  &lt;body&gt;&#xA;    Vous d&amp;#233;finissez ici le lien vers un jeu de donn&amp;#233;es &amp;#224; alimenter. Vous &#xA;    pouvez soit vous connecter &amp;#224; un VirtualModelInstance existant, dans ce &#xA;    projet ou ailleurs dans l'environnement Openflexo, soit vous pouvez cr&amp;#233;er &#xA;    un nouveau VirtualModelInstance (option &amp;#224; privil&amp;#233;gier si vous d&amp;#233;butez un &#xA;    nouveau projet), en pr&amp;#233;cisant le nom et l'endroit o&amp;#249; le stocker. Dans ce &#xA;    dernier cas, vous partirez avec un jeu de donn&amp;#233;es vierges.&#xA;  &lt;/body&gt;&#xA;&lt;/html&gt;&#xA;" key="step_description" />
+    <Localized id="19" lang="English" value="What would you like to do ?" key="what_would_you_like_to_do" />
+    <Localized id="20" lang="Dutch" value="what_would_you_like_to_do" key="what_would_you_like_to_do" />
+    <Localized id="21" lang="French" value="Que voulez vous faire ?" key="what_would_you_like_to_do" />
+    <Localized id="22" lang="English" value="New virtual model name" key="new_virtual_model_name" />
+    <Localized id="23" lang="Dutch" value="new_virtual_model_name" key="new_virtual_model_name" />
+    <Localized id="24" lang="French" value="Nom du VirtualModel à créer" key="new_virtual_model_name" />
+    <Localized id="25" lang="English" value="Relative path" key="relative_path" />
+    <Localized id="26" lang="Dutch" value="relative_path" key="relative_path" />
+    <Localized id="27" lang="French" value="Path relatif" key="relative_path" />
+    <Localized id="28" lang="English" value="VirtualModel" key="virtual_model" />
+    <Localized id="29" lang="Dutch" value="Virtual model" key="virtual_model" />
+    <Localized id="30" lang="French" value="VirtualModel" key="virtual_model" />
+    <Localized id="31" lang="English" value="New virtual model instance name" key="new_virtual_model_instance_name" />
+    <Localized id="32" lang="Dutch" value="new_virtual_model_instance_name" key="new_virtual_model_instance_name" />
+    <Localized id="33" lang="French" value="new_virtual_model_instance_name" key="new_virtual_model_instance_name" />
+    <Localized id="34" lang="English" value="Virtual model instance" key="virtual_model_instance" />
+    <Localized id="35" lang="Dutch" value="virtual_model_instance" key="virtual_model_instance" />
+    <Localized id="36" lang="French" value="virtual_model_instance" key="virtual_model_instance" />
+  </LocalizedDictionary>
+  <FIBVariable id="37" type="org.openflexo.fme.controller.action.GivesFMENatureWizard$ConfigureSampleData" name="data" />
+</Panel>
