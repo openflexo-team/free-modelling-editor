@@ -40,9 +40,14 @@ package org.openflexo.fme.model;
 
 import java.awt.Font;
 import java.io.FileNotFoundException;
+import java.util.Collections;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.openflexo.connie.DataBinding;
+import org.openflexo.connie.DataBinding.BindingDefinitionType;
+import org.openflexo.connie.ParseException;
+import org.openflexo.connie.expr.BindingPath;
 import org.openflexo.diana.ShapeGraphicalRepresentation;
 import org.openflexo.diana.shapes.Rectangle;
 import org.openflexo.diana.shapes.ShapeSpecification.ShapeType;
@@ -58,9 +63,11 @@ import org.openflexo.foundation.fml.action.CreateEditionAction;
 import org.openflexo.foundation.fml.action.CreateFlexoBehaviour;
 import org.openflexo.foundation.fml.action.CreateGenericBehaviourParameter;
 import org.openflexo.foundation.fml.action.CreateTechnologyRole;
+import org.openflexo.foundation.fml.binding.CreationSchemePathElement;
 import org.openflexo.foundation.fml.editionaction.AssignationAction;
 import org.openflexo.foundation.fml.editionaction.DeleteAction;
 import org.openflexo.foundation.fml.editionaction.ExpressionAction;
+import org.openflexo.foundation.fml.expr.FMLPrettyPrinter;
 import org.openflexo.foundation.fml.rt.editionaction.AddFlexoConceptInstance;
 import org.openflexo.foundation.fml.rt.editionaction.AddFlexoConceptInstanceParameter;
 import org.openflexo.foundation.resource.ResourceLoadingCancelledException;
@@ -337,11 +344,42 @@ public interface FMEDiagramFreeModel extends FMEFreeModel {
 							editor);
 				}
 				createAddFlexoConceptInstance.setModelSlot(getSampleDataModelSlot());
-				createAddFlexoConceptInstance.setEditionActionClass(AddFlexoConceptInstance.class);
+				createAddFlexoConceptInstance.setEditionActionClass(ExpressionAction.class);
 				createAddFlexoConceptInstance.setAssignation(new DataBinding<>(CONCEPT_ROLE_NAME));
 				createAddFlexoConceptInstance.doAction();
-				AddFlexoConceptInstance<?> addFCI = (AddFlexoConceptInstance<?>) createAddFlexoConceptInstance.getBaseEditionAction();
+
+				ExpressionAction newFCIAction = (ExpressionAction) createAddFlexoConceptInstance.getBaseEditionAction();
+				List<DataBinding<?>> args = Collections.singletonList(new DataBinding<>("parameters.conceptName"));
+				CreationSchemePathElement pathElement = (CreationSchemePathElement) dropScheme.getBindingFactory()
+						.makeNewInstancePathElement(concept.getInstanceType(), null, concept.getCreationSchemes().get(0).getName(), args,
+								newFCIAction);
+
+				DataBinding expression = new DataBinding(newFCIAction, concept.getInstanceType(), BindingDefinitionType.GET);
+				BindingPath bindingPath = null;
+
+				if (containerConceptGR != null) {
+					try {
+						bindingPath = BindingPath.parse(DropScheme.TARGET_KEY + "." + FMEFreeModel.CONCEPT_ROLE_NAME, newFCIAction);
+						bindingPath.addBindingPathElement(pathElement);
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				else {
+					// bindingPath = BindingPath.parse(SAMPLE_DATA_MODEL_SLOT_NAME, newFCIAction);
+					bindingPath = new BindingPath(Collections.singletonList(pathElement), newFCIAction, FMLPrettyPrinter.getInstance());
+				}
+				expression.setExpression(bindingPath);
+				newFCIAction.setExpression(expression);
+
+				// Code replacing
+				/*AddFlexoConceptInstance<?> addFCI = (AddFlexoConceptInstance<?>) createAddFlexoConceptInstance.getBaseEditionAction();
 				addFCI.setCreationScheme(concept.getCreationSchemes().get(0));
+				
+				System.out.println(concept.getFMLPrettyPrint());
+				System.out.println(dropScheme.getFMLPrettyPrint());
+				
 				AddFlexoConceptInstanceParameter addFCINameParam = addFCI.getParameter(FMEConceptualModel.CONCEPT_NAME_PARAMETER);
 				addFCINameParam.setValue(new DataBinding<>("parameters.conceptName"));
 				addFCI.setReceiver(new DataBinding<>(SAMPLE_DATA_MODEL_SLOT_NAME));
@@ -350,7 +388,7 @@ public interface FMEDiagramFreeModel extends FMEFreeModel {
 				}
 				else {
 					addFCI.setContainer(new DataBinding<>(DropScheme.TARGET_KEY + "." + FMEFreeModel.CONCEPT_ROLE_NAME));
-				}
+				}*/
 			}
 			else {
 				CreateEditionAction givesNameAction = null;

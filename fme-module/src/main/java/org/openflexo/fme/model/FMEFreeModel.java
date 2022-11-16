@@ -58,6 +58,7 @@ import org.openflexo.foundation.fml.action.CreateFlexoConcept;
 import org.openflexo.foundation.fml.action.CreateFlexoConceptInstanceRole;
 import org.openflexo.foundation.fml.action.CreateInspectorEntry;
 import org.openflexo.foundation.fml.action.CreatePrimitiveRole;
+import org.openflexo.foundation.fml.editionaction.DeleteAction;
 import org.openflexo.foundation.fml.inspector.InspectorEntry;
 import org.openflexo.foundation.fml.rt.FMLRTVirtualModelInstanceModelSlot;
 import org.openflexo.foundation.fml.rt.VirtualModelInstance;
@@ -69,6 +70,7 @@ import org.openflexo.pamela.annotations.Adder;
 import org.openflexo.pamela.annotations.DeserializationFinalizer;
 import org.openflexo.pamela.annotations.Embedded;
 import org.openflexo.pamela.annotations.Getter;
+import org.openflexo.pamela.annotations.Getter.Cardinality;
 import org.openflexo.pamela.annotations.Import;
 import org.openflexo.pamela.annotations.Imports;
 import org.openflexo.pamela.annotations.ModelEntity;
@@ -76,7 +78,6 @@ import org.openflexo.pamela.annotations.PropertyIdentifier;
 import org.openflexo.pamela.annotations.Remover;
 import org.openflexo.pamela.annotations.Setter;
 import org.openflexo.pamela.annotations.XMLElement;
-import org.openflexo.pamela.annotations.Getter.Cardinality;
 
 /**
  * Represents a {@link FMEFreeModel} in the FreeModellingEditor<br>
@@ -317,10 +318,10 @@ public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellin
 					else {
 						deleteConceptAction = CreateEditionAction.actionType.makeNewAction(deletionScheme.getControlGraph(), null, editor);
 					}
-					deleteConceptAction.setEditionActionClass(DeleteFlexoConceptInstance.class);
+					deleteConceptAction.setEditionActionClass(DeleteAction.class);
 					deleteConceptAction.doAction();
 
-					DeleteFlexoConceptInstance<?> deleteConcept = (DeleteFlexoConceptInstance<?>) deleteConceptAction.getNewEditionAction();
+					DeleteAction<?> deleteConcept = (DeleteAction<?>) deleteConceptAction.getNewEditionAction();
 					deleteConcept.setObject(new DataBinding<>(CONCEPT_ROLE_NAME));
 				}
 
@@ -339,7 +340,7 @@ public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellin
 					createTypeEntry.setData(new DataBinding<String>('"' + getLocales().localizedForKey("unclassified") + '"'));
 				}
 				else {
-					createTypeEntry.setData(new DataBinding<String>(CONCEPT_ROLE_NAME + ".concept.name"));
+					createTypeEntry.setData(new DataBinding<String>(CONCEPT_ROLE_NAME + ".name"));
 				}
 				createTypeEntry.setIsReadOnly(true);
 				createTypeEntry.doAction();
