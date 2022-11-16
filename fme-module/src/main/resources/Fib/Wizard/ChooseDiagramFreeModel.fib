@@ -1,43 +1,127 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Panel id="0" align="left" borderTop="0" borderLeft="0" trackViewPortHeight="true" trackViewPortWidth="true" borderBottom="0" border="empty" imageWidth="960" sizeAdjustment="FitToAvailableSize" titleFont="Lucida Grande,0,13" imageHeight="640" layout="twocols" borderRight="0" opaque="false" controllerClassName="org.openflexo.view.controller.FlexoFIBController">
-  <Image id="1" imageWidth="80" sizeAdjustment="OriginalSize" imageFile="../../Icons/Help_32x32.png" align="left" imageHeight="46" constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=20;insetsTop=25;location=left)" name="Image" />
-  <Label id="2" label="step_description" align="center" localize="true" data="((data.action.nature.freeModels.size &gt; 0) ? &quot;step_description&quot; : &quot;step_description2&quot;)" constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=20;insetsLeft=0;insetsRight=40;insetsTop=20;location=right)" font="SansSerif,0,12" name="Label2" />
-  <Label id="3" label="what_would_you_like_to_do" align="left" localize="true" constraints="twocols(anchor=center;expandHorizontally=false;expandVertically=false;fill=none;gridHeight=1;gridWidth=1;gridX=-1;gridY=-1;insetsBottom=0;insetsLeft=80;insetsRight=10;insetsTop=0;location=left;padX=0;padY=0;weightX=0.0;weightY=0.0)" visible="(data.action.nature.freeModels.size &gt; 0)" name="Label" />
-  <RadioButtonList id="4" autoSelectFirstRow="true" iteratorClassName="org.openflexo.fme.model.action.InstantiateFMEFreeModel$FreeModelChoice" showText="true" showIcon="false" localize="true" manageDynamicModel="true" data="data.freeModelChoice" constraints="twocols(anchor=center;expandHorizontally=false;expandVertically=false;fill=none;gridHeight=1;gridWidth=1;gridX=-1;gridY=-1;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=right;padX=0;padY=0;weightX=0.0;weightY=0.0)" visible="(data.action.nature.freeModels.size &gt; 0)" name="ChoiceSelector" />
-  <Label id="5" label="new_freel_model_name" align="right" localize="true" constraints="twocols(anchor=east;expandHorizontally=false;expandVertically=false;fill=none;gridHeight=1;gridWidth=1;gridX=-1;gridY=-1;index=1;insetsBottom=0;insetsLeft=20;insetsRight=10;insetsTop=20;location=left;padX=0;padY=0;weightX=0.0;weightY=0.0)" visible="(ChoiceSelector.selectedIndex == 0)" index="1" name="NameLabel" />
-  <TextField id="6" columns="40" text="TextField" data="data.freeModelName" constraints="twocols(anchor=center;expandHorizontally=true;expandVertically=false;fill=horizontal;gridHeight=1;gridWidth=0;gridX=-1;gridY=-1;index=2;insetsBottom=0;insetsLeft=0;insetsRight=50;insetsTop=20;location=right;padX=0;padY=0;weightX=1.0;weightY=0.0)" visible="(ChoiceSelector.selectedIndex == 0)" index="2" name="NameTextField" />
-  <Label id="7" label="description" align="right" localize="true" constraints="twocols(anchor=north_east;expandHorizontally=true;expandVertically=false;fill=none;gridHeight=1;gridWidth=1;gridX=-1;gridY=-1;index=12;insetsBottom=0;insetsLeft=0;insetsRight=10;insetsTop=0;location=left;padX=0;padY=0;weightX=0.0;weightY=0.0)" visible="(ChoiceSelector.selectedIndex == 0)" index="12" name="DescriptionLabel" />
-  <TextArea id="8" rows="3" columns="8" validateOnReturn="true" text="TextArea" useScrollBar="true" verticalScrollbarPolicy="VERTICAL_SCROLLBAR_AS_NEEDED" constraints="twocols(expandHorizontally=true;expandVertically=true;insetsBottom=20;insetsLeft=0;insetsRight=50;insetsTop=0;location=right)" horizontalScrollbarPolicy="HORIZONTAL_SCROLLBAR_AS_NEEDED" visible="(ChoiceSelector.selectedIndex == 0)" name="TextArea" />
-  <Label id="9" label="free_model_to_instantiate" align="center" localize="true" constraints="twocols(anchor=center;expandHorizontally=false;expandVertically=false;fill=none;gridHeight=1;gridWidth=1;gridX=0;gridY=2;index=1;insetsBottom=0;insetsLeft=20;insetsRight=10;insetsTop=20;location=left;padX=0;padY=0;weightX=0.0;weightY=0.0)" visible="(ChoiceSelector.selectedIndex == 1)" index="6" controllerClassName="org.openflexo.gina.controller.FIBController" name="VirtualModelLabel" />
-  <RadioButtonList id="10" autoSelectFirstRow="true" iteratorClassName="org.openflexo.fme.model.FMEFreeModel" showText="true" list="data.action.nature.freeModels" showIcon="true" icon="controller.iconForObject(object)" format="object.name" data="data.existingFreeModel" constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=20;location=right)" visible="((ChoiceSelector.selectedIndex == 1) &amp;&amp;(data.action.nature.freeModels.size &gt; 0))" name="PaletteRadioButtonList" />
-  <LocalizedDictionary id="11">
-    <Localized id="12" lang="English" value="&lt;html&gt;&#xA;  &lt;head&gt;&#xA;    &#xA;  &lt;/head&gt;&#xA;  &lt;body&gt;&#xA;    You can choose to create a new FreeModel to explore new concepts, or feed &#xA;    an existing FreeModel with some new data.&#xA;  &lt;/body&gt;&#xA;&lt;/html&gt;&#xA;" key="step_description" />
-    <Localized id="13" lang="Dutch" value="&lt;html&gt;&#xA;&lt;head&gt;&#xA;&lt;/head&gt;&#xA;&lt;body&gt;&#xA;step_description&#xA;&lt;/body&gt;&#xA;&lt;/html&gt;" key="step_description" />
-    <Localized id="14" lang="French" value="&lt;html&gt;&#xA;  &lt;head&gt;&#xA;    &#xA;  &lt;/head&gt;&#xA;  &lt;body&gt;&#xA;    Vous pouvez choisir de cr&amp;#233;er un nouveau FreeModel pour explorer de &#xA;    nouveaux concepts, ou bien alimenter un FreeModel existant.&#xA;  &lt;/body&gt;&#xA;&lt;/html&gt;&#xA;" key="step_description" />
-    <Localized id="15" lang="English" value="What would you like to do ?" key="what_would_you_like_to_do" />
-    <Localized id="16" lang="Dutch" value="what_would_you_like_to_do" key="what_would_you_like_to_do" />
-    <Localized id="17" lang="French" value="Que voulez vous faire ?" key="what_would_you_like_to_do" />
-    <Localized id="18" lang="English" value="New virtual model name" key="new_virtual_model_name" />
-    <Localized id="19" lang="Dutch" value="new_virtual_model_name" key="new_virtual_model_name" />
-    <Localized id="20" lang="French" value="Nom du VirtualModel à créer" key="new_virtual_model_name" />
-    <Localized id="21" lang="English" value="Relative path" key="relative_path" />
-    <Localized id="22" lang="Dutch" value="relative_path" key="relative_path" />
-    <Localized id="23" lang="French" value="Path relatif" key="relative_path" />
-    <Localized id="24" lang="English" value="VirtualModel" key="virtual_model" />
-    <Localized id="25" lang="Dutch" value="Virtual model" key="virtual_model" />
-    <Localized id="26" lang="French" value="VirtualModel" key="virtual_model" />
-    <Localized id="27" lang="English" value="New freel model name" key="new_freel_model_name" />
-    <Localized id="28" lang="Dutch" value="new_freel_model_name" key="new_freel_model_name" />
-    <Localized id="29" lang="French" value="Nom du nouveau FreeModel" key="new_freel_model_name" />
-    <Localized id="30" lang="English" value="FreeModel description" key="description" />
-    <Localized id="31" lang="Dutch" value="Description" key="description" />
-    <Localized id="32" lang="French" value="Descriptif du FreeModel" key="description" />
-    <Localized id="33" lang="English" value="Free model to instantiate" key="free_model_to_instantiate" />
-    <Localized id="34" lang="Dutch" value="free_model_to_instantiate" key="free_model_to_instantiate" />
-    <Localized id="35" lang="French" value="FreeModel à instancier" key="free_model_to_instantiate" />
-    <Localized id="36" lang="English" value="&lt;html&gt;&#xA;  &lt;head&gt;&#xA;    &#xA;  &lt;/head&gt;&#xA;  &lt;body&gt;&#xA;    Create a new FreeModel to explore new concepts&#xA;&#xA;  &lt;/body&gt;&#xA;&lt;/html&gt;&#xA;" key="step_description2" />
-    <Localized id="37" lang="Dutch" value="&lt;html&gt;&#xA;&lt;head&gt;&#xA;&lt;/head&gt;&#xA;&lt;body&gt;&#xA;step_description2&#xA;&lt;/body&gt;&#xA;&lt;/html&gt;" key="step_description2" />
-    <Localized id="38" lang="French" value="&lt;html&gt;&#xA;  &lt;head&gt;&#xA;    &#xA;  &lt;/head&gt;&#xA;  &lt;body&gt;&#xA;    Cr&amp;#233;ez un nouveau FreeModel pour explorer de nouveaux concepts&#xA;&#xA;  &lt;/body&gt;&#xA;&lt;/html&gt;&#xA;" key="step_description2" />
-  </LocalizedDictionary>
-  <FIBVariable id="39" type="org.openflexo.fme.controller.action.InstantiateFMEDiagramFreeModelWizard$ChooseDiagramFreeModel" name="data" />
+<Panel id="0" align="left" borderTop="0" borderLeft="0"
+	trackViewPortHeight="true" trackViewPortWidth="true" borderBottom="0"
+	border="empty" imageWidth="960" sizeAdjustment="FitToAvailableSize"
+	titleFont="Lucida Grande,0,13" imageHeight="640" layout="twocols"
+	borderRight="0" opaque="false"
+	controllerClassName="org.openflexo.view.controller.FlexoFIBController">
+	<Image id="1" imageWidth="80" sizeAdjustment="OriginalSize"
+		imageFile="../../Icons/Help_32x32.png" align="left" imageHeight="46"
+		constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=20;insetsTop=25;location=left)"
+		name="Image" />
+	<Label id="2" label="step_description" align="center"
+		localize="true"
+		data="((data.action.nature.freeModels.size &gt; 0) ? &quot;step_description&quot; : &quot;step_description2&quot;)"
+		constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=20;insetsLeft=0;insetsRight=40;insetsTop=20;location=right)"
+		font="SansSerif,0,12" name="Label2" />
+	<Label id="3" label="what_would_you_like_to_do" align="left"
+		localize="true"
+		constraints="twocols(anchor=center;expandHorizontally=false;expandVertically=false;fill=none;gridHeight=1;gridWidth=1;gridX=-1;gridY=-1;insetsBottom=0;insetsLeft=80;insetsRight=10;insetsTop=0;location=left;padX=0;padY=0;weightX=0.0;weightY=0.0)"
+		visible="(data.action.nature.freeModels.size &gt; 0)" name="Label" />
+	<RadioButtonList id="4" autoSelectFirstRow="true"
+		iteratorClassName="org.openflexo.fme.model.action.InstantiateFMEFreeModel$FreeModelChoice"
+		showText="true" showIcon="false" localize="true"
+		manageDynamicModel="true" data="data.freeModelChoice"
+		constraints="twocols(anchor=center;expandHorizontally=false;expandVertically=false;fill=none;gridHeight=1;gridWidth=1;gridX=-1;gridY=-1;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=right;padX=0;padY=0;weightX=0.0;weightY=0.0)"
+		visible="(data.action.nature.freeModels.size &gt; 0)"
+		name="choiceSelector" />
+	<Label id="5" label="new_freel_model_name" align="right"
+		localize="true"
+		constraints="twocols(anchor=east;expandHorizontally=false;expandVertically=false;fill=none;gridHeight=1;gridWidth=1;gridX=-1;gridY=-1;index=1;insetsBottom=0;insetsLeft=20;insetsRight=10;insetsTop=20;location=left;padX=0;padY=0;weightX=0.0;weightY=0.0)"
+		visible="(choiceSelector.selectedIndex == 0)" index="1"
+		name="NameLabel" />
+	<TextField id="6" columns="40" text="TextField"
+		data="data.freeModelName"
+		constraints="twocols(anchor=center;expandHorizontally=true;expandVertically=false;fill=horizontal;gridHeight=1;gridWidth=0;gridX=-1;gridY=-1;index=2;insetsBottom=0;insetsLeft=0;insetsRight=50;insetsTop=20;location=right;padX=0;padY=0;weightX=1.0;weightY=0.0)"
+		visible="(choiceSelector.selectedIndex == 0)" index="2"
+		name="NameTextField" />
+	<Label id="7" label="description" align="right" localize="true"
+		constraints="twocols(anchor=north_east;expandHorizontally=true;expandVertically=false;fill=none;gridHeight=1;gridWidth=1;gridX=-1;gridY=-1;index=12;insetsBottom=0;insetsLeft=0;insetsRight=10;insetsTop=0;location=left;padX=0;padY=0;weightX=0.0;weightY=0.0)"
+		visible="(choiceSelector.selectedIndex == 0)" index="12"
+		name="DescriptionLabel" />
+	<TextArea id="8" rows="3" columns="8" validateOnReturn="true"
+		text="TextArea" useScrollBar="true"
+		verticalScrollbarPolicy="VERTICAL_SCROLLBAR_AS_NEEDED"
+		constraints="twocols(expandHorizontally=true;expandVertically=true;insetsBottom=20;insetsLeft=0;insetsRight=50;insetsTop=0;location=right)"
+		horizontalScrollbarPolicy="HORIZONTAL_SCROLLBAR_AS_NEEDED"
+		visible="(choiceSelector.selectedIndex == 0)" name="TextArea" />
+	<Label id="9" label="free_model_to_instantiate" align="center"
+		localize="true"
+		constraints="twocols(anchor=center;expandHorizontally=false;expandVertically=false;fill=none;gridHeight=1;gridWidth=1;gridX=0;gridY=2;index=1;insetsBottom=0;insetsLeft=20;insetsRight=10;insetsTop=20;location=left;padX=0;padY=0;weightX=0.0;weightY=0.0)"
+		visible="(choiceSelector.selectedIndex == 1)" index="6"
+		controllerClassName="org.openflexo.gina.controller.FIBController"
+		name="VirtualModelLabel" />
+	<RadioButtonList id="10" autoSelectFirstRow="true"
+		iteratorClassName="org.openflexo.fme.model.FMEFreeModel"
+		showText="true" list="data.action.nature.freeModels" showIcon="true"
+		icon="controller.iconForObject(object)" format="object.name"
+		data="data.existingFreeModel"
+		constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=20;location=right)"
+		visible="((choiceSelector.selectedIndex == 1) &amp;&amp;(data.action.nature.freeModels.size &gt; 0))"
+		name="PaletteRadioButtonList" />
+	<LocalizedDictionary id="11">
+		<Localized id="12" lang="English"
+			value="&lt;html&gt;&#xA;  &lt;head&gt;&#xA;    &#xA;  &lt;/head&gt;&#xA;  &lt;body&gt;&#xA;    You can choose to create a new FreeModel to explore new concepts, or feed &#xA;    an existing FreeModel with some new data.&#xA;  &lt;/body&gt;&#xA;&lt;/html&gt;&#xA;"
+			key="step_description" />
+		<Localized id="13" lang="Dutch"
+			value="&lt;html&gt;&#xA;&lt;head&gt;&#xA;&lt;/head&gt;&#xA;&lt;body&gt;&#xA;step_description&#xA;&lt;/body&gt;&#xA;&lt;/html&gt;"
+			key="step_description" />
+		<Localized id="14" lang="French"
+			value="&lt;html&gt;&#xA;  &lt;head&gt;&#xA;    &#xA;  &lt;/head&gt;&#xA;  &lt;body&gt;&#xA;    Vous pouvez choisir de cr&amp;#233;er un nouveau FreeModel pour explorer de &#xA;    nouveaux concepts, ou bien alimenter un FreeModel existant.&#xA;  &lt;/body&gt;&#xA;&lt;/html&gt;&#xA;"
+			key="step_description" />
+		<Localized id="15" lang="English"
+			value="What would you like to do ?" key="what_would_you_like_to_do" />
+		<Localized id="16" lang="Dutch"
+			value="what_would_you_like_to_do" key="what_would_you_like_to_do" />
+		<Localized id="17" lang="French"
+			value="Que voulez vous faire ?" key="what_would_you_like_to_do" />
+		<Localized id="18" lang="English"
+			value="New virtual model name" key="new_virtual_model_name" />
+		<Localized id="19" lang="Dutch"
+			value="new_virtual_model_name" key="new_virtual_model_name" />
+		<Localized id="20" lang="French"
+			value="Nom du VirtualModel à créer" key="new_virtual_model_name" />
+		<Localized id="21" lang="English" value="Relative path"
+			key="relative_path" />
+		<Localized id="22" lang="Dutch" value="relative_path"
+			key="relative_path" />
+		<Localized id="23" lang="French" value="Path relatif"
+			key="relative_path" />
+		<Localized id="24" lang="English" value="VirtualModel"
+			key="virtual_model" />
+		<Localized id="25" lang="Dutch" value="Virtual model"
+			key="virtual_model" />
+		<Localized id="26" lang="French" value="VirtualModel"
+			key="virtual_model" />
+		<Localized id="27" lang="English"
+			value="New freel model name" key="new_freel_model_name" />
+		<Localized id="28" lang="Dutch" value="new_freel_model_name"
+			key="new_freel_model_name" />
+		<Localized id="29" lang="French"
+			value="Nom du nouveau FreeModel" key="new_freel_model_name" />
+		<Localized id="30" lang="English"
+			value="FreeModel description" key="description" />
+		<Localized id="31" lang="Dutch" value="Description"
+			key="description" />
+		<Localized id="32" lang="French"
+			value="Descriptif du FreeModel" key="description" />
+		<Localized id="33" lang="English"
+			value="Free model to instantiate" key="free_model_to_instantiate" />
+		<Localized id="34" lang="Dutch"
+			value="free_model_to_instantiate" key="free_model_to_instantiate" />
+		<Localized id="35" lang="French"
+			value="FreeModel à instancier" key="free_model_to_instantiate" />
+		<Localized id="36" lang="English"
+			value="&lt;html&gt;&#xA;  &lt;head&gt;&#xA;    &#xA;  &lt;/head&gt;&#xA;  &lt;body&gt;&#xA;    Create a new FreeModel to explore new concepts&#xA;&#xA;  &lt;/body&gt;&#xA;&lt;/html&gt;&#xA;"
+			key="step_description2" />
+		<Localized id="37" lang="Dutch"
+			value="&lt;html&gt;&#xA;&lt;head&gt;&#xA;&lt;/head&gt;&#xA;&lt;body&gt;&#xA;step_description2&#xA;&lt;/body&gt;&#xA;&lt;/html&gt;"
+			key="step_description2" />
+		<Localized id="38" lang="French"
+			value="&lt;html&gt;&#xA;  &lt;head&gt;&#xA;    &#xA;  &lt;/head&gt;&#xA;  &lt;body&gt;&#xA;    Cr&amp;#233;ez un nouveau FreeModel pour explorer de nouveaux concepts&#xA;&#xA;  &lt;/body&gt;&#xA;&lt;/html&gt;&#xA;"
+			key="step_description2" />
+	</LocalizedDictionary>
+	<FIBVariable id="39"
+		type="org.openflexo.fme.controller.action.InstantiateFMEDiagramFreeModelWizard$ChooseDiagramFreeModel"
+		name="data" />
 </Panel>

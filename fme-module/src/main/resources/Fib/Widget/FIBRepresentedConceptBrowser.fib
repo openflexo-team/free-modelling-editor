@@ -5,15 +5,15 @@
 	<Panel layout="border" darkLevel="0" constraints="border(location=center)">
 		<Label label="represented_concepts" align="center"
 			constraints="border(location=north)" localize="true" />
-		<Browser name="Browser" root="data"
+		<Browser name="browser" root="data"
 			iteratorClassName="org.openflexo.foundation.FlexoObject"
 			visibleRowCount="3" rowHeight="18" boundToSelectionManager="true"
 			selectionMode="DiscontiguousTreeSelection" showFooter="true"
 			rootVisible="false" showRootsHandle="true" localize="true"
 			manageDynamicModel="true" constraints="border(location=center)"
-			width="100" height="100" clickAction="controller.singleClick(Browser.selected)"
-			doubleClickAction="controller.doubleClick(Browser.selected)"
-			rightClickAction="controller.rightClick(Browser.selected,event)">
+			width="100" height="100" clickAction="controller.singleClick(browser.selected)"
+			doubleClickAction="controller.doubleClick(browser.selected)"
+			rightClickAction="controller.rightClick(browser.selected,event)">
 			<BrowserElement dataClassName="org.openflexo.fme.model.FMEFreeModelInstance"
 				label="freeModel.name" isEditable="false" filtered="false"
 				defaultVisible="true" name="freeModel">
