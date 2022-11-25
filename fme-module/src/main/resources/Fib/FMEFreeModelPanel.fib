@@ -1,70 +1,186 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Panel id="0" align="left" borderTop="0" flowAlignment="LEADING" borderLeft="0" imageFile="../Icons/FMEBackground.png" trackViewPortHeight="true" trackViewPortWidth="true" borderBottom="0" border="empty" imageWidth="626" sizeAdjustment="FitToAvailableSize" imageHeight="417" layout="twocols" borderRight="0" vGap="5" hGap="5" controllerClassName="org.openflexo.fme.view.FMEFreeModelModuleView$FMEFreeModelModuleViewFIBController">
-  <Panel id="1" align="left" borderTop="0" borderTitle="Panel" flowAlignment="CENTER" borderLeft="0" trackViewPortHeight="true" trackViewPortWidth="true" borderBottom="0" border="empty" sizeAdjustment="OriginalSize" layout="flow" borderRight="0" vGap="5" hGap="5" constraints="twocols(anchor=south;expandHorizontally=true;expandVertically=false;fill=both;gridHeight=1;gridWidth=0;gridX=-1;gridY=-1;insetsBottom=0;insetsLeft=10;insetsRight=10;insetsTop=50;location=center;padX=0;padY=0;weightX=1.0;weightY=0.0)" name="FIBPanel2">
-    <Image id="2" imageWidth="80" sizeAdjustment="OriginalSize" imageFile="../Icons/FreeModel_64x64.png" align="left" imageHeight="46" data="controller.freeModelIcon.image" constraints="flow()" name="Image2" />
-    <Label id="3" label="" align="center" data="data.name" constraints="flow(anchor=center;fill=horizontal;gridHeight=1;gridWidth=0;gridX=-1;gridY=-1;insetsBottom=0;insetsLeft=10;insetsRight=10;insetsTop=50;location=center;padX=0;padY=0;weightX=1.0;weightY=0.0)" font="ArialMT,0,30" name="Label" />
-  </Panel>
-  <Label id="4" label="" align="left" constraints="twocols(expandHorizontally=true;expandVertically=true;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=right)" name="Label4" />
-  <Label id="5" label="name" align="left" localize="true" constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=10;insetsTop=0;location=left)" font="ArialMT,0,16" name="Label2" />
-  <TextField id="6" columns="7" data="data.name" constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=50;insetsTop=0;location=right)" name="TextField" />
-  <Label id="7" label="conceptual_model" align="left" localize="true" constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=30;insetsRight=10;insetsTop=10;location=left)" font="ArialMT,0,16" name="Label2" />
-  <Custom id="8" componentClassName="org.openflexo.fml.controller.widget.FIBVirtualModelSelector" dataClassForComponent="org.openflexo.foundation.fml.rm.VirtualModelResource" manageDynamicModel="true" data="data.conceptualModel.accessedVirtualModelResource" constraints="twocols(anchor=center;expandHorizontally=true;expandVertically=false;fill=horizontal;gridHeight=1;gridWidth=1;gridX=1;gridY=2;index=1;insetsBottom=0;insetsLeft=0;insetsRight=50;insetsTop=10;location=right;padX=0;padY=0;weightX=0.0;weightY=0.0)" index="6" controllerClassName="org.openflexo.gina.controller.FIBController" name="virtualModelSelector">
-    <Assignment id="9" variable="component.containerVirtualModel" mandatory="true" />
-    <Assignment id="10" variable="component.selectableCondition" mandatory="true" />
-    <Assignment id="11" variable="component.serviceManager" mandatory="true" />
-    <Assignment id="12" variable="component.flexoController" mandatory="true" />
-    <Assignment id="13" variable="component.virtualModelLibrary" value="controller.editor.serviceManager.virtualModelLibrary" mandatory="true" />
-  </Custom>
-  <Label id="14" label="sample_data" align="left" localize="true" constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=30;insetsRight=10;insetsTop=10;location=left)" font="ArialMT,0,16" name="Label3" />
-  <Custom id="15" componentClassName="org.openflexo.fml.rt.controller.widget.FIBVirtualModelInstanceResourceSelector" dataClassForComponent="org.openflexo.foundation.fml.rt.rm.FMLRTVirtualModelInstanceResource" manageDynamicModel="true" data="data.sampleData.accessedVirtualModelInstanceResource" constraints="twocols(anchor=center;expandHorizontally=true;expandVertically=false;fill=horizontal;gridHeight=1;gridWidth=1;gridX=1;gridY=2;index=1;insetsBottom=0;insetsLeft=0;insetsRight=50;insetsTop=10;location=right;padX=0;padY=0;weightX=0.0;weightY=0.0)" index="6" controllerClassName="org.openflexo.gina.controller.FIBController" name="virtualModelSelector">
-    <Assignment id="16" variable="component.virtualModel" mandatory="true" />
-    <Assignment id="17" variable="component.containerVirtualModelInstance" mandatory="true" />
-    <Assignment id="18" variable="component.virtualModelInstanceRepository" mandatory="true" />
-    <Assignment id="19" variable="component.project" mandatory="true" />
-    <Assignment id="20" variable="component.selectableCondition" mandatory="true" />
-    <Assignment id="21" variable="component.flexoController" mandatory="true" />
-    <Assignment id="22" variable="component.serviceManager" value="controller.editor.serviceManager" mandatory="true" />
-  </Custom>
-  <Label id="23" label="description" align="left" localize="true" constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=30;insetsRight=10;insetsTop=10;location=left)" font="ArialMT,0,16" name="Label3" />
-  <TextArea id="24" rows="3" columns="8" validateOnReturn="true" text="TextArea" data="data.description" useScrollBar="true" verticalScrollbarPolicy="VERTICAL_SCROLLBAR_AS_NEEDED" constraints="twocols(expandHorizontally=true;expandVertically=true;insetsBottom=0;insetsLeft=0;insetsRight=50;insetsTop=10;location=right)" horizontalScrollbarPolicy="HORIZONTAL_SCROLLBAR_AS_NEEDED" name="TextArea" />
-  <Label id="25" label="instances" align="left" localize="true" constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=10;insetsTop=10;location=left)" font="ArialMT,0,16" name="Label6" />
-  <Table id="26" visibleRowCount="3" backgroundNonSelectionColor="255,255,255" iteratorClassName="org.openflexo.fme.model.FMEFreeModelInstance" backgroundSecondarySelectionColor="178,215,255" showHeader="false" lookAndFeel="Classic" selectionMode="MultipleIntervalSelection" rowHeight="25" manageDynamicModel="true" doubleClickAction="controller.selectFreeModelInstance(Table.selected)" data="data.freeModelInstances" constraints="twocols(expandHorizontally=true;expandVertically=true;insetsBottom=0;insetsLeft=0;insetsRight=50;insetsTop=10;location=right)" name="Table">
-    <IconColumn id="27" data="controller.iconForObject(iterator)" resizable="false" title="icon" displayTitle="false" columnWidth="25" showIcon="false" name="icon" />
-    <LabelColumn id="28" data="(((((&quot;&lt;html&gt;&lt;b&gt;&quot; + iterator.name) + &quot;&lt;/b&gt;&quot;) + &quot;&lt;i&gt;&quot;) + ((iterator.description != null) ? (&quot; - &quot; + iterator.description) : &quot;&quot;)) + &quot;&lt;/i&gt;&lt;/html&gt;&quot;)" resizable="true" title="free_model" displayTitle="true" columnWidth="100" showIcon="false" name="name" />
-    <AddAction id="29" method="controller.createNewDiagramFreeModel(data)" name="add_action" />
-  </Table>
-  <Label id="30" label="" align="left" constraints="twocols(expandHorizontally=true;expandVertically=true;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=center)" name="Label5" />
-  <Panel id="31" align="left" borderTop="0" borderTitle="Panel" flowAlignment="CENTER" borderLeft="0" trackViewPortHeight="true" trackViewPortWidth="true" borderBottom="0" border="empty" sizeAdjustment="OriginalSize" layout="flow" borderRight="0" vGap="5" hGap="5" constraints="twocols(anchor=east;expandHorizontally=true;expandVertically=false;fill=both;gridHeight=-1;gridWidth=0;gridX=-1;gridY=-1;insetsBottom=30;insetsLeft=20;insetsRight=20;insetsTop=0;location=center;padX=0;padY=0;weightX=1.0;weightY=0.1)" name="FIBPanel">
-    <Button id="32" buttonType="Trigger" action="controller.instantiateNewDiagramFreeModel(data)" label="instantiate_new_diagram" localize="true" constraints="flow(anchor=east;fill=vertical;gridHeight=1;gridWidth=1;gridX=-1;gridY=-1;insetsBottom=30;insetsLeft=20;insetsRight=20;insetsTop=0;location=center;padX=0;padY=0;weightX=1.0;weightY=0.1)" height="50" width="250" name="Button" />
-  </Panel>
-  <LocalizedDictionary id="33">
-    <Localized id="34" lang="English" value="New diagram" key="new_diagram" />
-    <Localized id="35" lang="Dutch" value="new_diagram" key="new_diagram" />
-    <Localized id="36" lang="French" value="Nouveau diagramme" key="new_diagram" />
-    <Localized id="37" lang="English" value="Icon" key="icon" />
-    <Localized id="38" lang="Dutch" value="Icon" key="icon" />
-    <Localized id="39" lang="French" value="Icône" key="icon" />
-    <Localized id="40" lang="English" value="Name" key="name" />
-    <Localized id="41" lang="Dutch" value="Name" key="name" />
-    <Localized id="42" lang="French" value="Nom" key="name" />
-    <Localized id="43" lang="English" value="Description" key="description" />
-    <Localized id="44" lang="Dutch" value="Description" key="description" />
-    <Localized id="45" lang="French" value="Description" key="description" />
-    <Localized id="46" lang="English" value="Instances" key="instances" />
-    <Localized id="47" lang="Dutch" value="instances" key="instances" />
-    <Localized id="48" lang="French" value="Instances" key="instances" />
-    <Localized id="49" lang="English" value="Free model" key="free_model" />
-    <Localized id="50" lang="Dutch" value="free_model" key="free_model" />
-    <Localized id="51" lang="French" value="Free Model" key="free_model" />
-    <Localized id="52" lang="English" value="Instantiate new diagram" key="instantiate_new_diagram" />
-    <Localized id="53" lang="Dutch" value="instantiate_new_diagram" key="instantiate_new_diagram" />
-    <Localized id="54" lang="French" value="Instancier un nouveau diagramme" key="instantiate_new_diagram" />
-    <Localized id="55" lang="English" value="Conceptual model" key="conceptual_model" />
-    <Localized id="56" lang="Dutch" value="conceptual_model" key="conceptual_model" />
-    <Localized id="57" lang="French" value="Modèle conceptuel" key="conceptual_model" />
-    <Localized id="58" lang="English" value="Sample data" key="sample_data" />
-    <Localized id="59" lang="Dutch" value="sample_data" key="sample_data" />
-    <Localized id="60" lang="French" value="Jeu de données" key="sample_data" />
-  </LocalizedDictionary>
-  <FIBVariable id="61" type="org.openflexo.fme.model.FMEFreeModel" name="data" />
+<Panel id="0" align="left" borderTop="0" flowAlignment="LEADING"
+	borderLeft="0" imageFile="../Icons/FMEBackground.png"
+	trackViewPortHeight="true" trackViewPortWidth="true" borderBottom="0"
+	border="empty" imageWidth="626" sizeAdjustment="FitToAvailableSize"
+	imageHeight="417" layout="twocols" borderRight="0" vGap="5" hGap="5"
+	controllerClassName="org.openflexo.fme.view.FMEFreeModelModuleView$FMEFreeModelModuleViewFIBController">
+	<Panel id="1" align="left" borderTop="0" borderTitle="Panel"
+		flowAlignment="CENTER" borderLeft="0" trackViewPortHeight="true"
+		trackViewPortWidth="true" borderBottom="0" border="empty"
+		sizeAdjustment="OriginalSize" layout="flow" borderRight="0" vGap="5"
+		hGap="5"
+		constraints="twocols(anchor=south;expandHorizontally=true;expandVertically=false;fill=both;gridHeight=1;gridWidth=0;gridX=-1;gridY=-1;insetsBottom=0;insetsLeft=10;insetsRight=10;insetsTop=50;location=center;padX=0;padY=0;weightX=1.0;weightY=0.0)"
+		name="FIBPanel2">
+		<Image id="2" imageWidth="80" sizeAdjustment="OriginalSize"
+			imageFile="../Icons/FreeModel_64x64.png" align="left"
+			imageHeight="46" data="controller.freeModelIcon.image"
+			constraints="flow()" name="Image2" />
+		<Label id="3" label="" align="center" data="data.name"
+			constraints="flow(anchor=center;fill=horizontal;gridHeight=1;gridWidth=0;gridX=-1;gridY=-1;insetsBottom=0;insetsLeft=10;insetsRight=10;insetsTop=50;location=center;padX=0;padY=0;weightX=1.0;weightY=0.0)"
+			font="ArialMT,0,30" name="Label" />
+	</Panel>
+	<Label id="4" label="" align="left"
+		constraints="twocols(expandHorizontally=true;expandVertically=true;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=right)"
+		name="Label4" />
+	<Label id="5" label="name" align="left" localize="true"
+		constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=10;insetsTop=0;location=left)"
+		font="ArialMT,0,16" name="Label2" />
+	<TextField id="6" columns="7" data="data.name"
+		constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=50;insetsTop=0;location=right)"
+		name="TextField" />
+	<Label id="7" label="conceptual_model" align="left"
+		localize="true"
+		constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=30;insetsRight=10;insetsTop=10;location=left)"
+		font="ArialMT,0,16" name="Label2" />
+	<Custom id="8"
+		componentClassName="org.openflexo.fml.controller.widget.FIBVirtualModelSelector"
+		dataClassForComponent="org.openflexo.foundation.fml.rm.CompilationUnitResource"
+		manageDynamicModel="true"
+		data="data.conceptualModel.accessedVirtualModelResource"
+		constraints="twocols(anchor=center;expandHorizontally=true;expandVertically=false;fill=horizontal;gridHeight=1;gridWidth=1;gridX=1;gridY=2;index=1;insetsBottom=0;insetsLeft=0;insetsRight=50;insetsTop=10;location=right;padX=0;padY=0;weightX=0.0;weightY=0.0)"
+		index="6"
+		controllerClassName="org.openflexo.gina.controller.FIBController"
+		name="virtualModelSelector">
+		<Assignment id="9"
+			variable="component.containerVirtualModel" mandatory="true" />
+		<Assignment id="10"
+			variable="component.selectableCondition" mandatory="true" />
+		<Assignment id="11" variable="component.serviceManager"
+			mandatory="true" />
+		<Assignment id="12" variable="component.flexoController"
+			mandatory="true" />
+		<Assignment id="13"
+			variable="component.virtualModelLibrary"
+			value="controller.editor.serviceManager.virtualModelLibrary"
+			mandatory="true" />
+	</Custom>
+	<Label id="14" label="sample_data" align="left" localize="true"
+		constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=30;insetsRight=10;insetsTop=10;location=left)"
+		font="ArialMT,0,16" name="Label3" />
+	<Custom id="15"
+		componentClassName="org.openflexo.fml.rt.controller.widget.FIBVirtualModelInstanceResourceSelector"
+		dataClassForComponent="org.openflexo.foundation.fml.rt.rm.FMLRTVirtualModelInstanceResource"
+		manageDynamicModel="true"
+		data="data.sampleData.accessedVirtualModelInstanceResource"
+		constraints="twocols(anchor=center;expandHorizontally=true;expandVertically=false;fill=horizontal;gridHeight=1;gridWidth=1;gridX=1;gridY=2;index=1;insetsBottom=0;insetsLeft=0;insetsRight=50;insetsTop=10;location=right;padX=0;padY=0;weightX=0.0;weightY=0.0)"
+		index="6"
+		controllerClassName="org.openflexo.gina.controller.FIBController"
+		name="virtualModelSelector">
+		<Assignment id="16" variable="component.virtualModel"
+			mandatory="true" />
+		<Assignment id="17"
+			variable="component.containerVirtualModelInstance" mandatory="true" />
+		<Assignment id="18"
+			variable="component.virtualModelInstanceRepository" mandatory="true" />
+		<Assignment id="19" variable="component.project"
+			mandatory="true" />
+		<Assignment id="20"
+			variable="component.selectableCondition" mandatory="true" />
+		<Assignment id="21" variable="component.flexoController"
+			mandatory="true" />
+		<Assignment id="22" variable="component.serviceManager"
+			value="controller.editor.serviceManager" mandatory="true" />
+	</Custom>
+	<Label id="23" label="description" align="left" localize="true"
+		constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=30;insetsRight=10;insetsTop=10;location=left)"
+		font="ArialMT,0,16" name="Label3" />
+	<TextArea id="24" rows="3" columns="8" validateOnReturn="true"
+		text="TextArea" data="data.description" useScrollBar="true"
+		verticalScrollbarPolicy="VERTICAL_SCROLLBAR_AS_NEEDED"
+		constraints="twocols(expandHorizontally=true;expandVertically=true;insetsBottom=0;insetsLeft=0;insetsRight=50;insetsTop=10;location=right)"
+		horizontalScrollbarPolicy="HORIZONTAL_SCROLLBAR_AS_NEEDED"
+		name="TextArea" />
+	<Label id="25" label="instances" align="left" localize="true"
+		constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=10;insetsTop=10;location=left)"
+		font="ArialMT,0,16" name="Label6" />
+	<Table id="26" visibleRowCount="3"
+		backgroundNonSelectionColor="255,255,255"
+		iteratorClassName="org.openflexo.fme.model.FMEFreeModelInstance"
+		backgroundSecondarySelectionColor="178,215,255" showHeader="false"
+		lookAndFeel="Classic" selectionMode="MultipleIntervalSelection"
+		rowHeight="25" manageDynamicModel="true"
+		doubleClickAction="controller.selectFreeModelInstance(table.selected)"
+		data="data.freeModelInstances"
+		constraints="twocols(expandHorizontally=true;expandVertically=true;insetsBottom=0;insetsLeft=0;insetsRight=50;insetsTop=10;location=right)"
+		name="table">
+		<IconColumn id="27"
+			data="controller.iconForObject(iterator)" resizable="false"
+			title="icon" displayTitle="false" columnWidth="25" showIcon="false"
+			name="icon" />
+		<LabelColumn id="28"
+			data="(((((&quot;&lt;html&gt;&lt;b&gt;&quot; + iterator.name) + &quot;&lt;/b&gt;&quot;) + &quot;&lt;i&gt;&quot;) + ((iterator.description != null) ? (&quot; - &quot; + iterator.description) : &quot;&quot;)) + &quot;&lt;/i&gt;&lt;/html&gt;&quot;)"
+			resizable="true" title="free_model" displayTitle="true"
+			columnWidth="100" showIcon="false" name="name" />
+		<AddAction id="29"
+			method="controller.instantiateNewDiagramFreeModel(data)" name="add_action" />
+	</Table>
+	<Label id="30" label="" align="left"
+		constraints="twocols(expandHorizontally=true;expandVertically=true;insetsBottom=0;insetsLeft=0;insetsRight=0;insetsTop=0;location=center)"
+		name="Label5" />
+	<Panel id="31" align="left" borderTop="0" borderTitle="Panel"
+		flowAlignment="CENTER" borderLeft="0" trackViewPortHeight="true"
+		trackViewPortWidth="true" borderBottom="0" border="empty"
+		sizeAdjustment="OriginalSize" layout="flow" borderRight="0" vGap="5"
+		hGap="5"
+		constraints="twocols(anchor=east;expandHorizontally=true;expandVertically=false;fill=both;gridHeight=-1;gridWidth=0;gridX=-1;gridY=-1;insetsBottom=30;insetsLeft=20;insetsRight=20;insetsTop=0;location=center;padX=0;padY=0;weightX=1.0;weightY=0.1)"
+		name="FIBPanel">
+		<Button id="32" buttonType="Trigger"
+			action="controller.instantiateNewDiagramFreeModel(data)"
+			label="instantiate_new_diagram" localize="true"
+			constraints="flow(anchor=east;fill=vertical;gridHeight=1;gridWidth=1;gridX=-1;gridY=-1;insetsBottom=30;insetsLeft=20;insetsRight=20;insetsTop=0;location=center;padX=0;padY=0;weightX=1.0;weightY=0.1)"
+			height="50" width="250" name="Button" />
+	</Panel>
+	<LocalizedDictionary id="33">
+		<Localized id="34" lang="English" value="New diagram"
+			key="new_diagram" />
+		<Localized id="35" lang="Dutch" value="new_diagram"
+			key="new_diagram" />
+		<Localized id="36" lang="French" value="Nouveau diagramme"
+			key="new_diagram" />
+		<Localized id="37" lang="English" value="Icon" key="icon" />
+		<Localized id="38" lang="Dutch" value="Icon" key="icon" />
+		<Localized id="39" lang="French" value="Icône" key="icon" />
+		<Localized id="40" lang="English" value="Name" key="name" />
+		<Localized id="41" lang="Dutch" value="Name" key="name" />
+		<Localized id="42" lang="French" value="Nom" key="name" />
+		<Localized id="43" lang="English" value="Description"
+			key="description" />
+		<Localized id="44" lang="Dutch" value="Description"
+			key="description" />
+		<Localized id="45" lang="French" value="Description"
+			key="description" />
+		<Localized id="46" lang="English" value="Instances"
+			key="instances" />
+		<Localized id="47" lang="Dutch" value="instances"
+			key="instances" />
+		<Localized id="48" lang="French" value="Instances"
+			key="instances" />
+		<Localized id="49" lang="English" value="Free model"
+			key="free_model" />
+		<Localized id="50" lang="Dutch" value="free_model"
+			key="free_model" />
+		<Localized id="51" lang="French" value="Free Model"
+			key="free_model" />
+		<Localized id="52" lang="English"
+			value="Instantiate new diagram" key="instantiate_new_diagram" />
+		<Localized id="53" lang="Dutch"
+			value="instantiate_new_diagram" key="instantiate_new_diagram" />
+		<Localized id="54" lang="French"
+			value="Instancier un nouveau diagramme" key="instantiate_new_diagram" />
+		<Localized id="55" lang="English" value="Conceptual model"
+			key="conceptual_model" />
+		<Localized id="56" lang="Dutch" value="conceptual_model"
+			key="conceptual_model" />
+		<Localized id="57" lang="French" value="Modèle conceptuel"
+			key="conceptual_model" />
+		<Localized id="58" lang="English" value="Sample data"
+			key="sample_data" />
+		<Localized id="59" lang="Dutch" value="sample_data"
+			key="sample_data" />
+		<Localized id="60" lang="French" value="Jeu de données"
+			key="sample_data" />
+	</LocalizedDictionary>
+	<FIBVariable id="61"
+		type="org.openflexo.fme.model.FMEFreeModel" name="data" />
 </Panel>

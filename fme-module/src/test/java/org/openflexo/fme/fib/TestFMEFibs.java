@@ -38,6 +38,7 @@
 
 package org.openflexo.fme.fib;
 
+import org.junit.Test;
 import org.openflexo.gina.test.GenericFIBTestCase;
 import org.openflexo.rm.FileResourceImpl;
 import org.openflexo.rm.ResourceLocator;
@@ -46,6 +47,26 @@ public class TestFMEFibs extends GenericFIBTestCase {
 
 	public static void main(String[] args) {
 		System.out.println(generateFIBTestCaseClass(((FileResourceImpl) ResourceLocator.locateResource("Fib")).getFile(), "Fib/"));
+	}
+
+	@Test
+	public void testFMEFreeModelPanel() {
+		validateFIB("Fib/FMEFreeModelPanel.fib");
+	}
+
+	@Test
+	public void testConvertToFMEProjectPanel() {
+		validateFIB("Fib/ConvertToFMEProjectPanel.fib");
+	}
+
+	@Test
+	public void testFMEProjectNaturePanel() {
+		validateFIB("Fib/FMEProjectNaturePanel.fib");
+	}
+
+	@Test
+	public void testFMEWelcomePanel() {
+		validateFIB("Fib/FMEWelcomePanel.fib");
 	}
 
 }

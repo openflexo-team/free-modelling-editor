@@ -26,7 +26,7 @@
 		<Assignment id="8" variable="component.flexoController"
 			mandatory="true" />
 		<Assignment id="9" variable="component.virtualModel"
-			value="data.action.FMEFreeModel.conceptualModel.accessedVirtualModel"
+			value="data.action.fMEFreeModel.conceptualModel.accessedVirtualModel"
 			mandatory="true" />
 	</Custom>
 	<Label id="10" label="container" align="right" localize="true"
@@ -45,7 +45,7 @@
 		<Assignment id="14" variable="component.flexoController"
 			mandatory="true" />
 		<Assignment id="15" variable="component.virtualModelInstance"
-			value="data.action.FMEFreeModel.sampleData.accessedVirtualModelInstance"
+			value="data.action.fMEFreeModel.sampleData.accessedVirtualModelInstance"
 			mandatory="true" />
 		<Assignment id="16" variable="component.expectedFlexoConceptType"
 			value="data.concept.containerFlexoConcept" mandatory="true" />
@@ -59,9 +59,9 @@
 		showText="true" showIcon="false" localize="true" manageDynamicModel="true"
 		format="object.name" data="data.grStrategy"
 		constraints="twocols(anchor=west;expandHorizontally=false;expandVertically=false;fill=horizontal;gridHeight=1;gridWidth=0;gridX=-1;gridY=-1;index=0;insetsBottom=0;insetsLeft=0;insetsRight=20;insetsTop=10;location=right;padX=0;padY=0;weightX=1.0;weightY=0.0)"
-		visible="data.action.hasGRConcept" index="0" name="GRStrategyRBList" />
+		visible="data.action.hasGRConcept" index="0" name="grStrategyRBList" />
 	<Label id="19" label="label" align="left" localize="true"
-		data="(GRStrategyRBList.selected.toString + &quot;_description&quot;)"
+		data="(grStrategyRBList.selected.toString + &quot;_description&quot;)"
 		constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=20;insetsTop=0;location=right)"
 		visible="data.action.hasGRConcept" font="SansSerif,0,11" name="Label" />
 	<LocalizedDictionary id="20">

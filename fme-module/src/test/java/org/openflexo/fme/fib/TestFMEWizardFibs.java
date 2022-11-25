@@ -51,8 +51,18 @@ public class TestFMEWizardFibs extends GenericFIBTestCase {
 	}
 
 	@Test
-	public void testChooseDiagramFreeModel() {
-		validateFIB("Fib/Wizard/ChooseDiagramFreeModel.fib");
+	public void testConfigureNewConceptFromNoneConcept() {
+		validateFIB("Fib/Wizard/ConfigureNewConceptFromNoneConcept.fib");
+	}
+
+	@Test
+	public void testConfigureFreeModelSampleData() {
+		validateFIB("Fib/Wizard/ConfigureFreeModelSampleData.fib");
+	}
+
+	@Test
+	public void testDescribePPTFreeModel() {
+		validateFIB("Fib/Wizard/DescribePPTFreeModel.fib");
 	}
 
 	@Test
@@ -61,18 +71,8 @@ public class TestFMEWizardFibs extends GenericFIBTestCase {
 	}
 
 	@Test
-	public void testConfigureNewConcept() {
-		validateFIB("Fib/Wizard/ConfigureNewConcept.fib");
-	}
-
-	@Test
-	public void testConfigureNewConceptFromNoneConcept() {
-		validateFIB("Fib/Wizard/ConfigureNewConceptFromNoneConcept.fib");
-	}
-
-	@Test
-	public void testConfigureSampleData() {
-		validateFIB("Fib/Wizard/ConfigureSampleData.fib");
+	public void testChooseDiagramFreeModel() {
+		validateFIB("Fib/Wizard/ChooseDiagramFreeModel.fib");
 	}
 
 	@Test
@@ -83,6 +83,51 @@ public class TestFMEWizardFibs extends GenericFIBTestCase {
 	@Test
 	public void testDescribeDiagramFreeModelInstance() {
 		validateFIB("Fib/Wizard/DescribeDiagramFreeModelInstance.fib");
+	}
+
+	@Test
+	public void testConfigureInstantiateNewFMEProperty() {
+		validateFIB("Fib/Wizard/ConfigureInstantiateNewFMEProperty.fib");
+	}
+
+	@Test
+	public void testConfigureSampleData() {
+		validateFIB("Fib/Wizard/ConfigureSampleData.fib");
+	}
+
+	@Test
+	public void testConfigureFreeModelConceptualModel() {
+		validateFIB("Fib/Wizard/ConfigureFreeModelConceptualModel.fib");
+	}
+
+	@Test
+	public void testConfigureNewInstanceOfExistingConceptFromDiagramElement() {
+		validateFIB("Fib/Wizard/ConfigureNewInstanceOfExistingConceptFromDiagramElement.fib");
+	}
+
+	@Test
+	public void testConfigureNewConcept() {
+		validateFIB("Fib/Wizard/ConfigureNewConcept.fib");
+	}
+
+	@Test
+	public void testConfigureNewInstanceOfExistingConcept() {
+		validateFIB("Fib/Wizard/ConfigureNewInstanceOfExistingConcept.fib");
+	}
+
+	@Test
+	public void testConfigureNewRelationalConcept() {
+		validateFIB("Fib/Wizard/ConfigureNewRelationalConcept.fib");
+	}
+
+	@Test
+	public void testConfigureNewFMEPropertyFromDiagramConnector() {
+		validateFIB("Fib/Wizard/ConfigureNewFMEPropertyFromDiagramConnector.fib");
+	}
+
+	@Test
+	public void testConfigureNewFMEProperty() {
+		validateFIB("Fib/Wizard/ConfigureNewFMEProperty.fib");
 	}
 
 }
