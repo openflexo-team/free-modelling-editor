@@ -65,7 +65,7 @@ import org.openflexo.technologyadapter.diagram.fml.action.CreateDiagramPalette;
 import org.openflexo.technologyadapter.diagram.fml.action.CreateDiagramSpecification;
 import org.openflexo.technologyadapter.diagram.fml.action.CreateExampleDiagram;
 import org.openflexo.technologyadapter.diagram.metamodel.DiagramSpecification;
-import org.openflexo.technologyadapter.diagram.model.DiagramType;
+import org.openflexo.technologyadapter.diagram.model.Diagram;
 
 /**
  * This action is used to create a new {@link FMEPPTFreeModel} in a {@link FreeModellingProjectNature}<br>
@@ -211,7 +211,7 @@ public class CreateFMEPPTFreeModel extends CreateFMEFreeModel<CreateFMEPPTFreeMo
 		CreateGenericBehaviourParameter createDiagramParameter = CreateGenericBehaviourParameter.actionType
 				.makeNewEmbeddedAction(creationScheme, null, this);
 		createDiagramParameter.setParameterName("diagram");
-		createDiagramParameter.setParameterType(DiagramType.getDiagramType(diagramSpecification));
+		createDiagramParameter.setParameterType(Diagram.class);
 		createDiagramParameter.doAction();
 
 		CreateEditionAction assignDiagramAction = CreateEditionAction.actionType.makeNewEmbeddedAction(creationScheme.getControlGraph(),
