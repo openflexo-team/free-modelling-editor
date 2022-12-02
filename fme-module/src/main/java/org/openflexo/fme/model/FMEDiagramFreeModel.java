@@ -67,7 +67,6 @@ import org.openflexo.foundation.fml.binding.CreationSchemePathElement;
 import org.openflexo.foundation.fml.editionaction.AssignationAction;
 import org.openflexo.foundation.fml.editionaction.DeleteAction;
 import org.openflexo.foundation.fml.editionaction.ExpressionAction;
-import org.openflexo.foundation.fml.expr.FMLPrettyPrinter;
 import org.openflexo.foundation.fml.rt.editionaction.AddFlexoConceptInstance;
 import org.openflexo.foundation.fml.rt.editionaction.AddFlexoConceptInstanceParameter;
 import org.openflexo.foundation.resource.ResourceLoadingCancelledException;
@@ -357,19 +356,23 @@ public interface FMEDiagramFreeModel extends FMEFreeModel {
 				DataBinding expression = new DataBinding(newFCIAction, concept.getInstanceType(), BindingDefinitionType.GET);
 				BindingPath bindingPath = null;
 
-				if (containerConceptGR != null) {
-					try {
+				try {
+					if (containerConceptGR != null) {
 						bindingPath = BindingPath.parse(DropScheme.TARGET_KEY + "." + FMEFreeModel.CONCEPT_ROLE_NAME, newFCIAction);
 						bindingPath.addBindingPathElement(pathElement);
-					} catch (ParseException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
 					}
+					else {
+						bindingPath = BindingPath.parse(SAMPLE_DATA_MODEL_SLOT_NAME, newFCIAction);
+						// bindingPath = new BindingPath(Collections.singletonList(pathElement), newFCIAction,
+						// FMLPrettyPrinter.getInstance());
+					}
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-				else {
-					// bindingPath = BindingPath.parse(SAMPLE_DATA_MODEL_SLOT_NAME, newFCIAction);
-					bindingPath = new BindingPath(Collections.singletonList(pathElement), newFCIAction, FMLPrettyPrinter.getInstance());
-				}
+
+				bindingPath.addBindingPathElement(pathElement);
+
 				expression.setExpression(bindingPath);
 				newFCIAction.setExpression(expression);
 
