@@ -594,7 +594,6 @@ public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellin
 
 		@Override
 		public void finalizeDeserialization() {
-			System.out.println("a la fin, " + getNature());
 			if (performSuperGetter(CONCEPTUAL_MODEL) != null) {
 				getConceptualModel().setNature(getNature());
 			}
