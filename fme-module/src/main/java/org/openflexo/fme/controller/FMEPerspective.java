@@ -85,7 +85,7 @@ public class FMEPerspective extends NaturePerspective<FreeModellingProjectNature
 	 * Default constructor taking controller as argument
 	 */
 	public FMEPerspective(FMEController controller) {
-		super("free_modelling_perspective", controller);
+		super(controller);
 
 		freeModellingProjectBrowser = new FIBFreeModellingProjectBrowser(controller.getProject(), controller);
 
@@ -97,6 +97,11 @@ public class FMEPerspective extends NaturePerspective<FreeModellingProjectNature
 		inspectorPanel = new FIBFlexoConceptInstanceInspectorPanel(getController().getModuleInspectorController());
 		inspectorPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 10));
 
+	}
+
+	@Override
+	public String getName() {
+		return "free_modelling_perspective";
 	}
 
 	public FlexoCollabsiblePanelGroup getInspectorPanelGroup() {
@@ -192,7 +197,7 @@ public class FMEPerspective extends NaturePerspective<FreeModellingProjectNature
 		}
 		return super.isRepresentableInModuleView(object);
 	}
-	
+
 	@Override
 	public FlexoObject getRepresentableMasterObject(FlexoObject object) {
 		if (object instanceof FreeModellingProjectNature) {
@@ -206,7 +211,7 @@ public class FMEPerspective extends NaturePerspective<FreeModellingProjectNature
 		}
 		return super.getRepresentableMasterObject(object);
 	}
-	
+
 	@Override
 	public String getWindowTitleforObject(FlexoObject object, FlexoController controller) {
 		if (object instanceof WelcomePanel) {
