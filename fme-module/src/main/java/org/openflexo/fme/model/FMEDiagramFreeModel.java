@@ -304,7 +304,7 @@ public interface FMEDiagramFreeModel extends FMEFreeModel {
 			DropScheme dropScheme = (DropScheme) createDropScheme.getNewFlexoBehaviour();
 			dropScheme.setSkipConfirmationPanel(false);
 			if (containerConceptGR == null) {
-				dropScheme.setTopTarget(true);
+				dropScheme.setAsTopTarget();
 			}
 			else {
 				dropScheme.setTargetFlexoConcept(containerConceptGR);
