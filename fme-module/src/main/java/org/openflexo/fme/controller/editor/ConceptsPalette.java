@@ -42,6 +42,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.logging.Logger;
 
+import org.openflexo.connie.exception.NullReferenceException;
+import org.openflexo.connie.exception.TypeMismatchException;
 import org.openflexo.diana.Drawing.DrawingTreeNode;
 import org.openflexo.diana.geom.DianaPoint;
 import org.openflexo.fme.controller.editor.DynamicPalette.GraphicalRepresentationSet;
@@ -50,6 +52,7 @@ import org.openflexo.fme.model.FMEDiagramFreeModelInstance;
 import org.openflexo.fme.model.action.DropShape;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.rt.FMLRTVirtualModelInstance;
+import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.technologyadapter.diagram.TypedDiagramModelSlot;
 import org.openflexo.technologyadapter.diagram.controller.diagrameditor.ContextualPalette;
 import org.openflexo.technologyadapter.diagram.controller.diagrameditor.DiagramEditor;
@@ -128,6 +131,24 @@ public class ConceptsPalette extends ContextualPalette {
 		TypedDiagramModelSlot ms = FMLControlledDiagramVirtualModelNature.getTypedDiagramModelSlot(vmi.getVirtualModel());
 		FMLDiagramPaletteElementBinding binding = ms.getPaletteElementBinding(paletteElement);
 		// DropScheme dropScheme = binding.getDropScheme();
+
+		/*logger.info("DropShape with call=" + binding.getCall() + " valid=" + binding.getCall().isValid() + " reason: "
+				+ binding.getCall().invalidBindingReason());
+		logger.info("BoundFC: " + binding.getBoundFlexoConcept());*/
+
+		/*try {
+			FlexoConceptInstance monResultat = binding.getCall().getBindingValue(vmi);
+			logger.severe("Hop, je cree: " + monResultat);
+		} catch (TypeMismatchException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NullReferenceException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ReflectiveOperationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
 
 		DropShape action = DropShape.actionType.makeNewAction(rootContainer, null, getEditor().getFlexoController().getEditor());
 		action.setDiagramFreeModelInstance(getEditor().getDiagramFreeModelInstance());

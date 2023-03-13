@@ -474,7 +474,7 @@ public interface FMEDiagramFreeModel extends FMEFreeModel {
 			ConnectorRole role = (ConnectorRole) createConnectorRole.getNewFlexoRole();
 
 			// Bind shapes's label to renderer
-			role.setReadOnlyLabel(true);
+			// role.setReadOnlyLabel(true);
 			role.setLabel(new DataBinding<>(CONCEPT_ROLE_NAME + ".render"));
 
 			// Sets connector
