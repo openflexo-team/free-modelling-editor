@@ -19,6 +19,7 @@ create_free_model_diagram_based_on_a_powerpoint_slide=Create free model diagram 
 create_new_concept=Create new concept
 create_new_property=Create new property
 create_new_relational_concept=Create new relational concept
+create_ppt_free_model=Create ppt free model
 declare_instance_of_existing_concept=Declare as an instance of existing concept
 declare_instance_of_existing_concept_from_diagram_element=Declare instance of existing concept from diagram element
 define_new_property=Define new property

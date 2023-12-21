@@ -19,6 +19,7 @@ create_free_model_diagram_based_on_a_powerpoint_slide=Cr\u00E9er un nouveau mod\
 create_new_concept=Cr\u00E9er un nouveau concept
 create_new_property=Cr\u00E9er une nouvelle propri\u00E9t\u00E9
 create_new_relational_concept=create_new_relational_concept
+create_ppt_free_model=create_ppt_free_model
 declare_instance_of_existing_concept=D\u00E9clarer comme une instance d'un concept existant
 declare_instance_of_existing_concept_from_diagram_element=declare_instance_of_existing_concept_from_diagram_element
 define_new_property=D\u00E9finir une nouvelle propri\u00E9t\u00E9
