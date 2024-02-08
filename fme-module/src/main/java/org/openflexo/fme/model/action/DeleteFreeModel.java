@@ -46,7 +46,7 @@ import org.openflexo.foundation.FlexoEditor;
 import org.openflexo.foundation.FlexoObject;
 import org.openflexo.foundation.FlexoObject.FlexoObjectImpl;
 import org.openflexo.foundation.action.FlexoActionFactory;
-import org.openflexo.foundation.fml.action.DeleteVirtualModel;
+import org.openflexo.foundation.fml.action.DeleteCompilationUnit;
 import org.openflexo.foundation.resource.SaveResourceException;
 
 /**
@@ -96,8 +96,8 @@ public class DeleteFreeModel extends FMEAction<DeleteFreeModel, FMEFreeModel, Fl
 		logger.info("Remove free model action started ...");
 		logger.info("Delete virtual model instance");
 		getFocusedObject().getNature().removeFromFreeModels(getFocusedObject());
-		DeleteVirtualModel deleteVm = DeleteVirtualModel.actionType.makeNewEmbeddedAction(getFocusedObject().getAccessedVirtualModel(),
-				null, this);
+		DeleteCompilationUnit deleteVm = DeleteCompilationUnit.actionType
+				.makeNewEmbeddedAction(getFocusedObject().getAccessedVirtualModel().getCompilationUnit(), null, this);
 		deleteVm.doAction();
 		logger.info("Delete free model");
 		getFocusedObject().delete();
