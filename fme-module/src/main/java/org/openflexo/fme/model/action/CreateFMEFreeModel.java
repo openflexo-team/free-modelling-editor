@@ -60,7 +60,7 @@ import org.openflexo.foundation.fml.action.CreateTopLevelVirtualModel;
 import org.openflexo.foundation.fml.editionaction.ExpressionAction;
 import org.openflexo.foundation.fml.rm.CompilationUnitResource;
 import org.openflexo.foundation.fml.rt.FMLRTTechnologyAdapter;
-import org.openflexo.foundation.fml.rt.FMLRTVirtualModelInstanceModelSlot;
+import org.openflexo.foundation.fml.rt.FMLRTModelSlot;
 import org.openflexo.foundation.fml.rt.action.CreateBasicVirtualModelInstance;
 import org.openflexo.foundation.fml.rt.rm.FMLRTVirtualModelInstanceResource;
 import org.openflexo.foundation.resource.FlexoResourceCenter;
@@ -145,12 +145,12 @@ public abstract class CreateFMEFreeModel<A extends CreateFMEFreeModel<A>> extend
 		// Now we create the sample data model slot
 		CreateModelSlot createMS = CreateModelSlot.actionType.makeNewEmbeddedAction(newVirtualModel, null, this);
 		createMS.setTechnologyAdapter(getServiceManager().getTechnologyAdapterService().getTechnologyAdapter(FMLRTTechnologyAdapter.class));
-		createMS.setModelSlotClass(FMLRTVirtualModelInstanceModelSlot.class);
+		createMS.setModelSlotClass(FMLRTModelSlot.class);
 		createMS.setModelSlotName(FMEFreeModel.SAMPLE_DATA_MODEL_SLOT_NAME);
 		createMS.setVmRes(conceptualVM);
 
 		createMS.doAction();
-		// Unused FMLRTVirtualModelInstanceModelSlot sampleDataModelSlot = (FMLRTVirtualModelInstanceModelSlot)
+		// Unused FMLRTModelSlot sampleDataModelSlot = (FMLRTModelSlot)
 		createMS.getNewModelSlot();
 
 		// CreationScheme

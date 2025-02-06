@@ -60,7 +60,7 @@ import org.openflexo.foundation.fml.action.CreateInspectorEntry;
 import org.openflexo.foundation.fml.action.CreatePrimitiveRole;
 import org.openflexo.foundation.fml.editionaction.DeleteAction;
 import org.openflexo.foundation.fml.inspector.InspectorEntry;
-import org.openflexo.foundation.fml.rt.FMLRTVirtualModelInstanceModelSlot;
+import org.openflexo.foundation.fml.rt.FMLRTModelSlot;
 import org.openflexo.foundation.fml.rt.VirtualModelInstance;
 import org.openflexo.foundation.fml.rt.editionaction.DeleteFlexoConceptInstance;
 import org.openflexo.foundation.fml.rt.rm.FMLRTVirtualModelInstanceResourceFactory;
@@ -113,7 +113,7 @@ public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellin
 
 	public void setDescription(String description);
 
-	public FMLRTVirtualModelInstanceModelSlot getSampleDataModelSlot();
+	public FMLRTModelSlot getSampleDataModelSlot();
 
 	/**
 	 * Return conceptual model addressed by this {@link FMEFreeModel}.<br>
@@ -223,10 +223,10 @@ public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellin
 		}
 
 		@Override
-		public FMLRTVirtualModelInstanceModelSlot getSampleDataModelSlot() {
+		public FMLRTModelSlot getSampleDataModelSlot() {
 			if (getAccessedVirtualModel() != null
-					&& getAccessedVirtualModel().getModelSlots(FMLRTVirtualModelInstanceModelSlot.class).size() > 0) {
-				return getAccessedVirtualModel().getModelSlots(FMLRTVirtualModelInstanceModelSlot.class).get(0);
+					&& getAccessedVirtualModel().getModelSlots(FMLRTModelSlot.class).size() > 0) {
+				return getAccessedVirtualModel().getModelSlots(FMLRTModelSlot.class).get(0);
 			}
 			return null;
 		}
