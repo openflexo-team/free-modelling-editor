@@ -51,6 +51,7 @@ import org.openflexo.foundation.FlexoObject;
 import org.openflexo.foundation.action.FlexoActionFactory;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.PrimitiveRole;
+import org.openflexo.foundation.fml.rt.FMLExecutionException;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.technologyadapter.diagram.fml.ShapeRole;
 import org.openflexo.technologyadapter.diagram.model.DiagramElement;
@@ -101,9 +102,9 @@ public abstract class AbstractInstantiateConceptFromDiagramElement<A extends Abs
 	}
 
 	@SuppressWarnings("unchecked")
-	protected FlexoConceptInstance createFlexoConceptInstanceFromDiagramShape(DiagramShape diagramShape) {
+	protected FlexoConceptInstance createFlexoConceptInstanceFromDiagramShape(DiagramShape diagramShape) throws FMLExecutionException {
 		FlexoConceptInstance newFlexoConceptInstance = getFreeModelInstance().getAccessedVirtualModelInstance()
-				.makeNewFlexoConceptInstance(none);
+				.makeNewFlexoConceptInstance(none, null, null);
 		ShapeRole geRole = (ShapeRole) none.getAccessibleProperty(FMEDiagramFreeModel.SHAPE_ROLE_NAME);
 		newFlexoConceptInstance.setFlexoActor(diagramShape, geRole);
 		PrimitiveRole<String> nameRole = (PrimitiveRole<String>) none.getAccessibleProperty(FMEFreeModel.NAME_ROLE_NAME);

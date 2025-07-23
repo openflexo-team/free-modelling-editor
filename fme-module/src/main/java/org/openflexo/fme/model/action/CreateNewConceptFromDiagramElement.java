@@ -50,6 +50,7 @@ import org.openflexo.foundation.action.FlexoActionFactory;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.FlexoConceptInstanceRole;
 import org.openflexo.foundation.fml.FlexoProperty;
+import org.openflexo.foundation.fml.rt.FMLExecutionException;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.foundation.fml.rt.VirtualModelInstance.ObjectLookupResult;
 import org.openflexo.technologyadapter.diagram.model.DiagramConnector;
@@ -103,7 +104,7 @@ public class CreateNewConceptFromDiagramElement extends AbstractInstantiateConce
 	private FlexoConcept flexoConcept;
 
 	@Override
-	protected void doAction(Object context) throws InvalidArgumentException {
+	protected void doAction(Object context) throws InvalidArgumentException, FMLExecutionException {
 
 		// Unused FlexoConcept containerConcept = null;
 		if (getFocusedObject().getParent() != null) {
