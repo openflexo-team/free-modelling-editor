@@ -40,6 +40,7 @@ package org.openflexo.fme.model;
 
 import java.awt.Font;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
@@ -67,8 +68,8 @@ import org.openflexo.foundation.fml.binding.CreationSchemePathElement;
 import org.openflexo.foundation.fml.editionaction.AssignationAction;
 import org.openflexo.foundation.fml.editionaction.DeleteAction;
 import org.openflexo.foundation.fml.editionaction.ExpressionAction;
-import org.openflexo.foundation.fml.rt.editionaction.AddFlexoConceptInstance;
-import org.openflexo.foundation.fml.rt.editionaction.AddFlexoConceptInstanceParameter;
+import org.openflexo.foundation.fml.expr.FMLPrettyPrinter;
+import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.foundation.resource.ResourceLoadingCancelledException;
 import org.openflexo.logging.FlexoLogger;
 import org.openflexo.pamela.annotations.ImplementationClass;
@@ -511,16 +512,30 @@ public interface FMEDiagramFreeModel extends FMEFreeModel {
 				createAddFlexoConceptInstance = CreateEditionAction.actionType.makeNewAction(linkScheme.getControlGraph(), null, editor);
 			}
 			createAddFlexoConceptInstance.setModelSlot(getSampleDataModelSlot());
-			createAddFlexoConceptInstance.setEditionActionClass(AddFlexoConceptInstance.class);
+			createAddFlexoConceptInstance.setEditionActionClass(ExpressionAction.class);
 			createAddFlexoConceptInstance.setAssignation(new DataBinding<>(CONCEPT_ROLE_NAME));
 			createAddFlexoConceptInstance.doAction();
-			AddFlexoConceptInstance<?> addFCI = (AddFlexoConceptInstance<?>) createAddFlexoConceptInstance.getBaseEditionAction();
-			addFCI.setCreationScheme(concept.getCreationSchemes().get(0));
+			ExpressionAction<FlexoConceptInstance> addFCI = (ExpressionAction<FlexoConceptInstance>) createAddFlexoConceptInstance
+					.getBaseEditionAction();
+
+			BindingPath bv = new BindingPath(addFCI, FMLPrettyPrinter.getInstance());
+			List<DataBinding<?>> args = new ArrayList<>();
+			args.add(new DataBinding<>(LinkScheme.FROM_TARGET_KEY + "." + FMEFreeModel.CONCEPT_ROLE_NAME));
+			args.add(new DataBinding<>(LinkScheme.TO_TARGET_KEY + "." + FMEFreeModel.CONCEPT_ROLE_NAME));
+			CreationSchemePathElement creationSchemePathElement = getAccessedVirtualModel().getFMLModelFactory()
+					.newCreationSchemePathElement(null, concept.getCreationSchemes().get(0), args, addFCI);
+			bv.addBindingPathElement(creationSchemePathElement);
+			DataBinding<FlexoConceptInstance> newExpression = new DataBinding<FlexoConceptInstance>(addFCI, FlexoConceptInstance.class,
+					BindingDefinitionType.GET);
+			newExpression.setExpression(bv);
+			addFCI.setExpression(newExpression);
+
+			/*addFCI.setCreationScheme(concept.getCreationSchemes().get(0));
 			AddFlexoConceptInstanceParameter addFCISourceConceptParam = addFCI.getParameter(FMEConceptualModel.FROM_CONCEPT_ROLE_NAME);
 			addFCISourceConceptParam.setValue(new DataBinding<>(LinkScheme.FROM_TARGET_KEY + "." + FMEFreeModel.CONCEPT_ROLE_NAME));
 			AddFlexoConceptInstanceParameter addFCIDestinationConceptParam = addFCI.getParameter(FMEConceptualModel.TO_CONCEPT_ROLE_NAME);
 			addFCIDestinationConceptParam.setValue(new DataBinding<>(LinkScheme.TO_TARGET_KEY + "." + FMEFreeModel.CONCEPT_ROLE_NAME));
-			addFCI.setReceiver(new DataBinding<>(SAMPLE_DATA_MODEL_SLOT_NAME));
+			addFCI.setReceiver(new DataBinding<>(SAMPLE_DATA_MODEL_SLOT_NAME));*/
 
 			CreateEditionAction createAddConnector = null;
 			if (ownerAction != null) {
