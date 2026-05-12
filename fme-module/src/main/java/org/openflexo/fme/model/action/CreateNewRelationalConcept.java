@@ -280,11 +280,12 @@ public class CreateNewRelationalConcept extends FMEAction<CreateNewRelationalCon
 
 	@Override
 	public void notifiedBindingChanged(org.openflexo.connie.DataBinding<?> dataBinding) {
-		if (dataBinding.isSet()) {
-			if (!dataBinding.toString().equals(getDefaultRendererAsString())) {
+		// System.out.println("notifiedBindingChanged for " + dataBinding);
+		/*if (dataBinding.isSet()) {
+			if (!isParsingBinding && !dataBinding.toString().equals(getDefaultRendererAsString())) {
 				renderer.setUnparsedBinding(dataBinding.toString());
 			}
-		}
+		}*/
 	}
 
 	@Override
