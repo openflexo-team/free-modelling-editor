@@ -42,7 +42,7 @@ import java.io.File;
 import java.util.Vector;
 import java.util.logging.Logger;
 
-import org.apache.poi.hslf.model.Slide;
+import org.apache.poi.xslf.usermodel.XSLFSlide;
 import org.openflexo.connie.DataBinding;
 import org.openflexo.fme.model.FMEConceptualModel;
 import org.openflexo.fme.model.FMEDiagramFreeModel;
@@ -106,7 +106,7 @@ public class CreateFMEPPTFreeModel extends CreateFMEFreeModel<CreateFMEPPTFreeMo
 	}
 
 	private File pptFile;
-	private Slide slide;
+	private XSLFSlide slide;
 
 	private CreateFMEPPTFreeModel(FreeModellingProjectNature focusedObject, Vector<FlexoObject> globalSelection, FlexoEditor editor) {
 		super(actionType, focusedObject, globalSelection, editor);
@@ -129,13 +129,13 @@ public class CreateFMEPPTFreeModel extends CreateFMEFreeModel<CreateFMEPPTFreeMo
 		}
 	}
 
-	public Slide getSlide() {
+	public XSLFSlide getSlide() {
 		return slide;
 	}
 
-	public void setSlide(Slide slide) {
+	public void setSlide(XSLFSlide slide) {
 		if ((slide == null && this.slide != null) || (slide != null && !slide.equals(this.slide))) {
-			Slide oldValue = this.slide;
+			XSLFSlide oldValue = this.slide;
 			this.slide = slide;
 			getPropertyChangeSupport().firePropertyChange("slide", oldValue, slide);
 		}
