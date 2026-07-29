@@ -345,7 +345,8 @@ public class CreateNewFMEPropertyFromDiagramConnector
 		// Create new DeletionScheme
 		CreateFlexoBehaviour createDeletionScheme = null;
 		createDeletionScheme = CreateFlexoBehaviour.actionType.makeNewEmbeddedAction(returned, null, this);
-		createDeletionScheme.setFlexoBehaviourName("delete");
+		createDeletionScheme.setAnonymous(true);
+		// createDeletionScheme.setFlexoBehaviourName("delete");
 		createDeletionScheme.setFlexoBehaviourClass(DeletionScheme.class);
 		createDeletionScheme.doAction();
 		DeletionScheme deletionScheme = (DeletionScheme) createDeletionScheme.getNewFlexoBehaviour();

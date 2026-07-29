@@ -221,7 +221,8 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 				else {
 					createCreationScheme = CreateFlexoBehaviour.actionType.makeNewAction(returned, null, editor);
 				}
-				createCreationScheme.setFlexoBehaviourName("create");
+				createCreationScheme.setAnonymous(true);
+				// createCreationScheme.setFlexoBehaviourName("create");
 				createCreationScheme.setFlexoBehaviourClass(CreationScheme.class);
 				createCreationScheme.doAction();
 				CreationScheme creationScheme = (CreationScheme) createCreationScheme.getNewFlexoBehaviour();
@@ -265,7 +266,8 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 				else {
 					createDeletionScheme = CreateFlexoBehaviour.actionType.makeNewAction(returned, null, editor);
 				}
-				createDeletionScheme.setFlexoBehaviourName("delete");
+				createDeletionScheme.setAnonymous(true);
+				// createDeletionScheme.setFlexoBehaviourName("delete");
 				createDeletionScheme.setFlexoBehaviourClass(DeletionScheme.class);
 				createDeletionScheme.doAction();
 				DeletionScheme deletionScheme = (DeletionScheme) createDeletionScheme.getNewFlexoBehaviour();
@@ -349,7 +351,8 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 				else {
 					createCreationScheme = CreateFlexoBehaviour.actionType.makeNewAction(returned, null, editor);
 				}
-				createCreationScheme.setFlexoBehaviourName("create");
+				createCreationScheme.setAnonymous(true);
+				// createCreationScheme.setFlexoBehaviourName("create");
 				createCreationScheme.setFlexoBehaviourClass(CreationScheme.class);
 				createCreationScheme.doAction();
 				CreationScheme creationScheme = (CreationScheme) createCreationScheme.getNewFlexoBehaviour();
@@ -363,7 +366,8 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 				else {
 					createDeletionScheme = CreateFlexoBehaviour.actionType.makeNewAction(returned, null, editor);
 				}
-				createDeletionScheme.setFlexoBehaviourName("delete");
+				createDeletionScheme.setAnonymous(true);
+				// createDeletionScheme.setFlexoBehaviourName("delete");
 				createDeletionScheme.setFlexoBehaviourClass(DeletionScheme.class);
 				createDeletionScheme.doAction();
 				DeletionScheme deletionScheme = (DeletionScheme) createDeletionScheme.getNewFlexoBehaviour();

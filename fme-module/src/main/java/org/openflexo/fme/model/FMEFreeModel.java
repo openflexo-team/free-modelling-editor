@@ -224,8 +224,7 @@ public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellin
 
 		@Override
 		public FMLRTModelSlot getSampleDataModelSlot() {
-			if (getAccessedVirtualModel() != null
-					&& getAccessedVirtualModel().getModelSlots(FMLRTModelSlot.class).size() > 0) {
+			if (getAccessedVirtualModel() != null && getAccessedVirtualModel().getModelSlots(FMLRTModelSlot.class).size() > 0) {
 				return getAccessedVirtualModel().getModelSlots(FMLRTModelSlot.class).get(0);
 			}
 			return null;
@@ -302,7 +301,8 @@ public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellin
 				else {
 					createDeletionScheme = CreateFlexoBehaviour.actionType.makeNewAction(returned, null, editor);
 				}
-				createDeletionScheme.setFlexoBehaviourName("delete");
+				createDeletionScheme.setAnonymous(true);
+				// createDeletionScheme.setFlexoBehaviourName("delete");
 				createDeletionScheme.setFlexoBehaviourClass(DeletionScheme.class);
 				createDeletionScheme.doAction();
 				DeletionScheme deletionScheme = (DeletionScheme) createDeletionScheme.getNewFlexoBehaviour();
@@ -457,7 +457,8 @@ public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellin
 				else {
 					createDeletionScheme = CreateFlexoBehaviour.actionType.makeNewAction(returned, null, editor);
 				}
-				createDeletionScheme.setFlexoBehaviourName("delete");
+				createDeletionScheme.setAnonymous(true);
+				// createDeletionScheme.setFlexoBehaviourName("delete");
 				createDeletionScheme.setFlexoBehaviourClass(DeletionScheme.class);
 				createDeletionScheme.doAction();
 				DeletionScheme deletionScheme = (DeletionScheme) createDeletionScheme.getNewFlexoBehaviour();
