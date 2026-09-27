@@ -328,10 +328,10 @@ public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellin
 				// Create inspector type entry
 				CreateInspectorEntry createTypeEntry = null;
 				if (ownerAction != null) {
-					createTypeEntry = CreateInspectorEntry.actionType.makeNewEmbeddedAction(returned.getInspector(), null, ownerAction);
+					createTypeEntry = CreateInspectorEntry.actionType.makeNewEmbeddedAction(returned.getOrCreateInspector(), null, ownerAction);
 				}
 				else {
-					createTypeEntry = CreateInspectorEntry.actionType.makeNewAction(returned.getInspector(), null, editor);
+					createTypeEntry = CreateInspectorEntry.actionType.makeNewAction(returned.getOrCreateInspector(), null, editor);
 				}
 				createTypeEntry.setEntryName("Type");
 				createTypeEntry.setEntryType(String.class);
@@ -350,10 +350,10 @@ public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellin
 				// Create inspector name entry
 				CreateInspectorEntry createNameEntry = null;
 				if (ownerAction != null) {
-					createNameEntry = CreateInspectorEntry.actionType.makeNewEmbeddedAction(returned.getInspector(), null, ownerAction);
+					createNameEntry = CreateInspectorEntry.actionType.makeNewEmbeddedAction(returned.getOrCreateInspector(), null, ownerAction);
 				}
 				else {
-					createNameEntry = CreateInspectorEntry.actionType.makeNewAction(returned.getInspector(), null, editor);
+					createNameEntry = CreateInspectorEntry.actionType.makeNewAction(returned.getOrCreateInspector(), null, editor);
 				}
 				createNameEntry.setEntryName(FMEConceptualModel.NAME_ROLE_NAME);
 				createNameEntry.setEntryType(String.class);
@@ -372,11 +372,11 @@ public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellin
 				if (concept != null) {
 					CreateInspectorEntry createDescriptionEntry = null;
 					if (ownerAction != null) {
-						createDescriptionEntry = CreateInspectorEntry.actionType.makeNewEmbeddedAction(returned.getInspector(), null,
+						createDescriptionEntry = CreateInspectorEntry.actionType.makeNewEmbeddedAction(returned.getOrCreateInspector(), null,
 								ownerAction);
 					}
 					else {
-						createDescriptionEntry = CreateInspectorEntry.actionType.makeNewAction(returned.getInspector(), null, editor);
+						createDescriptionEntry = CreateInspectorEntry.actionType.makeNewAction(returned.getOrCreateInspector(), null, editor);
 					}
 					createDescriptionEntry.setEntryName(FMEConceptualModel.DESCRIPTION_ROLE_NAME);
 					createDescriptionEntry.setEntryType(String.class);
@@ -390,11 +390,11 @@ public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellin
 				// Bind shapes's label to name property
 				if (concept != null) {
 					// If we are bound to a concept instance, use name of concept
-					returned.getInspector().setRenderer(new DataBinding<String>("instance." + CONCEPT_ROLE_NAME + ".name"));
+					returned.setRenderer(new DataBinding<String>("instance." + CONCEPT_ROLE_NAME + ".name"));
 				}
 				else {
 					// Otherwise, this is the NoneGR, use primitive name
-					returned.getInspector().setRenderer(new DataBinding<String>("instance.name"));
+					returned.setRenderer(new DataBinding<String>("instance.name"));
 				}
 
 				configureGRFlexoConcept(returned, concept, containerConceptGR, editor, ownerAction);
@@ -482,10 +482,10 @@ public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellin
 				// Create inspector type entry
 				CreateInspectorEntry createTypeEntry = null;
 				if (ownerAction != null) {
-					createTypeEntry = CreateInspectorEntry.actionType.makeNewEmbeddedAction(returned.getInspector(), null, ownerAction);
+					createTypeEntry = CreateInspectorEntry.actionType.makeNewEmbeddedAction(returned.getOrCreateInspector(), null, ownerAction);
 				}
 				else {
-					createTypeEntry = CreateInspectorEntry.actionType.makeNewAction(returned.getInspector(), null, editor);
+					createTypeEntry = CreateInspectorEntry.actionType.makeNewAction(returned.getOrCreateInspector(), null, editor);
 				}
 				createTypeEntry.setEntryName("Relationship");
 				createTypeEntry.setEntryType(String.class);
@@ -498,10 +498,10 @@ public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellin
 				// Create inspector source entry
 				CreateInspectorEntry createSourceEntry = null;
 				if (ownerAction != null) {
-					createSourceEntry = CreateInspectorEntry.actionType.makeNewEmbeddedAction(returned.getInspector(), null, ownerAction);
+					createSourceEntry = CreateInspectorEntry.actionType.makeNewEmbeddedAction(returned.getOrCreateInspector(), null, ownerAction);
 				}
 				else {
-					createSourceEntry = CreateInspectorEntry.actionType.makeNewAction(returned.getInspector(), null, editor);
+					createSourceEntry = CreateInspectorEntry.actionType.makeNewAction(returned.getOrCreateInspector(), null, editor);
 				}
 				createSourceEntry.setEntryName(FMEConceptualModel.FROM_CONCEPT_ROLE_NAME);
 				createSourceEntry.setEntryType(FlexoConceptInstanceType.UNDEFINED_FLEXO_CONCEPT_INSTANCE_TYPE);
@@ -512,11 +512,11 @@ public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellin
 				// Create inspector destination entry
 				CreateInspectorEntry createDestinationEntry = null;
 				if (ownerAction != null) {
-					createDestinationEntry = CreateInspectorEntry.actionType.makeNewEmbeddedAction(returned.getInspector(), null,
+					createDestinationEntry = CreateInspectorEntry.actionType.makeNewEmbeddedAction(returned.getOrCreateInspector(), null,
 							ownerAction);
 				}
 				else {
-					createDestinationEntry = CreateInspectorEntry.actionType.makeNewAction(returned.getInspector(), null, editor);
+					createDestinationEntry = CreateInspectorEntry.actionType.makeNewAction(returned.getOrCreateInspector(), null, editor);
 				}
 				createDestinationEntry.setEntryName(FMEConceptualModel.TO_CONCEPT_ROLE_NAME);
 				createDestinationEntry.setEntryType(FlexoConceptInstanceType.UNDEFINED_FLEXO_CONCEPT_INSTANCE_TYPE);
@@ -526,7 +526,7 @@ public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellin
 
 				// Bind shapes's label to name property
 				// If we are bound to a concept instance, use name of concept
-				returned.getInspector().setRenderer(new DataBinding<String>("instance." + CONCEPT_ROLE_NAME + ".render"));
+				returned.setRenderer(new DataBinding<String>("instance." + CONCEPT_ROLE_NAME + ".render"));
 
 				configureGRRelationalFlexoConcept(returned, concept, fromConceptGR, toConceptGR, editor, ownerAction);
 			}

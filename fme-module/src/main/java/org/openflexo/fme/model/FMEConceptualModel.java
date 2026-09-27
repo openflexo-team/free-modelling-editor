@@ -276,10 +276,10 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 				// Create inspector name entry
 				CreateInspectorEntry createNameEntry = null;
 				if (ownerAction != null) {
-					createNameEntry = CreateInspectorEntry.actionType.makeNewEmbeddedAction(returned.getInspector(), null, ownerAction);
+					createNameEntry = CreateInspectorEntry.actionType.makeNewEmbeddedAction(returned.getOrCreateInspector(), null, ownerAction);
 				}
 				else {
-					createNameEntry = CreateInspectorEntry.actionType.makeNewAction(returned.getInspector(), null, editor);
+					createNameEntry = CreateInspectorEntry.actionType.makeNewAction(returned.getOrCreateInspector(), null, editor);
 				}
 				createNameEntry.setEntryName(NAME_ROLE_NAME);
 				createNameEntry.setEntryType(String.class);
@@ -292,11 +292,11 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 				// Create inspector description entry
 				CreateInspectorEntry createDescriptionEntry = null;
 				if (ownerAction != null) {
-					createDescriptionEntry = CreateInspectorEntry.actionType.makeNewEmbeddedAction(returned.getInspector(), null,
+					createDescriptionEntry = CreateInspectorEntry.actionType.makeNewEmbeddedAction(returned.getOrCreateInspector(), null,
 							ownerAction);
 				}
 				else {
-					createDescriptionEntry = CreateInspectorEntry.actionType.makeNewAction(returned.getInspector(), null, editor);
+					createDescriptionEntry = CreateInspectorEntry.actionType.makeNewAction(returned.getOrCreateInspector(), null, editor);
 				}
 				createDescriptionEntry.setEntryName(DESCRIPTION_ROLE_NAME);
 				createDescriptionEntry.setEntryType(String.class);
@@ -305,7 +305,7 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 				createDescriptionEntry.doAction();
 				InspectorEntry descriptionEntry = createDescriptionEntry.getNewEntry();
 
-				returned.getInspector().setRenderer(new DataBinding<String>("instance.name"));
+				returned.setRenderer(new DataBinding<String>("instance.name"));
 			}
 			return returned;
 		}
@@ -464,10 +464,10 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 				// Create inspector source entry
 				CreateInspectorEntry createSourceEntry = null;
 				if (ownerAction != null) {
-					createSourceEntry = CreateInspectorEntry.actionType.makeNewEmbeddedAction(returned.getInspector(), null, ownerAction);
+					createSourceEntry = CreateInspectorEntry.actionType.makeNewEmbeddedAction(returned.getOrCreateInspector(), null, ownerAction);
 				}
 				else {
-					createSourceEntry = CreateInspectorEntry.actionType.makeNewAction(returned.getInspector(), null, editor);
+					createSourceEntry = CreateInspectorEntry.actionType.makeNewAction(returned.getOrCreateInspector(), null, editor);
 				}
 				createSourceEntry.setEntryName(FROM_CONCEPT_ROLE_NAME);
 				createSourceEntry.setEntryType(fromConcept.getInstanceType());
@@ -478,11 +478,11 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 				// Create inspector destination entry
 				CreateInspectorEntry createDestinationEntry = null;
 				if (ownerAction != null) {
-					createDestinationEntry = CreateInspectorEntry.actionType.makeNewEmbeddedAction(returned.getInspector(), null,
+					createDestinationEntry = CreateInspectorEntry.actionType.makeNewEmbeddedAction(returned.getOrCreateInspector(), null,
 							ownerAction);
 				}
 				else {
-					createDestinationEntry = CreateInspectorEntry.actionType.makeNewAction(returned.getInspector(), null, editor);
+					createDestinationEntry = CreateInspectorEntry.actionType.makeNewAction(returned.getOrCreateInspector(), null, editor);
 				}
 				createDestinationEntry.setEntryName(TO_CONCEPT_ROLE_NAME);
 				createDestinationEntry.setEntryType(toConcept.getInstanceType());

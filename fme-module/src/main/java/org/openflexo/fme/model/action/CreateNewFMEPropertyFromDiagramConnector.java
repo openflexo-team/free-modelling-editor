@@ -208,11 +208,11 @@ public class CreateNewFMEPropertyFromDiagramConnector
 
 		if (fromFlexoConceptGR != null) {
 			CreateInspectorEntry createInspectorEntry = CreateInspectorEntry.actionType
-					.makeNewEmbeddedAction(fromFlexoConceptGR.getInspector(), null, this);
+					.makeNewEmbeddedAction(fromFlexoConceptGR.getOrCreateInspector(), null, this);
 			createInspectorEntry.setEntryName(getPropertyName());
 			createInspectorEntry.setEntryType(getToFlexoConcept().getInstanceType());
 			createInspectorEntry.setData(new DataBinding<>(FMEFreeModel.CONCEPT_ROLE_NAME + "." + propertyName));
-			createInspectorEntry.setIndex(fromFlexoConceptGR.getInspector().getEntries().size() - 1);
+			createInspectorEntry.setIndex(fromFlexoConceptGR.getOrCreateInspector().getEntries().size() - 1);
 			createInspectorEntry.doAction();
 		}
 
@@ -365,10 +365,10 @@ public class CreateNewFMEPropertyFromDiagramConnector
 		// Create inspector type entry
 		/*CreateInspectorEntry createTypeEntry = null;
 		if (ownerAction != null) {
-			createTypeEntry = CreateInspectorEntry.actionType.makeNewEmbeddedAction(returned.getInspector(), null, ownerAction);
+			createTypeEntry = CreateInspectorEntry.actionType.makeNewEmbeddedAction(returned.getOrCreateInspector(), null, ownerAction);
 		}
 		else {
-			createTypeEntry = CreateInspectorEntry.actionType.makeNewAction(returned.getInspector(), null, editor);
+			createTypeEntry = CreateInspectorEntry.actionType.makeNewAction(returned.getOrCreateInspector(), null, editor);
 		}
 		createTypeEntry.setEntryName("Type");
 		createTypeEntry.setEntryType(String.class);
@@ -386,10 +386,10 @@ public class CreateNewFMEPropertyFromDiagramConnector
 		// Create inspector name entry
 		/*CreateInspectorEntry createNameEntry = null;
 		if (ownerAction != null) {
-			createNameEntry = CreateInspectorEntry.actionType.makeNewEmbeddedAction(returned.getInspector(), null, ownerAction);
+			createNameEntry = CreateInspectorEntry.actionType.makeNewEmbeddedAction(returned.getOrCreateInspector(), null, ownerAction);
 		}
 		else {
-			createNameEntry = CreateInspectorEntry.actionType.makeNewAction(returned.getInspector(), null, editor);
+			createNameEntry = CreateInspectorEntry.actionType.makeNewAction(returned.getOrCreateInspector(), null, editor);
 		}
 		createNameEntry.setEntryName(FMEConceptualModel.NAME_ROLE_NAME);
 		createNameEntry.setEntryType(String.class);
@@ -407,10 +407,10 @@ public class CreateNewFMEPropertyFromDiagramConnector
 		// Create inspector description entry
 		/*CreateInspectorEntry createDescriptionEntry = null;
 		if (ownerAction != null) {
-			createDescriptionEntry = CreateInspectorEntry.actionType.makeNewEmbeddedAction(returned.getInspector(), null, ownerAction);
+			createDescriptionEntry = CreateInspectorEntry.actionType.makeNewEmbeddedAction(returned.getOrCreateInspector(), null, ownerAction);
 		}
 		else {
-			createDescriptionEntry = CreateInspectorEntry.actionType.makeNewAction(returned.getInspector(), null, editor);
+			createDescriptionEntry = CreateInspectorEntry.actionType.makeNewAction(returned.getOrCreateInspector(), null, editor);
 		}
 		createDescriptionEntry.setEntryName(FMEConceptualModel.DESCRIPTION_ROLE_NAME);
 		createDescriptionEntry.setEntryType(String.class);
@@ -422,11 +422,11 @@ public class CreateNewFMEPropertyFromDiagramConnector
 		// Bind shapes's label to name property
 		/*if (concept != null) {
 			// If we are bound to a concept instance, use name of concept
-			returned.getInspector().setRenderer(new DataBinding<String>("instance." + CONCEPT_ROLE_NAME + ".name"));
+			returned.setRenderer(new DataBinding<String>("instance." + CONCEPT_ROLE_NAME + ".name"));
 		}
 		else {
 			// Otherwise, this is the NoneGR, use primitive name
-			returned.getInspector().setRenderer(new DataBinding<String>("instance.name"));
+			returned.setRenderer(new DataBinding<String>("instance.name"));
 		}*/
 
 		// configureGRFlexoConcept(returned, concept, containerConceptGR, editor, ownerAction);

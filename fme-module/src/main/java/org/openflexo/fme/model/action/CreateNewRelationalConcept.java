@@ -124,7 +124,7 @@ public class CreateNewRelationalConcept extends FMEAction<CreateNewRelationalCon
 		// Now we create the new concept
 		newFlexoConcept = getFocusedObject().getConceptualModel().getRelationalFlexoConcept(getNewConceptName(), getFromConcept(),
 				getToConcept(), getEditor(), this);
-		newFlexoConcept.getInspector().setRenderer(getRenderer());
+		newFlexoConcept.setRenderer(getRenderer());
 
 		// Now we create the new concept GR
 		newGRFlexoConcept = getFocusedObject().getGRRelationalFlexoConcept(newFlexoConcept, getFromGRConcept(), getToGRConcept(),
