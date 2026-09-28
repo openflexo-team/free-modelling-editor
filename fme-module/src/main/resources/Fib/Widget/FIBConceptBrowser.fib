@@ -14,7 +14,7 @@
   <Panel layout="border" borderTitle="Panel" darkLevel="0" constraints="border(location=center)">
     <Panel layout="border" hGap="5" vGap="5" flowAlignment="LEADING" darkLevel="0" constraints="border(location=center)">
       <TextField data="controller.diagramEditor.conceptFilter" constraints="border(location=north)" name="finder" localize="true" manageDynamicModel="true" columns="7" text="TextField" />
-      <Browser root="data.freeModel.conceptualModel" iteratorClassName="org.openflexo.foundation.FlexoObject" visibleRowCount="5" rowHeight="18" boundToSelectionManager="true" selectionMode="DiscontiguousTreeSelection" showFooter="true" rootVisible="true" showRootsHandle="true" localize="true" enable="" manageDynamicModel="true" name="ConceptsBrowser" index="2" constraints="border(location=center)">
+      <Browser root="data.freeModel.conceptualModel" iteratorClassName="org.openflexo.foundation.FlexoObject" visibleRowCount="5" rowHeight="18" boundToSelectionManager="true" selectionMode="DiscontiguousTreeSelection" showFooter="true" rootVisible="true" showRootsHandle="true" localize="true" enable="" manageDynamicModel="true" name="conceptsBrowser" index="2" constraints="border(location=center)">
          <BrowserElement dataClassName="org.openflexo.fme.model.FMEConceptualModel" label="conceptualModel.name" icon="controller.iconForObject(conceptualModel)" isEditable="false" filtered="false" defaultVisible="true" name="conceptualModel">
           <Children data="conceptualModel.accessedVirtualModel.allRootFlexoConcepts" name="children" />
         </BrowserElement>
