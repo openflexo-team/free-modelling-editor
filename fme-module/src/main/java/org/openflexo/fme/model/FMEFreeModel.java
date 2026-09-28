@@ -210,10 +210,8 @@ public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellin
 
 		@Override
 		public String getName() {
-			if (getAccessedVirtualModel() != null) {
-				return getAccessedVirtualModel().getName();
-			}
-			return null;
+			// Never loads the virtual model: a browser label is computed from here
+			return getLoadedOrResourceName();
 		}
 
 		@Override

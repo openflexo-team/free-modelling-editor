@@ -147,10 +147,9 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 
 		@Override
 		public String getName() {
-			if (getAccessedVirtualModel() != null) {
-				return getAccessedVirtualModel().getName() + CompilationUnitResourceFactory.FML_SUFFIX;
-			}
-			return null;
+			// Never loads the virtual model: a browser label is computed from here
+			String name = getLoadedOrResourceName();
+			return name != null ? name + CompilationUnitResourceFactory.FML_SUFFIX : null;
 		}
 
 		/**
