@@ -263,6 +263,10 @@ public class FMEPerspective extends NaturePerspective<FreeModellingProjectNature
 		if (object instanceof FMEFreeModel) {
 			return new FMEFreeModelModuleView((FMEFreeModel) object, getController(), this);
 		}
+		if (object instanceof FMEFreeModelInstance && ((FMEFreeModelInstance) object).getFreeModel() != null) {
+			// A free model created before the inspectors of its concepts were generated gets them when opened
+			((FMEFreeModelInstance) object).getFreeModel().generateMissingInspectors();
+		}
 		if (object instanceof FMEDiagramFreeModelInstance) {
 			// Initialization of Diagram representation may rise PAMELA edits
 			// The goal is here to embed all those edits in a special edit record

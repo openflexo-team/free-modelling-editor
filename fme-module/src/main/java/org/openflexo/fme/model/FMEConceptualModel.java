@@ -58,11 +58,9 @@ import org.openflexo.foundation.fml.action.CreateFlexoBehaviour;
 import org.openflexo.foundation.fml.action.CreateFlexoConcept;
 import org.openflexo.foundation.fml.action.CreateFlexoConceptInstanceRole;
 import org.openflexo.foundation.fml.action.CreateGenericBehaviourParameter;
-import org.openflexo.foundation.fml.action.CreateInspectorEntry;
 import org.openflexo.foundation.fml.action.CreatePrimitiveRole;
 import org.openflexo.foundation.fml.editionaction.AssignationAction;
 import org.openflexo.foundation.fml.editionaction.ExpressionAction;
-import org.openflexo.foundation.fml.inspector.InspectorEntry;
 import org.openflexo.foundation.fml.rm.CompilationUnitResourceFactory;
 import org.openflexo.foundation.fml.rt.VirtualModelInstance;
 import org.openflexo.foundation.nature.NatureObject;
@@ -172,6 +170,8 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 		public FlexoConcept getFlexoConcept(String conceptName, FlexoConcept containerConcept, FlexoEditor editor,
 				FlexoAction<?, ?, ?> ownerAction) throws FlexoException {
 
+			// As typed by the user: FML would not parse it back if it were written as is
+			conceptName = FMENames.conceptName(conceptName);
 			FlexoConcept returned = getAccessedVirtualModel().getFlexoConcept(conceptName);
 
 			if (returned == null) {
@@ -273,39 +273,9 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 				DeletionScheme deletionScheme = (DeletionScheme) createDeletionScheme.getNewFlexoBehaviour();
 				deletionScheme.setSkipConfirmationPanel(true);
 
-				// Create inspector name entry
-				CreateInspectorEntry createNameEntry = null;
-				if (ownerAction != null) {
-					createNameEntry = CreateInspectorEntry.actionType.makeNewEmbeddedAction(returned.getOrCreateInspector(), null, ownerAction);
-				}
-				else {
-					createNameEntry = CreateInspectorEntry.actionType.makeNewAction(returned.getOrCreateInspector(), null, editor);
-				}
-				createNameEntry.setEntryName(NAME_ROLE_NAME);
-				createNameEntry.setEntryType(String.class);
-				createNameEntry.setWidgetType(WidgetType.TEXT_FIELD);
-				createNameEntry.setData(new DataBinding<String>("name"));
-
-				createNameEntry.doAction();
-				// Unused InspectorEntry nameEntry = createNameEntry.getNewEntry();
-
-				// Create inspector description entry
-				CreateInspectorEntry createDescriptionEntry = null;
-				if (ownerAction != null) {
-					createDescriptionEntry = CreateInspectorEntry.actionType.makeNewEmbeddedAction(returned.getOrCreateInspector(), null,
-							ownerAction);
-				}
-				else {
-					createDescriptionEntry = CreateInspectorEntry.actionType.makeNewAction(returned.getOrCreateInspector(), null, editor);
-				}
-				createDescriptionEntry.setEntryName(DESCRIPTION_ROLE_NAME);
-				createDescriptionEntry.setEntryType(String.class);
-				createDescriptionEntry.setWidgetType(WidgetType.TEXT_AREA);
-				createDescriptionEntry.setData(new DataBinding<String>("description"));
-				createDescriptionEntry.doAction();
-				InspectorEntry descriptionEntry = createDescriptionEntry.getNewEntry();
-
 				returned.setRenderer(new DataBinding<String>("instance.name"));
+
+				FMEInspectorGenerator.updateConceptualInspector(returned);
 			}
 			return returned;
 		}
@@ -327,6 +297,7 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 		public FlexoConcept getRelationalFlexoConcept(String conceptName, FlexoConcept fromConcept, FlexoConcept toConcept,
 				FlexoEditor editor, FlexoAction<?, ?, ?> ownerAction) throws FlexoException {
 
+			conceptName = FMENames.conceptName(conceptName);
 			FlexoConcept returned = getAccessedVirtualModel().getFlexoConcept(conceptName);
 
 			if (returned == null) {
@@ -461,35 +432,7 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 				((ExpressionAction<?>) destinationConceptAssignation.getAssignableAction())
 						.setExpression(new DataBinding<>("parameters." + TO_CONCEPT_ROLE_NAME));
 
-				// Create inspector source entry
-				CreateInspectorEntry createSourceEntry = null;
-				if (ownerAction != null) {
-					createSourceEntry = CreateInspectorEntry.actionType.makeNewEmbeddedAction(returned.getOrCreateInspector(), null, ownerAction);
-				}
-				else {
-					createSourceEntry = CreateInspectorEntry.actionType.makeNewAction(returned.getOrCreateInspector(), null, editor);
-				}
-				createSourceEntry.setEntryName(FROM_CONCEPT_ROLE_NAME);
-				createSourceEntry.setEntryType(fromConcept.getInstanceType());
-				createSourceEntry.setWidgetType(WidgetType.CUSTOM_WIDGET);
-				createSourceEntry.setData(new DataBinding<String>(FROM_CONCEPT_ROLE_NAME));
-				createSourceEntry.doAction();
-
-				// Create inspector destination entry
-				CreateInspectorEntry createDestinationEntry = null;
-				if (ownerAction != null) {
-					createDestinationEntry = CreateInspectorEntry.actionType.makeNewEmbeddedAction(returned.getOrCreateInspector(), null,
-							ownerAction);
-				}
-				else {
-					createDestinationEntry = CreateInspectorEntry.actionType.makeNewAction(returned.getOrCreateInspector(), null, editor);
-				}
-				createDestinationEntry.setEntryName(TO_CONCEPT_ROLE_NAME);
-				createDestinationEntry.setEntryType(toConcept.getInstanceType());
-				createDestinationEntry.setWidgetType(WidgetType.CUSTOM_WIDGET);
-				createDestinationEntry.setData(new DataBinding<String>(TO_CONCEPT_ROLE_NAME));
-				createDestinationEntry.doAction();
-
+				FMEInspectorGenerator.updateConceptualInspector(returned);
 			}
 			return returned;
 		}

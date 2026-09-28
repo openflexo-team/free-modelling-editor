@@ -46,6 +46,7 @@ import org.openflexo.components.wizard.FlexoActionWizard;
 import org.openflexo.components.wizard.WizardStep;
 import org.openflexo.connie.DataBinding;
 import org.openflexo.fme.model.FMEFreeModel;
+import org.openflexo.fme.model.FMENames;
 import org.openflexo.fme.model.action.CreateNewRelationalConcept;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.VirtualModel;
@@ -117,7 +118,7 @@ public class CreateNewRelationalConceptWizard extends FlexoActionWizard<CreateNe
 				return false;
 			}
 
-			if (getFreeModel().getAccessedVirtualModel().getFlexoConcept(getNewConceptName()) != null) {
+			if (getFreeModel().getAccessedVirtualModel().getFlexoConcept(FMENames.conceptName(getNewConceptName())) != null) {
 				setIssueMessage(getAction().getLocales().localizedForKey("a_concept_with_that_name_already_exists"),
 						IssueMessageType.ERROR);
 				return false;

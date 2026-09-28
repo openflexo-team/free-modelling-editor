@@ -45,6 +45,7 @@ import org.openflexo.ApplicationContext;
 import org.openflexo.components.wizard.FlexoActionWizard;
 import org.openflexo.components.wizard.WizardStep;
 import org.openflexo.fme.model.FMEFreeModel;
+import org.openflexo.fme.model.FMENames;
 import org.openflexo.fme.model.action.CreateNewConcept;
 import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.rt.FMLRTVirtualModelInstance;
@@ -115,7 +116,7 @@ public class CreateNewConceptWizard extends FlexoActionWizard<CreateNewConcept> 
 				return false;
 			}
 
-			if (getFreeModel().getAccessedVirtualModel().getFlexoConcept(getNewConceptName()) != null) {
+			if (getFreeModel().getAccessedVirtualModel().getFlexoConcept(FMENames.conceptName(getNewConceptName())) != null) {
 				setIssueMessage(getAction().getLocales().localizedForKey("a_concept_with_that_name_already_exists"),
 						IssueMessageType.ERROR);
 				return false;

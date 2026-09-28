@@ -125,7 +125,7 @@ public class CreateNewFMEPropertyWizard extends FlexoActionWizard<CreateNewFMEPr
 				return false;
 			}
 
-			if (getAction().getConcept().getAccessibleProperty(getPropertyName()) != null) {
+			if (getAction().getConcept().getAccessibleProperty(getAction().getCreatedPropertyName()) != null) {
 				setIssueMessage(getAction().getLocales().localizedForKey("a_property_with_that_name_already_exists"),
 						IssueMessageType.ERROR);
 				return false;

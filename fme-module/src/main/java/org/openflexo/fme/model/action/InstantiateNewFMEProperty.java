@@ -117,26 +117,26 @@ public class InstantiateNewFMEProperty extends FMEAction<InstantiateNewFMEProper
 
 			switch (createPropertyAction.getFMEType()) {
 				case String:
-					getConceptInstance().setFlexoPropertyValue(createPropertyAction.getPropertyName(), getStringValue());
+					getConceptInstance().setFlexoPropertyValue(createPropertyAction.getCreatedPropertyName(), getStringValue());
 					break;
 				case Boolean:
-					getConceptInstance().setFlexoPropertyValue(createPropertyAction.getPropertyName(), getBooleanValue());
+					getConceptInstance().setFlexoPropertyValue(createPropertyAction.getCreatedPropertyName(), getBooleanValue());
 					break;
 				case Integer:
-					getConceptInstance().setFlexoPropertyValue(createPropertyAction.getPropertyName(), getIntegerValue());
+					getConceptInstance().setFlexoPropertyValue(createPropertyAction.getCreatedPropertyName(), getIntegerValue());
 					break;
 				case Float:
-					getConceptInstance().setFlexoPropertyValue(createPropertyAction.getPropertyName(), getFloatValue());
+					getConceptInstance().setFlexoPropertyValue(createPropertyAction.getCreatedPropertyName(), getFloatValue());
 					break;
 				case Date:
-					getConceptInstance().setFlexoPropertyValue(createPropertyAction.getPropertyName(), getDateValue());
+					getConceptInstance().setFlexoPropertyValue(createPropertyAction.getCreatedPropertyName(), getDateValue());
 					break;
 				case Enumeration:
-					getConceptInstance().setFlexoPropertyValue(createPropertyAction.getPropertyName(),
+					getConceptInstance().setFlexoPropertyValue(createPropertyAction.getCreatedPropertyName(),
 							createPropertyAction.getNewEnum().getInstance(getEnumerationValue()));
 					break;
 				case Reference:
-					getConceptInstance().setFlexoPropertyValue(createPropertyAction.getPropertyName(), getReferenceValue());
+					getConceptInstance().setFlexoPropertyValue(createPropertyAction.getCreatedPropertyName(), getReferenceValue());
 					break;
 
 				default:

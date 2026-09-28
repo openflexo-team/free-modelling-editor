@@ -123,7 +123,8 @@ public class InstantiateNewFMEPropertyWizard extends FlexoActionWizard<Instantia
 				return false;
 			}
 
-			if (getAction().getCreatePropertyAction().getConcept().getAccessibleProperty(getPropertyName()) != null) {
+			if (getAction().getCreatePropertyAction().getConcept()
+					.getAccessibleProperty(getAction().getCreatePropertyAction().getCreatedPropertyName()) != null) {
 				setIssueMessage(getAction().getLocales().localizedForKey("a_property_with_that_name_already_exists"),
 						IssueMessageType.ERROR);
 				return false;

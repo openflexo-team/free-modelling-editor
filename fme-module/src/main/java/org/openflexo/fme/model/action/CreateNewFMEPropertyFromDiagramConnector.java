@@ -47,6 +47,8 @@ import org.openflexo.fme.model.FMEDiagramFreeModel;
 import org.openflexo.fme.model.FMEDiagramFreeModelInstance;
 import org.openflexo.fme.model.FMEFreeModel;
 import org.openflexo.fme.model.FMEFreeModelInstance;
+import org.openflexo.fme.model.FMEInspectorGenerator;
+import org.openflexo.fme.model.FMENames;
 import org.openflexo.foundation.FlexoEditor;
 import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.FlexoObject;
@@ -60,7 +62,6 @@ import org.openflexo.foundation.fml.action.CreateEditionAction;
 import org.openflexo.foundation.fml.action.CreateFlexoBehaviour;
 import org.openflexo.foundation.fml.action.CreateFlexoConcept;
 import org.openflexo.foundation.fml.action.CreateFlexoConceptInstanceRole;
-import org.openflexo.foundation.fml.action.CreateInspectorEntry;
 import org.openflexo.foundation.fml.action.CreateTechnologyRole;
 import org.openflexo.foundation.fml.editionaction.ExpressionAction;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
@@ -200,25 +201,21 @@ public class CreateNewFMEPropertyFromDiagramConnector
 
 		CreateFlexoConceptInstanceRole createPropertyAction = CreateFlexoConceptInstanceRole.actionType
 				.makeNewEmbeddedAction(getFromFlexoConcept(), null, this);
-		createPropertyAction.setRoleName(getPropertyName());
+		createPropertyAction.setRoleName(getCreatedPropertyName());
 		createPropertyAction.setFlexoConceptInstanceType(getToFlexoConcept());
 		createPropertyAction.setVirtualModelInstance(new DataBinding<>("container"));
 		createPropertyAction.setDescription(getDescription());
 		createPropertyAction.doAction();
 
 		if (fromFlexoConceptGR != null) {
-			CreateInspectorEntry createInspectorEntry = CreateInspectorEntry.actionType
-					.makeNewEmbeddedAction(fromFlexoConceptGR.getOrCreateInspector(), null, this);
-			createInspectorEntry.setEntryName(getPropertyName());
-			createInspectorEntry.setEntryType(getToFlexoConcept().getInstanceType());
-			createInspectorEntry.setData(new DataBinding<>(FMEFreeModel.CONCEPT_ROLE_NAME + "." + propertyName));
-			createInspectorEntry.setIndex(fromFlexoConceptGR.getOrCreateInspector().getEntries().size() - 1);
-			createInspectorEntry.doAction();
+			// The inspector of the source is regenerated, and now shows the new property
+			// No locales: a concept holding properties is never the NoneGR, the only inspector localizing a value
+			FMEInspectorGenerator.updateGRInspector(fromFlexoConceptGR, null);
 		}
 
 		FlexoConcept connectorGR = buildConnectorGRFlexoConcept();
 
-		fromFlexoConceptInstance.setFlexoPropertyValue(getPropertyName(), toFlexoConceptInstance);
+		fromFlexoConceptInstance.setFlexoPropertyValue(getCreatedPropertyName(), toFlexoConceptInstance);
 
 	}
 
@@ -247,6 +244,13 @@ public class CreateNewFMEPropertyFromDiagramConnector
 		}
 		return null;
 	}*/
+
+	/**
+	 * The name the property is created with: {@link #getPropertyName()}, as typed, normalized into a name FML accepts
+	 */
+	public String getCreatedPropertyName() {
+		return FMENames.propertyName(getPropertyName());
+	}
 
 	public String getPropertyName() {
 		return propertyName;
@@ -301,7 +305,7 @@ public class CreateNewFMEPropertyFromDiagramConnector
 	@Override
 	public boolean isValid() {
 
-		if (StringUtils.isEmpty(getPropertyName())) {
+		if (getCreatedPropertyName() == null) {
 			return false;
 		}
 
@@ -321,7 +325,7 @@ public class CreateNewFMEPropertyFromDiagramConnector
 		// Creates the concept
 		CreateFlexoConcept action = CreateFlexoConcept.actionType
 				.makeNewEmbeddedAction(fromFlexoConceptGR.getDeclaringCompilationUnit().getVirtualModel(), null, this);
-		String conceptName = getPropertyName().substring(0, 1).toUpperCase() + getPropertyName().substring(1) + "ConnectorGR";
+		String conceptName = FMENames.conceptName(getCreatedPropertyName()) + "ConnectorGR";
 		action.setNewFlexoConceptName(conceptName);
 		action.doAction();
 		FlexoConcept returned = action.getNewFlexoConcept();
@@ -362,63 +366,6 @@ public class CreateNewFMEPropertyFromDiagramConnector
 			deleteConcept.setObject(new DataBinding<>(CONCEPT_ROLE_NAME));
 		}*/
 
-		// Create inspector type entry
-		/*CreateInspectorEntry createTypeEntry = null;
-		if (ownerAction != null) {
-			createTypeEntry = CreateInspectorEntry.actionType.makeNewEmbeddedAction(returned.getOrCreateInspector(), null, ownerAction);
-		}
-		else {
-			createTypeEntry = CreateInspectorEntry.actionType.makeNewAction(returned.getOrCreateInspector(), null, editor);
-		}
-		createTypeEntry.setEntryName("Type");
-		createTypeEntry.setEntryType(String.class);
-		createTypeEntry.setWidgetType(WidgetType.TEXT_FIELD);
-		if (concept == null) {
-			createTypeEntry.setData(new DataBinding<String>('"' + getLocales().localizedForKey("unclassified") + '"'));
-		}
-		else {
-			createTypeEntry.setData(new DataBinding<String>(CONCEPT_ROLE_NAME + ".concept.name"));
-		}
-		createTypeEntry.setIsReadOnly(true);
-		createTypeEntry.doAction();
-		InspectorEntry typeEntry = createTypeEntry.getNewEntry();*/
-
-		// Create inspector name entry
-		/*CreateInspectorEntry createNameEntry = null;
-		if (ownerAction != null) {
-			createNameEntry = CreateInspectorEntry.actionType.makeNewEmbeddedAction(returned.getOrCreateInspector(), null, ownerAction);
-		}
-		else {
-			createNameEntry = CreateInspectorEntry.actionType.makeNewAction(returned.getOrCreateInspector(), null, editor);
-		}
-		createNameEntry.setEntryName(FMEConceptualModel.NAME_ROLE_NAME);
-		createNameEntry.setEntryType(String.class);
-		createNameEntry.setWidgetType(WidgetType.TEXT_FIELD);
-		if (concept == null) {
-			createNameEntry.setData(new DataBinding<String>(FMEConceptualModel.NAME_ROLE_NAME));
-		}
-		else {
-			createNameEntry.setData(new DataBinding<String>(CONCEPT_ROLE_NAME + ".name"));
-		}
-		
-		createNameEntry.doAction();
-		InspectorEntry nameEntry = createNameEntry.getNewEntry();*/
-
-		// Create inspector description entry
-		/*CreateInspectorEntry createDescriptionEntry = null;
-		if (ownerAction != null) {
-			createDescriptionEntry = CreateInspectorEntry.actionType.makeNewEmbeddedAction(returned.getOrCreateInspector(), null, ownerAction);
-		}
-		else {
-			createDescriptionEntry = CreateInspectorEntry.actionType.makeNewAction(returned.getOrCreateInspector(), null, editor);
-		}
-		createDescriptionEntry.setEntryName(FMEConceptualModel.DESCRIPTION_ROLE_NAME);
-		createDescriptionEntry.setEntryType(String.class);
-		createDescriptionEntry.setWidgetType(WidgetType.TEXT_AREA);
-		createDescriptionEntry.setData(new DataBinding<String>(CONCEPT_ROLE_NAME + ".description"));
-		createDescriptionEntry.doAction();
-		InspectorEntry descriptionEntry = createDescriptionEntry.getNewEntry();*/
-
 		// Bind shapes's label to name property
 		/*if (concept != null) {
 			// If we are bound to a concept instance, use name of concept
@@ -440,7 +387,7 @@ public class CreateNewFMEPropertyFromDiagramConnector
 		createConnectorRole.doAction();
 		ConnectorRole role = (ConnectorRole) createConnectorRole.getNewFlexoRole();
 
-		role.setLabel(new DataBinding<>("'" + getPropertyName() + "'"));
+		role.setLabel(new DataBinding<>("'" + getCreatedPropertyName() + "'"));
 
 		// Init GR
 		DiagramConnector newConnector = createConnector();
@@ -476,7 +423,7 @@ public class CreateNewFMEPropertyFromDiagramConnector
 				this);
 		setPropertyAction.setEditionActionClass(ExpressionAction.class);
 		setPropertyAction
-				.setAssignation(new DataBinding<>(FROM_CONCEPT_INSTANCE + "." + FMEFreeModel.CONCEPT_ROLE_NAME + "." + getPropertyName()));
+				.setAssignation(new DataBinding<>(FROM_CONCEPT_INSTANCE + "." + FMEFreeModel.CONCEPT_ROLE_NAME + "." + getCreatedPropertyName()));
 		setPropertyAction.doAction();
 		ExpressionAction<?> expAction3 = (ExpressionAction<?>) setPropertyAction.getBaseEditionAction();
 		expAction3.setExpression(new DataBinding<>(TO_CONCEPT_INSTANCE + "." + FMEFreeModel.CONCEPT_ROLE_NAME));
@@ -524,7 +471,7 @@ public class CreateNewFMEPropertyFromDiagramConnector
 
 		org.openflexo.technologyadapter.diagram.model.action.AddConnector addConnectorAction = org.openflexo.technologyadapter.diagram.model.action.AddConnector.actionType
 				.makeNewEmbeddedAction(startShape, null, this);
-		addConnectorAction.setNewConnectorName(getPropertyName());
+		addConnectorAction.setNewConnectorName(getCreatedPropertyName());
 		addConnectorAction.setFromShape(startShape);
 		addConnectorAction.setToShape(endShape);
 

@@ -1,0 +1,513 @@
+/**
+ *
+ * Copyright (c) 2026, Openflexo
+ *
+ * This file is part of Free-modelling-editor, a component of the software infrastructure
+ * developed at Openflexo.
+ *
+ *
+ * Openflexo is dual-licensed under the European Union Public License (EUPL, either
+ * version 1.1 of the License, or any later version ), which is available at
+ * https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+ * and the GNU General Public License (GPL, either version 3 of the License, or any
+ * later version), which is available at http://www.gnu.org/licenses/gpl.html .
+ *
+ * You can redistribute it and/or modify under the terms of either of these licenses
+ *
+ * If you choose to redistribute it and/or modify under the terms of the GNU GPL, you
+ * must include the following additional permission.
+ *
+ *          Additional permission under GNU GPL version 3 section 7
+ *
+ *          If you modify this Program, or any covered work, by linking or
+ *          combining it with software containing parts covered by the terms
+ *          of EPL 1.0, the licensors of this Program grant you additional permission
+ *          to convey the resulting work. *
+ *
+ * This software is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE.
+ *
+ * See http://www.openflexo.org/license.html for details.
+ *
+ *
+ * Please contact Openflexo (openflexo-contacts@openflexo.org)
+ * or visit www.openflexo.org if you need additional information.
+ *
+ */
+
+package org.openflexo.fme.model;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.openflexo.connie.DataBinding;
+import org.openflexo.connie.type.PrimitiveType;
+import org.openflexo.fml.rt.controller.widget.FIBFlexoConceptInstanceSelector;
+import org.openflexo.foundation.FlexoException;
+import org.openflexo.foundation.fml.FMLTechnologyAdapter;
+import org.openflexo.foundation.fml.FlexoConcept;
+import org.openflexo.foundation.fml.FlexoConceptInstanceRole;
+import org.openflexo.foundation.fml.FlexoEnum;
+import org.openflexo.foundation.fml.FlexoProperty;
+import org.openflexo.foundation.fml.PrimitiveRole;
+import org.openflexo.foundation.fml.VirtualModel;
+import org.openflexo.foundation.fml.rm.CompilationUnitResource;
+import org.openflexo.foundation.fml.rm.FIBComponentResource;
+import org.openflexo.foundation.fml.rm.FIBComponentResourceFactory;
+import org.openflexo.foundation.fml.rm.FMLFIBComponent;
+import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
+import org.openflexo.foundation.resource.FlexoResourceCenter;
+import org.openflexo.gina.model.FIBComponent;
+import org.openflexo.gina.model.FIBModelFactory;
+import org.openflexo.gina.model.FIBWidget;
+import org.openflexo.gina.model.container.FIBPanel.Layout;
+import org.openflexo.gina.model.container.layout.TwoColsLayoutConstraints;
+import org.openflexo.gina.model.container.layout.TwoColsLayoutConstraints.TwoColsLayoutLocation;
+import org.openflexo.gina.model.widget.FIBCheckBox;
+import org.openflexo.gina.model.widget.FIBCustom;
+import org.openflexo.gina.model.widget.FIBDropDown;
+import org.openflexo.gina.model.widget.FIBLabel;
+import org.openflexo.gina.model.widget.FIBNumber;
+import org.openflexo.gina.model.widget.FIBNumber.NumberType;
+import org.openflexo.gina.model.widget.FIBTextArea;
+import org.openflexo.gina.model.widget.FIBTextField;
+import org.openflexo.gina.utils.FIBInspector;
+import org.openflexo.localization.LocalizedDelegate;
+import org.openflexo.rm.Resource;
+
+/**
+ * Generates the inspectors of the concepts the free modelling editor creates.
+ *
+ * <p>
+ * The inspector of a concept is an ordinary GINA component, <code>&lt;ConceptName&gt;.inspector</code>, stored in the
+ * <code>Xxx.fml/</code> container of the VirtualModel declaring the concept - where {@link FlexoConcept#getInspectorComponentResource()}
+ * looks for it, and from where the platform merges it into the inspector of a {@link FlexoConceptInstance}.
+ *
+ * <p>
+ * Generation is STATELESS: the component is rebuilt as a whole from the current structure of the concept, rather than patched. This is
+ * what makes adding a property, or giving an inspector to a concept created before inspectors were generated, the same operation.
+ *
+ * <p>
+ * A generated component is never saved here: its resource is created, or its component replaced, and marked modified. It is saved with
+ * the rest of the project, when the user saves. Until then it resolves all the same, being registered in the contents of the compilation
+ * unit resource.
+ *
+ * <p>
+ * Widgets are built here rather than by the technology adapter controllers: the set of types a free model uses is closed ({@link FMEType}),
+ * a controller is not available headless, and the widgets they build for a choice or a reference point into the deprecated
+ * FlexoConceptInspector, which no longer exists for these concepts.
+ *
+ * @author sylvain
+ */
+public class FMEInspectorGenerator {
+
+	private static final Logger logger = Logger.getLogger(FMEInspectorGenerator.class.getPackage().getName());
+
+	/** Name of the entry showing the type of a graphical representation's concept */
+	public static final String TYPE_ENTRY_NAME = "Type";
+	/** Name of the entry showing the relationship a connector represents */
+	public static final String RELATIONSHIP_ENTRY_NAME = "Relationship";
+
+	private static final String DATA = FIBComponent.DEFAULT_DATA_VARIABLE;
+	private static final String CONCEPT = DATA + "." + FMEFreeModel.CONCEPT_ROLE_NAME;
+
+	private FMEInspectorGenerator() {
+	}
+
+	/**
+	 * (Re)generate the inspector of a concept of a free model - the graphical representation (GR) of a conceptual concept, the GR of a
+	 * relationship, or the NoneGR standing for unclassified elements.
+	 *
+	 * <p>
+	 * The shape is read from the structure of the concept:
+	 * <ul>
+	 * <li>a GR of a concept shows a read-only "Type", the name, one widget per property of the concept, then the description;</li>
+	 * <li>a GR of a relationship shows the relationship read-only, its source, its destination, then one widget per other property;</li>
+	 * <li>the NoneGR shows "unclassified" as its type, and its own name.</li>
+	 * </ul>
+	 *
+	 * <p>
+	 * Any other concept of a free model - the one holding a connector between two instances, for instance - gets no inspector, as it never
+	 * had one.
+	 *
+	 * @param locales
+	 *            where "unclassified" is localized; may be null
+	 * @return the resource of the inspector, or null when it could not be generated or the concept has none
+	 */
+	public static FIBComponentResource updateGRInspector(FlexoConcept grConcept, LocalizedDelegate locales) {
+		if (!isGRConcept(grConcept)) {
+			return null;
+		}
+		return update(grConcept, new GRContents(grConcept, locales));
+	}
+
+	/**
+	 * (Re)generate the inspector of a concept of the conceptual model: its name and description, and, for a relationship, its source and
+	 * destination.
+	 *
+	 * @return the resource of the inspector, or null when it could not be generated or the concept has none
+	 */
+	public static FIBComponentResource updateConceptualInspector(FlexoConcept concept) {
+		if (!isConceptualConcept(concept)) {
+			return null;
+		}
+		return update(concept, new ConceptualContents(concept));
+	}
+
+	/**
+	 * Generate the inspector of each concept of supplied free model VirtualModel that has none of its own - a free model created before
+	 * inspectors were generated. Its enums are skipped: nothing inspects them.
+	 */
+	public static void generateMissingGRInspectors(VirtualModel freeModelVirtualModel, LocalizedDelegate locales) {
+		for (FlexoConcept concept : conceptsWithoutInspector(freeModelVirtualModel)) {
+			updateGRInspector(concept, locales);
+		}
+	}
+
+	/**
+	 * Same as {@link #generateMissingGRInspectors(VirtualModel, LocalizedDelegate)}, for the conceptual model
+	 */
+	public static void generateMissingConceptualInspectors(VirtualModel conceptualVirtualModel) {
+		for (FlexoConcept concept : conceptsWithoutInspector(conceptualVirtualModel)) {
+			updateConceptualInspector(concept);
+		}
+	}
+
+	private static List<FlexoConcept> conceptsWithoutInspector(VirtualModel virtualModel) {
+		List<FlexoConcept> returned = new ArrayList<>();
+		if (virtualModel != null) {
+			for (FlexoConcept concept : virtualModel.getFlexoConcepts()) {
+				if (!(concept instanceof FlexoEnum) && ownInspectorResource(concept) == null) {
+					returned.add(concept);
+				}
+			}
+		}
+		return returned;
+	}
+
+	/**
+	 * The inspector the container holds for supplied concept by the naming convention, or null. Not
+	 * {@link FlexoConcept#getInspectorComponentFlexoResource()} as it is: that one would answer an inherited inspector too.
+	 */
+	public static FIBComponentResource ownInspectorResource(FlexoConcept concept) {
+		FIBComponentResource returned = concept.getInspectorComponentFlexoResource();
+		if (returned == null || returned.getIODelegate() == null || concept.getDeclaringCompilationUnit() == null) {
+			return null;
+		}
+		Resource conventional = concept.getDeclaringCompilationUnit().getContainedArtefact(inspectorFileName(concept));
+		return conventional != null && conventional.equals(returned.getIODelegate().getSerializationArtefactAsResource()) ? returned : null;
+	}
+
+	private static String inspectorFileName(FlexoConcept concept) {
+		return concept.getName() + FIBComponentResourceFactory.INSPECTOR_SUFFIX;
+	}
+
+	private static FIBComponentResource update(FlexoConcept concept, Contents contents) {
+
+		if (concept == null || concept.getDeclaringCompilationUnit() == null
+				|| !(concept.getDeclaringCompilationUnit().getResource() instanceof CompilationUnitResource)) {
+			logger.warning("Cannot generate the inspector of " + concept + ": it belongs to no compilation unit resource");
+			return null;
+		}
+
+		try {
+			FIBModelFactory factory = new FIBModelFactory(null, concept.getServiceManager().getTechnologyAdapterService(),
+					FIBInspector.class);
+			FIBInspector component = buildComponent(concept, contents, factory);
+
+			FIBComponentResource resource = ownInspectorResource(concept);
+			if (resource == null) {
+				resource = makeResource(concept);
+				FMLFIBComponent resourceData = FMLFIBComponent.newInstance(component);
+				resourceData.setResource(resource);
+				resource.setResourceData(resourceData);
+			}
+			else {
+				// Replacing the component - rather than patching it - is what the platform inspector listens to
+				resource.getResourceData().setComponent(component);
+			}
+			component.setModified(true);
+			resource.setModified(true);
+			return resource;
+		} catch (Exception e) {
+			logger.log(Level.WARNING, "Could not generate the inspector of " + concept, e);
+			return null;
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <I> FIBComponentResource makeResource(FlexoConcept concept) throws FlexoException {
+
+		CompilationUnitResource compilationUnitResource = (CompilationUnitResource) concept.getDeclaringCompilationUnit().getResource();
+		FlexoResourceCenter<I> resourceCenter = (FlexoResourceCenter<I>) compilationUnitResource.getResourceCenter();
+
+		// Beside the FML source, in the Xxx.fml/ container. createEntry() writes nothing: the file appears when the resource is saved
+		I containerDirectory = resourceCenter.getContainer((I) compilationUnitResource.getIODelegate().getSerializationArtefact());
+		I artefact = resourceCenter.createEntry(inspectorFileName(concept), containerDirectory);
+
+		FIBComponentResourceFactory factory = concept.getServiceManager().getTechnologyAdapterService()
+				.getTechnologyAdapter(FMLTechnologyAdapter.class).getResourceFactory(FIBComponentResourceFactory.class);
+		try {
+			// No empty contents: the factory would SAVE them right away
+			return factory.makeResource(artefact, resourceCenter, false);
+		} catch (Exception e) {
+			throw new FlexoException("Could not create " + inspectorFileName(concept) + " in " + containerDirectory, e);
+		}
+	}
+
+	private static FIBInspector buildComponent(FlexoConcept concept, Contents contents, FIBModelFactory factory) {
+
+		// A plain panel: the platform wraps it into a tab titled after the concept, first of the tabs of the instance inspector
+		FIBInspector root = factory.newInstance(FIBInspector.class);
+		root.setName(lowerCamelCase(concept.getName()) + "Inspector");
+		root.setDataClass(FlexoConceptInstance.class);
+		root.setControllerClassName("org.openflexo.inspector.FIBInspectorController");
+		root.setLayout(Layout.twocols);
+
+		// Typed by the concept, which is what makes 'data.fmeConcept.name' resolve
+		factory.newFIBVariable(root, DATA, concept.getInstanceType());
+
+		contents.append(new Builder(root, factory));
+
+		root.finalizeDeserialization();
+		return root;
+	}
+
+	/**
+	 * What an inspector shows, in order
+	 */
+	private interface Contents {
+		void append(Builder builder);
+	}
+
+	private static class GRContents implements Contents {
+
+		private final FlexoConcept grConcept;
+		private final LocalizedDelegate locales;
+
+		GRContents(FlexoConcept grConcept, LocalizedDelegate locales) {
+			this.grConcept = grConcept;
+			this.locales = locales;
+		}
+
+		@Override
+		public void append(Builder builder) {
+
+			FlexoConcept concept = conceptOf(grConcept);
+
+			if (concept == null) {
+				// NoneGR: an unclassified element, carrying its own name
+				String unclassified = locales != null ? locales.localizedForKey("unclassified") : "unclassified";
+				builder.readOnlyTextField(TYPE_ENTRY_NAME, '"' + unclassified + '"');
+				builder.textField(FMEFreeModel.NAME_ROLE_NAME, DATA + "." + FMEFreeModel.NAME_ROLE_NAME);
+				return;
+			}
+
+			List<String> shown = new ArrayList<>();
+
+			if (isRelationship(concept)) {
+				builder.readOnlyTextField(RELATIONSHIP_ENTRY_NAME, CONCEPT + ".render");
+				builder.property(concept.getAccessibleProperty(FMEConceptualModel.FROM_CONCEPT_ROLE_NAME), CONCEPT);
+				builder.property(concept.getAccessibleProperty(FMEConceptualModel.TO_CONCEPT_ROLE_NAME), CONCEPT);
+				shown.add(FMEConceptualModel.FROM_CONCEPT_ROLE_NAME);
+				shown.add(FMEConceptualModel.TO_CONCEPT_ROLE_NAME);
+			}
+			else {
+				// As it has always been: the "Type" entry shows the name of the concept instance, read-only
+				builder.readOnlyTextField(TYPE_ENTRY_NAME, CONCEPT + "." + FMEConceptualModel.NAME_ROLE_NAME);
+				builder.textField(FMEConceptualModel.NAME_ROLE_NAME, CONCEPT + "." + FMEConceptualModel.NAME_ROLE_NAME);
+				shown.add(FMEConceptualModel.NAME_ROLE_NAME);
+				shown.add(FMEConceptualModel.DESCRIPTION_ROLE_NAME);
+			}
+
+			// The properties the user added to the concept, in declaration order
+			for (FlexoProperty<?> property : concept.getDeclaredProperties()) {
+				if (!shown.contains(property.getName())) {
+					builder.property(property, CONCEPT);
+				}
+			}
+
+			if (!isRelationship(concept) && concept.getAccessibleProperty(FMEConceptualModel.DESCRIPTION_ROLE_NAME) != null) {
+				builder.textArea(FMEConceptualModel.DESCRIPTION_ROLE_NAME, CONCEPT + "." + FMEConceptualModel.DESCRIPTION_ROLE_NAME);
+			}
+		}
+	}
+
+	private static class ConceptualContents implements Contents {
+
+		private final FlexoConcept concept;
+
+		ConceptualContents(FlexoConcept concept) {
+			this.concept = concept;
+		}
+
+		@Override
+		public void append(Builder builder) {
+			if (concept.getAccessibleProperty(FMEConceptualModel.NAME_ROLE_NAME) != null) {
+				builder.textField(FMEConceptualModel.NAME_ROLE_NAME, DATA + "." + FMEConceptualModel.NAME_ROLE_NAME);
+			}
+			if (concept.getAccessibleProperty(FMEConceptualModel.DESCRIPTION_ROLE_NAME) != null) {
+				builder.textArea(FMEConceptualModel.DESCRIPTION_ROLE_NAME, DATA + "." + FMEConceptualModel.DESCRIPTION_ROLE_NAME);
+			}
+			if (isRelationship(concept)) {
+				builder.property(concept.getAccessibleProperty(FMEConceptualModel.FROM_CONCEPT_ROLE_NAME), DATA);
+				builder.property(concept.getAccessibleProperty(FMEConceptualModel.TO_CONCEPT_ROLE_NAME), DATA);
+			}
+		}
+	}
+
+	private static boolean isGRConcept(FlexoConcept concept) {
+		return concept != null && (conceptOf(concept) != null || FMEFreeModel.NONE_FLEXO_CONCEPT_NAME.equals(concept.getName()));
+	}
+
+	private static boolean isConceptualConcept(FlexoConcept concept) {
+		return concept != null && !(concept instanceof FlexoEnum)
+				&& (concept.getAccessibleProperty(FMEConceptualModel.NAME_ROLE_NAME) != null || isRelationship(concept));
+	}
+
+	/**
+	 * The conceptual concept a graphical representation stands for, or null for the NoneGR
+	 */
+	private static FlexoConcept conceptOf(FlexoConcept grConcept) {
+		FlexoProperty<?> conceptRole = grConcept.getAccessibleProperty(FMEFreeModel.CONCEPT_ROLE_NAME);
+		return conceptRole instanceof FlexoConceptInstanceRole ? ((FlexoConceptInstanceRole) conceptRole).getFlexoConceptType() : null;
+	}
+
+	private static boolean isRelationship(FlexoConcept concept) {
+		return concept.getAccessibleProperty(FMEConceptualModel.FROM_CONCEPT_ROLE_NAME) instanceof FlexoConceptInstanceRole
+				&& concept.getAccessibleProperty(FMEConceptualModel.TO_CONCEPT_ROLE_NAME) instanceof FlexoConceptInstanceRole;
+	}
+
+	/**
+	 * Name of a widget: GINA binds a component through FML rules once driven by a concept, and under them a capitalized path element is read
+	 * as a type name - so every widget is named in lowerCamelCase.
+	 */
+	private static String lowerCamelCase(String name) {
+		if (name == null || name.isEmpty()) {
+			return name;
+		}
+		return Character.toLowerCase(name.charAt(0)) + name.substring(1);
+	}
+
+	/**
+	 * Appends a label on the left column and a widget on the right one - the shape every inspector of the infrastructure has
+	 */
+	private static class Builder {
+
+		private final FIBInspector root;
+		private final FIBModelFactory factory;
+
+		Builder(FIBInspector root, FIBModelFactory factory) {
+			this.root = root;
+			this.factory = factory;
+		}
+
+		void textField(String entryName, String data) {
+			FIBTextField widget = factory.newFIBTextField();
+			append(entryName, widget, "TextField", data, true, false);
+		}
+
+		void readOnlyTextField(String entryName, String data) {
+			FIBTextField widget = factory.newFIBTextField();
+			widget.setReadOnly(true);
+			append(entryName, widget, "TextField", data, true, false);
+		}
+
+		void textArea(String entryName, String data) {
+			FIBTextArea widget = factory.newFIBTextArea();
+			widget.setValidateOnReturn(true);
+			widget.setUseScrollBar(true);
+			append(entryName, widget, "TextArea", data, true, true);
+		}
+
+		/**
+		 * The widget matching the type of supplied property, reached as <code>owner.propertyName</code>
+		 */
+		void property(FlexoProperty<?> property, String owner) {
+			if (property == null) {
+				return;
+			}
+			String data = owner + "." + property.getName();
+
+			if (property instanceof PrimitiveRole) {
+				PrimitiveType primitiveType = ((PrimitiveRole<?>) property).getPrimitiveType();
+				switch (primitiveType != null ? primitiveType : PrimitiveType.String) {
+					case Boolean:
+						FIBCheckBox checkBox = factory.newFIBCheckBox();
+						append(property.getName(), checkBox, "CheckBox", data, false, false);
+						return;
+					case Integer:
+					case Long:
+						append(property.getName(), number(NumberType.IntegerType), "Number", data, false, false);
+						return;
+					case Float:
+					case Double:
+						append(property.getName(), number(NumberType.DoubleType), "Number", data, false, false);
+						return;
+					case Date:
+						append(property.getName(), factory.newFIBDate(), "Date", data, false, false);
+						return;
+					default:
+						textField(property.getName(), data);
+						return;
+				}
+			}
+
+			if (property instanceof FlexoConceptInstanceRole) {
+				FlexoConcept type = ((FlexoConceptInstanceRole) property).getFlexoConceptType();
+				if (type instanceof FlexoEnum) {
+					FIBDropDown dropDown = factory.newFIBDropDown();
+					// enumValues does not need a value to be read through: the choice is offered while the property is unset
+					dropDown.setList(new DataBinding<>(data + ".enumValues"));
+					append(property.getName(), dropDown, "DropDown", data, true, false);
+					return;
+				}
+				append(property.getName(), instanceSelector(type, owner), "Selector", data, true, false);
+				return;
+			}
+
+			logger.warning("No widget generated for " + property + " of type " + property.getType());
+		}
+
+		private FIBNumber number(NumberType numberType) {
+			FIBNumber number = factory.newFIBNumber();
+			number.setNumberType(numberType);
+			return number;
+		}
+
+		/**
+		 * A selector of the instances of supplied concept, living in the same VirtualModel instance as <code>owner</code>. The concept is
+		 * named by its URI: a binding cannot denote a concept statically.
+		 */
+		private FIBCustom instanceSelector(FlexoConcept type, String owner) {
+			FIBCustom selector = factory.newFIBCustom();
+			selector.setComponentClass(FIBFlexoConceptInstanceSelector.class);
+			// The service manager first: resolving the URI of the expected concept goes through it
+			selector.addToAssignments(factory.newFIBCustomAssignment(selector, new DataBinding<>("component.serviceManager"),
+					new DataBinding<>("controller.flexoController.applicationContext"), true));
+			selector.addToAssignments(factory.newFIBCustomAssignment(selector, new DataBinding<>("component.virtualModelInstance"),
+					new DataBinding<>(owner + ".container"), true));
+			if (type != null && type.getURI() != null) {
+				selector.addToAssignments(factory.newFIBCustomAssignment(selector,
+						new DataBinding<>("component.expectedFlexoConceptTypeURI"), new DataBinding<>('"' + type.getURI() + '"'), true));
+			}
+			return selector;
+		}
+
+		private void append(String entryName, FIBWidget widget, String widgetSuffix, String data, boolean expandHorizontally,
+				boolean expandVertically) {
+
+			FIBLabel label = factory.newFIBLabel(entryName);
+			label.setName(lowerCamelCase(entryName) + "Label");
+			root.addToSubComponentsNoNotification(label, new TwoColsLayoutConstraints(TwoColsLayoutLocation.left, false, false));
+
+			widget.setName(lowerCamelCase(entryName) + widgetSuffix);
+			widget.setData(new DataBinding<>(data));
+			root.addToSubComponentsNoNotification(widget,
+					new TwoColsLayoutConstraints(TwoColsLayoutLocation.right, expandHorizontally, expandVertically));
+		}
+	}
+}

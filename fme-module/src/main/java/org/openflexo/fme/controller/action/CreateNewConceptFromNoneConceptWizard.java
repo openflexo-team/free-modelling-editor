@@ -44,6 +44,7 @@ import java.util.logging.Logger;
 import org.openflexo.ApplicationContext;
 import org.openflexo.components.wizard.FlexoActionWizard;
 import org.openflexo.components.wizard.WizardStep;
+import org.openflexo.fme.model.FMENames;
 import org.openflexo.fme.model.action.CreateNewConceptFromNoneConcept;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.VirtualModel;
@@ -116,7 +117,7 @@ public class CreateNewConceptFromNoneConceptWizard extends FlexoActionWizard<Cre
 				return false;
 			}
 
-			if (getFlexoConceptInstance().getVirtualModelInstance().getVirtualModel().getFlexoConcept(getNewConceptName()) != null) {
+			if (getFlexoConceptInstance().getVirtualModelInstance().getVirtualModel().getFlexoConcept(FMENames.conceptName(getNewConceptName())) != null) {
 				setIssueMessage(getAction().getLocales().localizedForKey("a_concept_with_that_name_already_exists"),
 						IssueMessageType.ERROR);
 				return false;
