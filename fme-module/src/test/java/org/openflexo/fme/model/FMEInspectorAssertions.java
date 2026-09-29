@@ -40,6 +40,7 @@ package org.openflexo.fme.model;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
@@ -50,6 +51,7 @@ import java.util.List;
 import org.openflexo.fib.binding.FMLControlledComponent;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.rm.FIBComponentResource;
+import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.gina.model.FIBComponent;
 import org.openflexo.gina.model.FIBContainer;
 import org.openflexo.gina.utils.FIBInspector;
@@ -74,6 +76,11 @@ public class FMEInspectorAssertions {
 	public static FIBComponent assertInspectorIsValid(FlexoConcept concept, String... expectedWidgetNames) {
 
 		String expectedFileName = concept.getName() + ".inspector";
+
+		// An explicit @Inspector("...") - not the naming convention alone (CORE-F-4: a later rename would silently orphan a
+		// component resolved only by convention). FMEInspectorGenerator#update writes it from the concept's very creation.
+		assertTrue(concept.getName() + " resolves its inspector by the naming convention alone, not an explicit @Inspector(...)",
+				concept.hasMetaData(FlexoConcept.INSPECTOR_METADATA));
 
 		assertNotNull("Concept " + concept.getName() + " resolves no inspector", concept.getInspectorComponentResource());
 		String uri = concept.getInspectorComponentResource().getURI();
@@ -104,6 +111,33 @@ public class FMEInspectorAssertions {
 		assertEquals(Arrays.asList(expectedWidgetNames), widgetNames(component));
 
 		return component;
+	}
+
+	/**
+	 * Asserts that supplied GR concept hands inspection entirely to its conceptual counterpart - a plain concept or a relationship,
+	 * found through {@link FMEFreeModel#CONCEPT_ROLE_NAME} - rather than resolving an inspector of its own:
+	 * <code>@Inspector(derived=fmeConcept)</code> is declared, and neither the naming convention nor an explicit filename key
+	 * resolves any component for it (see {@link FlexoConcept#getInspectorComponentResource()} and CORE-F-4's exclusivity rule).
+	 */
+	public static void assertDerivesToConceptualInspector(FlexoConcept grConcept) {
+		assertTrue(grConcept.getName() + " does not declare @Inspector(derived=...)", grConcept.hasDerivedInspector());
+		assertNull(grConcept.getName() + " should have no inspector component of its own",
+				FMEInspectorGenerator.ownInspectorResource(grConcept));
+		assertNull(grConcept.getName() + " should resolve no inspector component at all",
+				grConcept.getInspectorComponentResource());
+	}
+
+	/**
+	 * Same as {@link #assertDerivesToConceptualInspector(FlexoConcept)}, and additionally checks that a live instance of the GR
+	 * concept actually redirects: {@link FlexoConceptInstance#getInspectedObject()} on it returns the conceptual instance its
+	 * {@link FMEFreeModel#CONCEPT_ROLE_NAME} role points to, not itself.
+	 */
+	public static void assertDerivesToConceptualInspector(FlexoConceptInstance grInstance) {
+		assertDerivesToConceptualInspector(grInstance.getFlexoConcept());
+		FlexoConceptInstance conceptualInstance = grInstance.getFlexoPropertyValue(FMEFreeModel.CONCEPT_ROLE_NAME);
+		assertNotNull("No " + FMEFreeModel.CONCEPT_ROLE_NAME + " instance to derive to", conceptualInstance);
+		assertSame("getInspectedObject() does not redirect to the conceptual instance", conceptualInstance,
+				grInstance.getInspectedObject());
 	}
 
 	/**

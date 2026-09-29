@@ -222,14 +222,14 @@ public class TestCreateFreeModelWithInstances extends OpenflexoProjectAtRunTimeT
 		assertEquals(1, freeModelInstance.getAccessedVirtualModelInstance().getFlexoConceptInstances().size());
 
 		tutuConceptGR = tutu.getFlexoConcept();
-		FMEInspectorAssertions.assertInspectorIsValid(tutuConceptGR, "typeTextField", "nameTextField", "descriptionTextArea");
+		// The GR hands inspection entirely to the conceptual concept - it has no inspector of its own to generate
+		FMEInspectorAssertions.assertDerivesToConceptualInspector(tutu);
 		FMEInspectorAssertions.assertInspectorIsValid(tutuConcept, "nameTextField", "descriptionTextArea");
 
 		project.save();
 		project.saveModifiedResources();
 
 		// Saved with the project
-		assertTrue(((File) tutuConceptGR.getInspectorComponentFlexoResource().getIODelegate().getSerializationArtefact()).exists());
 		assertTrue(((File) tutuConcept.getInspectorComponentFlexoResource().getIODelegate().getSerializationArtefact()).exists());
 	}
 
@@ -286,8 +286,10 @@ public class TestCreateFreeModelWithInstances extends OpenflexoProjectAtRunTimeT
 	}
 
 	/**
-	 * Adding a property to a concept regenerates the inspector of its graphical representation, which then shows a widget of the type of
-	 * that property - between the name and the description, where the deprecated inspector entries used to be inserted.
+	 * Adding a property to a concept regenerates the CONCEPTUAL concept's inspector, which then shows a widget of the type of that
+	 * property - between the name and the description, where the deprecated inspector entries used to be inserted. The GR's own
+	 * inspector is never touched: it has none, deriving entirely to the conceptual concept's (see
+	 * {@link #testMakeNewConceptFromTutu()}).
 	 */
 	@Test
 	@TestOrder(8)
@@ -295,7 +297,7 @@ public class TestCreateFreeModelWithInstances extends OpenflexoProjectAtRunTimeT
 	public void testAddPropertiesRegeneratesInspector()
 			throws TypeMismatchException, NullReferenceException, ReflectiveOperationException {
 
-		FIBComponentResource inspector = tutuConceptGR.getInspectorComponentFlexoResource();
+		FIBComponentResource inspector = tutuConcept.getInspectorComponentFlexoResource();
 		FIBComponent before = inspector.getComponent();
 
 		addProperty("comment", FMEType.String, null, null);
@@ -307,24 +309,27 @@ public class TestCreateFreeModelWithInstances extends OpenflexoProjectAtRunTimeT
 		addProperty("friend", FMEType.Reference, null, tutuConcept);
 
 		// Same resource, new component: this is what the platform inspector listens to
-		assertSame(inspector, tutuConceptGR.getInspectorComponentFlexoResource());
+		assertSame(inspector, tutuConcept.getInspectorComponentFlexoResource());
 		assertNotSame(before, inspector.getComponent());
 		assertTrue(project.getServiceManager().getResourceManager().getUnsavedResources().contains(inspector));
 
-		FIBComponent component = FMEInspectorAssertions.assertInspectorIsValid(tutuConceptGR, "typeTextField", "nameTextField",
-				"commentTextField", "activeCheckBox", "countNumber", "weightNumber", "birthDateDate", "colorDropDown", "friendSelector",
+		FIBComponent component = FMEInspectorAssertions.assertInspectorIsValid(tutuConcept, "nameTextField", "commentTextField",
+				"activeCheckBox", "countNumber", "weightNumber", "birthDateDate", "colorDropDown", "friendSelector",
 				"descriptionTextArea");
+
+		// The GR still derives, and still resolves nothing of its own
+		FMEInspectorAssertions.assertDerivesToConceptualInspector(tutu);
 
 		// The choice of an enum is offered while the property is still unset
 		FIBDropDown colorDropDown = (FIBDropDown) ((FIBContainer) component).getSubComponentNamed("colorDropDown");
-		assertEquals("data.fmeConcept.color.enumValues", colorDropDown.getList().toString());
+		assertEquals("data.color.enumValues", colorDropDown.getList().toString());
 		FlexoConceptInstance tutuConceptInstance = tutu.getFlexoPropertyValue(FMEFreeModel.CONCEPT_ROLE_NAME);
 		assertNotNull(tutuConceptInstance);
 		assertNull(tutuConceptInstance.getFlexoPropertyValue("color"));
-		BindingEvaluationContext inspectingTutu = new BindingEvaluationContext() {
+		BindingEvaluationContext inspectingTutuConcept = new BindingEvaluationContext() {
 			@Override
 			public Object getValue(BindingVariable variable) {
-				return FIBComponent.DEFAULT_DATA_VARIABLE.equals(variable.getVariableName()) ? tutu : null;
+				return FIBComponent.DEFAULT_DATA_VARIABLE.equals(variable.getVariableName()) ? tutuConceptInstance : null;
 			}
 
 			@Override
@@ -332,7 +337,7 @@ public class TestCreateFreeModelWithInstances extends OpenflexoProjectAtRunTimeT
 				return new FMLExpressionEvaluator(this);
 			}
 		};
-		List<?> colors = (List<?>) colorDropDown.getList().getBindingValue(inspectingTutu);
+		List<?> colors = (List<?>) colorDropDown.getList().getBindingValue(inspectingTutuConcept);
 		assertNotNull(colors);
 		assertEquals(3, colors.size());
 		assertNotNull(((FlexoEnum) nature.getConceptualModel().getAccessedVirtualModel().getFlexoConcept("Color")).getValue("LIGHT_BLUE"));
@@ -353,7 +358,8 @@ public class TestCreateFreeModelWithInstances extends OpenflexoProjectAtRunTimeT
 	}
 
 	/**
-	 * A relationship, reified as a concept, has an inspector both in the conceptual model and in the free model
+	 * A relationship, reified as a concept, has an inspector in the conceptual model; its GR derives to it, exactly like a plain
+	 * concept's does.
 	 */
 	@Test
 	@TestOrder(9)
@@ -371,12 +377,14 @@ public class TestCreateFreeModelWithInstances extends OpenflexoProjectAtRunTimeT
 		assertTrue(action.hasActionExecutionSucceeded());
 
 		FMEInspectorAssertions.assertInspectorIsValid(action.getNewFlexoConcept(), "sourceConceptSelector", "destinationConceptSelector");
-		FMEInspectorAssertions.assertInspectorIsValid(action.getNewGRFlexoConcept(), "relationshipTextField", "sourceConceptSelector",
-				"destinationConceptSelector");
+		FMEInspectorAssertions.assertDerivesToConceptualInspector(action.getNewGRFlexoConcept());
 	}
 
 	/**
-	 * A free model created before inspectors were generated gets them when opened
+	 * A free model created before inspectors were generated gets one (the NoneGR case - none exists here to exercise, covered by
+	 * {@link #testCreateInstance()} already having one); one created before <code>@Inspector(derived=…)</code> existed - a GR
+	 * concept still carrying its own FME-generated inspector - gets MIGRATED to a derived one, and the stale file is removed
+	 * (CORE-F-4: nothing may be left in the container that nothing resolves to).
 	 */
 	@Test
 	@TestOrder(10)
@@ -385,14 +393,18 @@ public class TestCreateFreeModelWithInstances extends OpenflexoProjectAtRunTimeT
 
 		project.saveModifiedResources();
 
-		// Simulate a concept created before inspectors were generated
-		tutuConceptGR.getInspectorComponentFlexoResource().delete();
-		assertNull(FMEInspectorGenerator.ownInspectorResource(tutuConceptGR));
+		// Simulate a free model saved before @Inspector(derived=...) existed: TutuConceptGR has its own generated inspector,
+		// not the annotation
+		tutuConceptGR.setDerivedInspector(null);
+		FIBComponentResource legacy = FMEInspectorGenerator.generateLegacyGRInspector(tutuConceptGR, null);
+		assertNotNull(legacy);
+		assertFalse(tutuConceptGR.hasDerivedInspector());
+		assertSame(legacy, FMEInspectorGenerator.ownInspectorResource(tutuConceptGR));
 
 		freeModel.generateMissingInspectors();
 
-		FMEInspectorAssertions.assertInspectorIsValid(tutuConceptGR, "typeTextField", "nameTextField", "commentTextField",
-				"activeCheckBox", "countNumber", "weightNumber", "birthDateDate", "colorDropDown", "friendSelector", "descriptionTextArea");
+		// Migrated: derives again, and the legacy inspector is gone - not merely unused
+		FMEInspectorAssertions.assertDerivesToConceptualInspector(tutu);
 
 		project.saveModifiedResources();
 	}
@@ -419,12 +431,11 @@ public class TestCreateFreeModelWithInstances extends OpenflexoProjectAtRunTimeT
 
 		FlexoConcept reloadedGR = freeModel.getAccessedVirtualModel().getFlexoConcept("TutuConceptGR");
 		assertNotNull(reloadedGR);
-		FMEInspectorAssertions.assertInspectorIsValid(reloadedGR, "typeTextField", "nameTextField", "commentTextField", "activeCheckBox",
-				"countNumber", "weightNumber", "birthDateDate", "colorDropDown", "friendSelector", "descriptionTextArea");
-		FMEInspectorAssertions.assertInspectorIsValid(freeModel.getAccessedVirtualModel().getFlexoConcept("KnowsGR"),
-				"relationshipTextField", "sourceConceptSelector", "destinationConceptSelector");
+		FMEInspectorAssertions.assertDerivesToConceptualInspector(reloadedGR);
+		FMEInspectorAssertions.assertDerivesToConceptualInspector(freeModel.getAccessedVirtualModel().getFlexoConcept("KnowsGR"));
 		FMEInspectorAssertions.assertInspectorIsValid(
-				nature.getConceptualModel().getAccessedVirtualModel().getFlexoConcept("TutuConcept"), "nameTextField",
+				nature.getConceptualModel().getAccessedVirtualModel().getFlexoConcept("TutuConcept"), "nameTextField", "commentTextField",
+				"activeCheckBox", "countNumber", "weightNumber", "birthDateDate", "colorDropDown", "friendSelector",
 				"descriptionTextArea");
 	}
 }

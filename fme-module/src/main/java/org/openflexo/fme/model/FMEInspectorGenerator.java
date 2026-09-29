@@ -54,6 +54,7 @@ import org.openflexo.foundation.fml.FlexoEnum;
 import org.openflexo.foundation.fml.FlexoProperty;
 import org.openflexo.foundation.fml.PrimitiveRole;
 import org.openflexo.foundation.fml.VirtualModel;
+import org.openflexo.foundation.fml.md.SingleMetaData;
 import org.openflexo.foundation.fml.rm.CompilationUnitResource;
 import org.openflexo.foundation.fml.rm.FIBComponentResource;
 import org.openflexo.foundation.fml.rm.FIBComponentResourceFactory;
@@ -122,12 +123,15 @@ public class FMEInspectorGenerator {
 	 * relationship, or the NoneGR standing for unclassified elements.
 	 *
 	 * <p>
-	 * The shape is read from the structure of the concept:
-	 * <ul>
-	 * <li>a GR of a concept shows a read-only "Type", the name, one widget per property of the concept, then the description;</li>
-	 * <li>a GR of a relationship shows the relationship read-only, its source, its destination, then one widget per other property;</li>
-	 * <li>the NoneGR shows "unclassified" as its type, and its own name.</li>
-	 * </ul>
+	 * A GR with a conceptual counterpart - a plain concept or a relationship, found through its {@link FMEFreeModel#CONCEPT_ROLE_NAME}
+	 * role - never gets an inspector of its own: showing the same properties twice, once on the GR and once on the conceptual concept
+	 * (see {@link #updateConceptualInspector(FlexoConcept)}), serves nothing. It gets
+	 * <code>@Inspector(derived=fmeConcept)</code> instead, handing inspection entirely to that conceptual instance - see
+	 * {@link FlexoConcept#setDerivedInspector(DataBinding)}.
+	 *
+	 * <p>
+	 * Only the NoneGR - no conceptual counterpart to derive to - still gets a generated inspector of its own, showing "unclassified" as
+	 * its type and its own name.
 	 *
 	 * <p>
 	 * Any other concept of a free model - the one holding a connector between two instances, for instance - gets no inspector, as it never
@@ -135,12 +139,55 @@ public class FMEInspectorGenerator {
 	 *
 	 * @param locales
 	 *            where "unclassified" is localized; may be null
-	 * @return the resource of the inspector, or null when it could not be generated or the concept has none
+	 * @return the resource of the inspector generated for the NoneGR, or null otherwise (nothing generated, or the concept has none)
 	 */
 	public static FIBComponentResource updateGRInspector(FlexoConcept grConcept, LocalizedDelegate locales) {
 		if (!isGRConcept(grConcept)) {
 			return null;
 		}
+		if (conceptOf(grConcept) != null) {
+			deriveToConceptualInspector(grConcept);
+			return null;
+		}
+		return update(grConcept, new GRContents(grConcept, locales));
+	}
+
+	/**
+	 * Hands inspection of supplied GR concept entirely to the conceptual instance its {@link FMEFreeModel#CONCEPT_ROLE_NAME} role
+	 * points to: <code>@Inspector(derived=fmeConcept)</code>. Removes whatever inspector FME generated for it before this change - a
+	 * stale file left in the container would otherwise be driven by nothing (CORE-F-4), and the annotation makes it entirely
+	 * redundant with the conceptual concept's own inspector.
+	 */
+	private static void deriveToConceptualInspector(FlexoConcept grConcept) {
+
+		FIBComponentResource stale = ownInspectorResource(grConcept);
+		if (stale != null) {
+			stale.delete();
+		}
+
+		// A GR migrated from before this change may still carry the explicit @Inspector("...") FME now writes at
+		// creation (or one a reader wrote by hand): clear it first, or setDerivedInspector() would only ADD the
+		// 'derived' key next to a 'default' one left naming the file just deleted above - a broken declaration.
+		if (grConcept.hasMetaData(FlexoConcept.INSPECTOR_METADATA)) {
+			grConcept.removeFromMetaData(grConcept.getMetaData(FlexoConcept.INSPECTOR_METADATA));
+		}
+
+		grConcept.setDerivedInspector(new DataBinding<>(FMEFreeModel.CONCEPT_ROLE_NAME));
+
+		// Tell whoever shows the FML source: the FML editor listens to "FMLPrettyPrint" on the compilation unit, which
+		// setIsModified() fires - see CreateFIBComponent#declareComponent (openflexo-ui) for the full explanation.
+		if (grConcept.getDeclaringCompilationUnit() != null) {
+			grConcept.getDeclaringCompilationUnit().setIsModified();
+		}
+	}
+
+	/**
+	 * Test-only seam: (re)generates a GR concept's own inspector the way {@link #updateGRInspector(FlexoConcept, LocalizedDelegate)}
+	 * did before <code>@Inspector(derived=…)</code> existed - simulates a free model saved before this change, so
+	 * {@link #generateMissingGRInspectors(VirtualModel, LocalizedDelegate)}'s migration path can be exercised without a save/reload
+	 * cycle. Never called from production code: a GR concept with a conceptual counterpart always derives now.
+	 */
+	static FIBComponentResource generateLegacyGRInspector(FlexoConcept grConcept, LocalizedDelegate locales) {
 		return update(grConcept, new GRContents(grConcept, locales));
 	}
 
@@ -158,12 +205,22 @@ public class FMEInspectorGenerator {
 	}
 
 	/**
-	 * Generate the inspector of each concept of supplied free model VirtualModel that has none of its own - a free model created before
-	 * inspectors were generated. Its enums are skipped: nothing inspects them.
+	 * Bring every GR concept of supplied free model VirtualModel to its final state - a free model created before inspectors were
+	 * generated, or before <code>@Inspector(derived=…)</code> existed. A concept/relationship GR is final once it derives to its
+	 * conceptual counterpart; the NoneGR, once it has a generated inspector of its own. Its enums are skipped: nothing inspects them.
 	 */
 	public static void generateMissingGRInspectors(VirtualModel freeModelVirtualModel, LocalizedDelegate locales) {
-		for (FlexoConcept concept : conceptsWithoutInspector(freeModelVirtualModel)) {
-			updateGRInspector(concept, locales);
+		if (freeModelVirtualModel == null) {
+			return;
+		}
+		for (FlexoConcept concept : freeModelVirtualModel.getFlexoConcepts()) {
+			if (concept instanceof FlexoEnum || !isGRConcept(concept)) {
+				continue;
+			}
+			boolean upToDate = conceptOf(concept) != null ? concept.hasDerivedInspector() : ownInspectorResource(concept) != null;
+			if (!upToDate) {
+				updateGRInspector(concept, locales);
+			}
 		}
 	}
 
@@ -224,6 +281,21 @@ public class FMEInspectorGenerator {
 				FMLFIBComponent resourceData = FMLFIBComponent.newInstance(component);
 				resourceData.setResource(resource);
 				resource.setResourceData(resourceData);
+
+				// An explicit @Inspector("...") from the start, exactly like CreateInspector (openflexo-ui) writes for a
+				// hand-created one: relying on the naming convention alone is what CORE-F-4 was about - a later rename of
+				// the concept would silently orphan the file, generated one or not.
+				// setSingleMetaData() only replaces an EXISTING SingleMetaData - a leftover MultiValuedMetaData under the
+				// same key (e.g. an emptied @Inspector(derived=...), mid-migration) must be cleared first, or it would sit
+				// alongside the new one rather than being replaced by it.
+				if (concept.hasMetaData(FlexoConcept.INSPECTOR_METADATA)
+						&& !(concept.getMetaData(FlexoConcept.INSPECTOR_METADATA) instanceof SingleMetaData)) {
+					concept.removeFromMetaData(concept.getMetaData(FlexoConcept.INSPECTOR_METADATA));
+				}
+				concept.setSingleMetaData(FlexoConcept.INSPECTOR_METADATA, inspectorFileName(concept), String.class);
+				if (concept.getDeclaringCompilationUnit() != null) {
+					concept.getDeclaringCompilationUnit().setIsModified();
+				}
 			}
 			else {
 				// Replacing the component - rather than patching it - is what the platform inspector listens to
@@ -346,15 +418,34 @@ public class FMEInspectorGenerator {
 
 		@Override
 		public void append(Builder builder) {
-			if (concept.getAccessibleProperty(FMEConceptualModel.NAME_ROLE_NAME) != null) {
-				builder.textField(FMEConceptualModel.NAME_ROLE_NAME, DATA + "." + FMEConceptualModel.NAME_ROLE_NAME);
-			}
-			if (concept.getAccessibleProperty(FMEConceptualModel.DESCRIPTION_ROLE_NAME) != null) {
-				builder.textArea(FMEConceptualModel.DESCRIPTION_ROLE_NAME, DATA + "." + FMEConceptualModel.DESCRIPTION_ROLE_NAME);
-			}
+
+			List<String> shown = new ArrayList<>();
+
 			if (isRelationship(concept)) {
 				builder.property(concept.getAccessibleProperty(FMEConceptualModel.FROM_CONCEPT_ROLE_NAME), DATA);
 				builder.property(concept.getAccessibleProperty(FMEConceptualModel.TO_CONCEPT_ROLE_NAME), DATA);
+				shown.add(FMEConceptualModel.FROM_CONCEPT_ROLE_NAME);
+				shown.add(FMEConceptualModel.TO_CONCEPT_ROLE_NAME);
+			}
+			else {
+				if (concept.getAccessibleProperty(FMEConceptualModel.NAME_ROLE_NAME) != null) {
+					builder.textField(FMEConceptualModel.NAME_ROLE_NAME, DATA + "." + FMEConceptualModel.NAME_ROLE_NAME);
+				}
+				shown.add(FMEConceptualModel.NAME_ROLE_NAME);
+				shown.add(FMEConceptualModel.DESCRIPTION_ROLE_NAME);
+			}
+
+			// The properties the user added to the concept, in declaration order - this concept's own inspector is now the
+			// ONLY one a GR deriving to it shows (@Inspector(derived=...)), so nothing may be left out here any more than it
+			// would be in GRContents, which this mirrors.
+			for (FlexoProperty<?> property : concept.getDeclaredProperties()) {
+				if (!shown.contains(property.getName())) {
+					builder.property(property, DATA);
+				}
+			}
+
+			if (!isRelationship(concept) && concept.getAccessibleProperty(FMEConceptualModel.DESCRIPTION_ROLE_NAME) != null) {
+				builder.textArea(FMEConceptualModel.DESCRIPTION_ROLE_NAME, DATA + "." + FMEConceptualModel.DESCRIPTION_ROLE_NAME);
 			}
 		}
 	}

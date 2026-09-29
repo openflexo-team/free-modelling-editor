@@ -165,9 +165,9 @@ public class CreateNewFMEProperty extends FMEAction<CreateNewFMEProperty, FlexoC
 			}
 
 			if (getGRConcept() != null) {
-				// The inspector of the graphical representation is regenerated, and now shows the new property
-				// No locales: a concept holding properties is never the NoneGR, the only inspector localizing a value
-				FMEInspectorGenerator.updateGRInspector(getGRConcept(), null);
+				// The graphical representation's inspector derives entirely to the conceptual concept's own
+				// (@Inspector(derived=...)); regenerating THAT one is what makes the new property show
+				FMEInspectorGenerator.updateConceptualInspector(getConcept());
 			}
 
 		}

@@ -208,9 +208,9 @@ public class CreateNewFMEPropertyFromDiagramConnector
 		createPropertyAction.doAction();
 
 		if (fromFlexoConceptGR != null) {
-			// The inspector of the source is regenerated, and now shows the new property
-			// No locales: a concept holding properties is never the NoneGR, the only inspector localizing a value
-			FMEInspectorGenerator.updateGRInspector(fromFlexoConceptGR, null);
+			// The source's inspector derives entirely to the conceptual concept's own (@Inspector(derived=...));
+			// regenerating THAT one is what makes the new property show
+			FMEInspectorGenerator.updateConceptualInspector(getFromFlexoConcept());
 		}
 
 		FlexoConcept connectorGR = buildConnectorGRFlexoConcept();
