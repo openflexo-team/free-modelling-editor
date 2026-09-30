@@ -342,9 +342,8 @@ public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellin
 
 				// Bind shapes's label to name property
 				if (concept != null) {
-					// If we are bound to a concept instance, use name of concept
-					returned.setRenderer(new DataBinding<String>(
-							"instance." + CONCEPT_ROLE_NAME + "." + labelPropertyNameOf(concept)));
+					// If we are bound to a concept instance, this is its own representation (given by the renderer of its concept)
+					returned.setRenderer(new DataBinding<String>("instance." + CONCEPT_ROLE_NAME + ".stringRepresentation"));
 				}
 				else {
 					// Otherwise, this is the NoneGR, use primitive name
