@@ -166,8 +166,9 @@ public class CreateNewFMEProperty extends FMEAction<CreateNewFMEProperty, FlexoC
 
 			if (getGRConcept() != null) {
 				// The graphical representation's inspector derives entirely to the conceptual concept's own
-				// (@Inspector(derived=...)); regenerating THAT one is what makes the new property show
-				FMEInspectorGenerator.updateConceptualInspector(getConcept());
+				// (@Inspector(derived=...)); completing THAT one is what makes the new property show - completing, not
+				// regenerating: its author may have edited it since
+				FMEInspectorGenerator.addPropertyToConceptualInspector(getConcept(), getConcept().getAccessibleProperty(getCreatedPropertyName()));
 			}
 
 		}

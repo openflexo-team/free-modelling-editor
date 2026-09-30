@@ -41,7 +41,6 @@ package org.openflexo.fme.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -80,6 +79,10 @@ import org.openflexo.foundation.test.OpenflexoProjectAtRunTimeTestCase;
 import org.openflexo.gina.model.FIBComponent;
 import org.openflexo.gina.model.FIBContainer;
 import org.openflexo.gina.model.widget.FIBDropDown;
+import org.openflexo.gina.model.widget.FIBTextField;
+import org.openflexo.gina.model.FIBWidget;
+import org.openflexo.gina.model.container.layout.TwoColsLayoutConstraints;
+import org.openflexo.gina.model.container.layout.TwoColsLayoutConstraints.TwoColsLayoutLocation;
 import org.openflexo.technologyadapter.diagram.DiagramTechnologyAdapter;
 import org.openflexo.technologyadapter.diagram.model.DiagramShape;
 import org.openflexo.test.OrderedRunner;
@@ -300,6 +303,15 @@ public class TestCreateFreeModelWithInstances extends OpenflexoProjectAtRunTimeT
 		FIBComponentResource inspector = tutuConcept.getInspectorComponentFlexoResource();
 		FIBComponent before = inspector.getComponent();
 
+		// The author edits the inspector in the FIB editor, in place: a tooltip on the name, and a widget of their own after the
+		// description. Adding properties must complete the component, never rebuild it - that erased these edits.
+		FIBContainer beforeContainer = (FIBContainer) before;
+		((FIBWidget) beforeContainer.getSubComponentNamed("nameTextField")).setTooltipText("edited by hand");
+		FIBTextField reviewer = beforeContainer.getModelFactory().newFIBTextField();
+		reviewer.setName("reviewerTextField");
+		beforeContainer.addToSubComponents(reviewer,
+				new TwoColsLayoutConstraints(TwoColsLayoutLocation.right, true, false));
+
 		addProperty("comment", FMEType.String, null, null);
 		addProperty("active", FMEType.Boolean, null, null);
 		addProperty("count", FMEType.Integer, null, null);
@@ -308,14 +320,15 @@ public class TestCreateFreeModelWithInstances extends OpenflexoProjectAtRunTimeT
 		addProperty("color", FMEType.Enumeration, "red, light blue,green", null);
 		addProperty("friend", FMEType.Reference, null, tutuConcept);
 
-		// Same resource, new component: this is what the platform inspector listens to
+		// Same resource, SAME component: the properties were added to what the author edited
 		assertSame(inspector, tutuConcept.getInspectorComponentFlexoResource());
-		assertNotSame(before, inspector.getComponent());
+		assertSame(before, inspector.getComponent());
+		assertEquals("edited by hand", ((FIBWidget) beforeContainer.getSubComponentNamed("nameTextField")).getTooltipText());
 		assertTrue(project.getServiceManager().getResourceManager().getUnsavedResources().contains(inspector));
 
 		FIBComponent component = FMEInspectorAssertions.assertInspectorIsValid(tutuConcept, "nameTextField", "commentTextField",
 				"activeCheckBox", "countNumber", "weightNumber", "birthDateDate", "colorDropDown", "friendSelector",
-				"descriptionTextArea");
+				"descriptionTextArea", "reviewerTextField");
 
 		// The GR still derives, and still resolves nothing of its own
 		FMEInspectorAssertions.assertDerivesToConceptualInspector(tutu);
@@ -436,6 +449,6 @@ public class TestCreateFreeModelWithInstances extends OpenflexoProjectAtRunTimeT
 		FMEInspectorAssertions.assertInspectorIsValid(
 				nature.getConceptualModel().getAccessedVirtualModel().getFlexoConcept("TutuConcept"), "nameTextField", "commentTextField",
 				"activeCheckBox", "countNumber", "weightNumber", "birthDateDate", "colorDropDown", "friendSelector",
-				"descriptionTextArea");
+				"descriptionTextArea", "reviewerTextField");
 	}
 }

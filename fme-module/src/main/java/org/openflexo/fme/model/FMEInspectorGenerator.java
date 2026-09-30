@@ -195,6 +195,10 @@ public class FMEInspectorGenerator {
 	 * (Re)generate the inspector of a concept of the conceptual model: its name and description, and, for a relationship, its source and
 	 * destination.
 	 *
+	 * <p>
+	 * An inspector that exists is REPLACED, and with it any edit its author made: to show a property just added, use
+	 * {@link #addPropertyToConceptualInspector(FlexoConcept, FlexoProperty)}.
+	 *
 	 * @return the resource of the inspector, or null when it could not be generated or the concept has none
 	 */
 	public static FIBComponentResource updateConceptualInspector(FlexoConcept concept) {
@@ -221,6 +225,53 @@ public class FMEInspectorGenerator {
 			if (!upToDate) {
 				updateGRInspector(concept, locales);
 			}
+		}
+	}
+
+	/**
+	 * Show a property just added to a conceptual concept in its inspector, WITHOUT rebuilding that inspector.
+	 *
+	 * <p>
+	 * The inspector is an ordinary GINA component the author may have edited since it was generated, in the FIB editor: regenerating it
+	 * ({@link #updateConceptualInspector(FlexoConcept)}) would replace the component and erase every such edit. The widget of the property
+	 * is added to the existing component instead, in the place a generation would have given it - in front of the description - or at the
+	 * end when the author moved or removed the description. A concept with no inspector yet gets one generated, having nothing to preserve.
+	 *
+	 * <p>
+	 * As for a generation, the component is marked modified and never saved here. The resource announces the edit, since it is done in place
+	 * and no <code>component</code> change will tell the inspectors built from it.
+	 *
+	 * @return the resource of the inspector, or null when it could not be updated or the concept has none
+	 */
+	public static FIBComponentResource addPropertyToConceptualInspector(FlexoConcept concept, FlexoProperty<?> property) {
+		if (!isConceptualConcept(concept) || property == null) {
+			return null;
+		}
+		FIBComponentResource resource = ownInspectorResource(concept);
+		FIBComponent existing = resource != null ? resource.getComponent() : null;
+		if (!(existing instanceof FIBInspector)) {
+			return updateConceptualInspector(concept);
+		}
+
+		FIBInspector component = (FIBInspector) existing;
+		try {
+			// Already there - the author may even have added it by hand
+			if (component.getSubComponentNamed(lowerCamelCase(property.getName()) + "Label") == null) {
+				FIBComponent description = component
+						.getSubComponentNamed(lowerCamelCase(FMEConceptualModel.DESCRIPTION_ROLE_NAME) + "Label");
+				int index = description != null && description.getParent() == component ? component.getSubComponents().indexOf(description)
+						: component.getSubComponents().size();
+				FIBModelFactory factory = new FIBModelFactory(null, concept.getServiceManager().getTechnologyAdapterService(),
+						FIBInspector.class);
+				new Builder(component, factory, index).property(property, DATA);
+			}
+			component.setModified(true);
+			resource.setModified(true);
+			resource.notifyComponentEdited();
+			return resource;
+		} catch (Exception e) {
+			logger.log(Level.WARNING, "Could not add " + property + " to the inspector of " + concept, e);
+			return null;
 		}
 	}
 
@@ -490,10 +541,21 @@ public class FMEInspectorGenerator {
 
 		private final FIBInspector root;
 		private final FIBModelFactory factory;
+		/** Where the next widget goes in an existing component, or -1 to append silently at the end of a component being built */
+		private int insertionIndex = -1;
 
 		Builder(FIBInspector root, FIBModelFactory factory) {
 			this.root = root;
 			this.factory = factory;
+		}
+
+		/**
+		 * A builder completing a component that already exists - and may be open in the GINA editor: what it adds goes at supplied index and
+		 * is notified.
+		 */
+		Builder(FIBInspector root, FIBModelFactory factory, int insertionIndex) {
+			this(root, factory);
+			this.insertionIndex = insertionIndex;
 		}
 
 		void textField(String entryName, String data) {
@@ -593,12 +655,21 @@ public class FMEInspectorGenerator {
 
 			FIBLabel label = factory.newFIBLabel(entryName);
 			label.setName(lowerCamelCase(entryName) + "Label");
-			root.addToSubComponentsNoNotification(label, new TwoColsLayoutConstraints(TwoColsLayoutLocation.left, false, false));
+			TwoColsLayoutConstraints labelConstraints = new TwoColsLayoutConstraints(TwoColsLayoutLocation.left, false, false);
 
 			widget.setName(lowerCamelCase(entryName) + widgetSuffix);
 			widget.setData(new DataBinding<>(data));
-			root.addToSubComponentsNoNotification(widget,
-					new TwoColsLayoutConstraints(TwoColsLayoutLocation.right, expandHorizontally, expandVertically));
+			TwoColsLayoutConstraints widgetConstraints = new TwoColsLayoutConstraints(TwoColsLayoutLocation.right, expandHorizontally,
+					expandVertically);
+
+			if (insertionIndex < 0) {
+				root.addToSubComponentsNoNotification(label, labelConstraints);
+				root.addToSubComponentsNoNotification(widget, widgetConstraints);
+			}
+			else {
+				root.addToSubComponents(label, labelConstraints, insertionIndex++);
+				root.addToSubComponents(widget, widgetConstraints, insertionIndex++);
+			}
 		}
 	}
 }

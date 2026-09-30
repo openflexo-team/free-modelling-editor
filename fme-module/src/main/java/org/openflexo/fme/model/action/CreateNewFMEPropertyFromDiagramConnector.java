@@ -209,8 +209,9 @@ public class CreateNewFMEPropertyFromDiagramConnector
 
 		if (fromFlexoConceptGR != null) {
 			// The source's inspector derives entirely to the conceptual concept's own (@Inspector(derived=...));
-			// regenerating THAT one is what makes the new property show
-			FMEInspectorGenerator.updateConceptualInspector(getFromFlexoConcept());
+			// completing THAT one - not regenerating it: its author may have edited it - is what makes the new property show
+			FMEInspectorGenerator.addPropertyToConceptualInspector(getFromFlexoConcept(),
+					getFromFlexoConcept().getAccessibleProperty(getCreatedPropertyName()));
 		}
 
 		FlexoConcept connectorGR = buildConnectorGRFlexoConcept();
