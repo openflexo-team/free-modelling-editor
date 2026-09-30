@@ -9,7 +9,7 @@
 			iteratorClassName="org.openflexo.foundation.FlexoObject"
 			visibleRowCount="3" rowHeight="18" boundToSelectionManager="true"
 			selectionMode="DiscontiguousTreeSelection" showFooter="true"
-			rootVisible="false" showRootsHandle="true" localize="true"
+			rootVisible="false" showRootsHandle="true" deepExploration="true" localize="true"
 			manageDynamicModel="true" constraints="border(location=center)"
 			width="100" height="100" clickAction="controller.singleClick(browser.selected)"
 			doubleClickAction="controller.doubleClick(browser.selected)"
