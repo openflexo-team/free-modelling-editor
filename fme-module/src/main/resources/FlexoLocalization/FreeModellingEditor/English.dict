@@ -64,3 +64,15 @@ would_you_really_like_to_delete_this_concept_and_all_existing_instances_of_that_
 would_you_really_like_to_delete_this_free_model_instance=Would you really like to delete this free model instance
 you_cannot_specialize_sample_data_if_conceptual_model_is_not_specialized=You cannot specialize sample data if conceptual model is not specialized
 you_cannot_use_general_sample_data_as_you_specialized_conceptual_model=You cannot use general sample data as you specialized conceptual model
+configure_new_concept_structure=Configure the properties of the new concept
+property=Property
+type=Type
+add_property=Add property
+delete_property=Delete property
+property_description=Description
+bind_shape_label_to=Bind shape label to
+invalid_property_name=Property name must be a valid FML identifier
+duplicate_property_name=Two properties have the same name
+only_primitive_properties_are_supported=Only primitive properties are supported
+no_string_property_for_the_label=A String property is needed to label the shape
+invalid_concept_name=Concept name must be a valid FML identifier

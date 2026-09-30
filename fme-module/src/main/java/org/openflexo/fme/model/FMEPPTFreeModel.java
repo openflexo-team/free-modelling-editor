@@ -276,7 +276,7 @@ public interface FMEPPTFreeModel extends FMEFreeModel {
 			// Bind shapes's label to name property
 			if (concept != null) {
 				// If we are bound to a concept instance, use that name
-				role.setLabel(new DataBinding<>(CONCEPT_ROLE_NAME + ".name"));
+				role.setLabel(new DataBinding<>(CONCEPT_ROLE_NAME + "." + labelPropertyNameOf(concept)));
 			}
 			else {
 				// Otherwise, this is the NoneGR, use primitive name

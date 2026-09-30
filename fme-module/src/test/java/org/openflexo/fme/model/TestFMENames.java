@@ -40,7 +40,9 @@
 package org.openflexo.fme.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 
@@ -79,5 +81,26 @@ public class TestFMENames {
 		assertEquals("LIGHT_BLUE", FMENames.enumValue(" light blue "));
 		assertEquals("ELEVE", FMENames.enumValue("élève"));
 		assertEquals(Arrays.asList("RED", "LIGHT_BLUE", "GREEN"), FMENames.enumValues("red, light blue,green,,RED"));
+	}
+
+	/** The names the wizards accept as they are: the ones the FML grammar reads back */
+	@Test
+	public void testValidNames() {
+		assertTrue(FMENames.isValidConceptName("Star"));
+		assertTrue(FMENames.isValidConceptName("MyConcept2"));
+		assertTrue(FMENames.isValidConceptName("Étoile".replace("É", "E") + "s"));
+		assertFalse(FMENames.isValidConceptName("star"));
+		assertFalse(FMENames.isValidConceptName("My concept"));
+		assertFalse(FMENames.isValidConceptName("2D"));
+		assertFalse(FMENames.isValidConceptName("Étoile"));
+		assertFalse(FMENames.isValidConceptName(""));
+		assertFalse(FMENames.isValidConceptName(null));
+
+		assertTrue(FMENames.isValidPropertyName("title"));
+		assertTrue(FMENames.isValidPropertyName("birthDate2"));
+		assertFalse(FMENames.isValidPropertyName("Title"));
+		assertFalse(FMENames.isValidPropertyName("birth date"));
+		assertFalse(FMENames.isValidPropertyName("1st"));
+		assertFalse(FMENames.isValidPropertyName(null));
 	}
 }

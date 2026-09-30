@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Panel layout="border" darkLevel="0" opaque="false" border="empty"
+	controllerClassName="org.openflexo.view.controller.FlexoFIBController"
+	dataClassName="org.openflexo.fme.controller.action.ConfigureNewConceptStructureStep">
+	<Table name="propertiesTable" constraints="border(location=center)"
+		iteratorClassName="org.openflexo.foundation.fml.action.PropertyEntry"
+		data="data.structure.propertiesEntries" visibleRowCount="6" rowHeight="20"
+		autoSelectFirstRow="true" createNewRowOnClick="false"
+		boundToSelectionManager="false" showFooter="true"
+		selectionMode="SingleSelection" localize="true"
+		manageDynamicModel="true" font="SansSerif.plain,0,11">
+		<IconColumn data="data.getIconForProperty(iterator)" title="icon"
+			displayTitle="false" columnWidth="20" resizable="false" showIcon="false"
+			name="icon" />
+		<TextFieldColumn data="iterator.name" title="property"
+			displayTitle="true" columnWidth="150" resizable="true" showIcon="false"
+			name="property" />
+		<LabelColumn data="data.getTypeName(iterator)" title="type" displayTitle="true"
+			columnWidth="100" resizable="true" name="type" />
+		<AddAction method="data.structure.newPropertyEntry" name="add_property" />
+		<RemoveAction method="data.structure.deletePropertyEntry(selected)"
+			name="delete_property" />
+	</Table>
+	<Panel layout="twocols" darkLevel="1" border="empty" borderTop="5"
+		borderBottom="5" borderLeft="5" borderRight="5" name="DetailsPanel"
+		constraints="border(location=south)">
+		<Label label="property" align="right" localize="true"
+			constraints="twocols(expandHorizontally=false;expandVertically=false;location=left)"
+			name="PropertyNameLabel" />
+		<TextField data="propertiesTable.selected.name" columns="20"
+			enable="(propertiesTable.selected != null)" localize="true"
+			constraints="twocols(expandHorizontally=true;expandVertically=false;location=right)"
+			name="PropertyNameTextField" />
+		<Label label="type" align="right" localize="true"
+			constraints="twocols(expandHorizontally=false;expandVertically=false;location=left)"
+			name="PropertyTypeLabel" />
+		<DropDown list="data.availableTypes" data="propertiesTable.selected.type"
+			iteratorClassName="java.lang.Class" format="object.simpleName" showText="true"
+			showIcon="false" enable="(propertiesTable.selected != null)"
+			localize="true"
+			constraints="twocols(expandHorizontally=true;expandVertically=false;location=right)"
+			name="PropertyTypeDropDown" />
+		<Label label="property_description" align="right" localize="true"
+			constraints="twocols(expandHorizontally=false;expandVertically=false;location=left)"
+			name="PropertyDescriptionLabel" />
+		<TextField data="propertiesTable.selected.description" columns="20"
+			enable="(propertiesTable.selected != null)" localize="true"
+			constraints="twocols(expandHorizontally=true;expandVertically=false;location=right)"
+			name="PropertyDescriptionTextField" />
+		<Label label="bind_shape_label_to" align="right" localize="true"
+			constraints="twocols(expandHorizontally=false;expandVertically=false;location=left)"
+			name="LabelPropertyLabel" />
+		<DropDown list="data.structure.stringPropertiesNames"
+			data="data.structure.labelPropertyName" iteratorClassName="java.lang.String"
+			showText="true" showIcon="false" localize="true"
+			constraints="twocols(expandHorizontally=true;expandVertically=false;location=right)"
+			name="LabelPropertyDropDown" />
+	</Panel>
+	<LocalizedDictionary />
+</Panel>

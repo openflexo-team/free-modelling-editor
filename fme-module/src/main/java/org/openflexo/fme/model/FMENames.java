@@ -42,6 +42,9 @@ import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
+
+import org.openflexo.foundation.fml.FMLKeywords;
 
 /**
  * Turns the names a user types in the free modelling editor into names FML accepts.
@@ -60,6 +63,27 @@ import java.util.StringTokenizer;
 public class FMENames {
 
 	private FMENames() {
+	}
+
+	// FML identifiers, as declared by fml.sablecc: uidentifier for a concept, lidentifier for a property
+	private static final Pattern CONCEPT_IDENTIFIER = Pattern.compile("[A-Z][\\p{L}\\p{Nd}$_]*");
+	private static final Pattern PROPERTY_IDENTIFIER = Pattern.compile("[a-z_][\\p{L}\\p{Nd}$_]*");
+
+	/**
+	 * Whether supplied name can be written as is as the name of a concept: an FML <code>uidentifier</code> (an upper case ASCII letter
+	 * followed by letters, digits, '$' or '_'), which is not a keyword.<br>
+	 * Unlike {@link #conceptName(String)}, which turns what was typed into a name, this only tells whether a name is one.
+	 */
+	public static boolean isValidConceptName(String name) {
+		return name != null && CONCEPT_IDENTIFIER.matcher(name).matches() && !FMLKeywords.isKeyword(name);
+	}
+
+	/**
+	 * Whether supplied name can be written as is as the name of a property: an FML <code>lidentifier</code> (a lower case ASCII letter or
+	 * '_' followed by letters, digits, '$' or '_'), which is not a keyword.
+	 */
+	public static boolean isValidPropertyName(String name) {
+		return name != null && PROPERTY_IDENTIFIER.matcher(name).matches() && !FMLKeywords.isKeyword(name);
 	}
 
 	/**

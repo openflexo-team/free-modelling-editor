@@ -38,6 +38,7 @@
 
 package org.openflexo.fme.controller.action;
 
+import java.awt.Dimension;
 import java.awt.Image;
 import java.util.logging.Logger;
 
@@ -67,11 +68,18 @@ public class CreateNewConceptFromNoneConceptWizard extends FlexoActionWizard<Cre
 	public CreateNewConceptFromNoneConceptWizard(CreateNewConceptFromNoneConcept action, FlexoController controller) {
 		super(action, controller);
 		addStep(configureNewConceptFromNoneConcept = new ConfigureNewConceptFromNoneConcept());
+		addStep(new ConfigureNewConceptStructureStep(action.getStructure(), action.getLocales(), controller.getApplicationContext()));
 	}
 
 	@Override
 	public String getWizardTitle() {
 		return getAction().getLocales().localizedForKey("create_new_concept");
+	}
+
+	@Override
+	public Dimension getExtraSize() {
+		// Room for the message of the step, and for the table of properties of the second step
+		return new Dimension(0, 150);
 	}
 
 	@Override
@@ -117,7 +125,12 @@ public class CreateNewConceptFromNoneConceptWizard extends FlexoActionWizard<Cre
 				return false;
 			}
 
-			if (getFlexoConceptInstance().getVirtualModelInstance().getVirtualModel().getFlexoConcept(FMENames.conceptName(getNewConceptName())) != null) {
+			if (!FMENames.isValidConceptName(getNewConceptName())) {
+				setIssueMessage(getAction().getLocales().localizedForKey("invalid_concept_name"), IssueMessageType.ERROR);
+				return false;
+			}
+
+			if (getFlexoConceptInstance().getVirtualModelInstance().getVirtualModel().getFlexoConcept(getNewConceptName()) != null) {
 				setIssueMessage(getAction().getLocales().localizedForKey("a_concept_with_that_name_already_exists"),
 						IssueMessageType.ERROR);
 				return false;

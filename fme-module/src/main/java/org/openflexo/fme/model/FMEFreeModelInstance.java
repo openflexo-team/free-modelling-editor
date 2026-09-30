@@ -288,10 +288,14 @@ public interface FMEFreeModelInstance extends VirtualModelInstanceBasedNatureObj
 
 		@Override
 		public FlexoConceptInstance getFlexoConceptInstanceNamed(String name, FlexoConcept concept) {
+			String labelProperty = FMEConceptualModel.labelPropertyName(concept);
+			if (labelProperty == null) {
+				return null;
+			}
 			for (FlexoConceptInstance fci : getSampleData().getAccessedVirtualModelInstance().getFlexoConceptInstances(concept)) {
 				String fciName;
 				try {
-					fciName = fci.execute(FMEConceptualModel.NAME_ROLE_NAME);
+					fciName = fci.execute(labelProperty);
 					if (fciName != null && fciName.equals(name)) {
 						return fci;
 					}

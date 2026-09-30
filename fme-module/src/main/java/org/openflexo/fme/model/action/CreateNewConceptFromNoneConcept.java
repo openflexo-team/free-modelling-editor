@@ -44,6 +44,7 @@ import java.util.logging.Logger;
 import org.openflexo.fme.model.FMEDiagramFreeModel;
 import org.openflexo.fme.model.FMEDiagramFreeModelInstance;
 import org.openflexo.fme.model.FMEFreeModel;
+import org.openflexo.fme.model.FMENames;
 import org.openflexo.foundation.FlexoEditor;
 import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.FlexoObject;
@@ -109,8 +110,25 @@ public class CreateNewConceptFromNoneConcept extends AbstractInstantiateConcept<
 	private FlexoConcept newFlexoConcept;
 	private FlexoConcept newGRFlexoConcept;
 
+	private NewConceptStructure structure;
+
 	private CreateNewConceptFromNoneConcept(FlexoConceptInstance focusedObject, Vector<FlexoObject> globalSelection, FlexoEditor editor) {
 		super(actionType, focusedObject, globalSelection, editor);
+	}
+
+	/**
+	 * The properties of the concept to create, and the one labelling its instances: <code>name</code> and <code>description</code> unless
+	 * configured
+	 */
+	public NewConceptStructure getStructure() {
+		if (structure == null) {
+			structure = new NewConceptStructure();
+			structure.getPropertyChangeSupport().addPropertyChangeListener(evt -> {
+				boolean wasValid = isValid();
+				getPropertyChangeSupport().firePropertyChange("isValid", wasValid, isValid());
+			});
+		}
+		return structure;
 	}
 
 	@Override
@@ -136,6 +154,8 @@ public class CreateNewConceptFromNoneConcept extends AbstractInstantiateConcept<
 		CreateNewConcept createNewConcept = CreateNewConcept.actionType.makeNewEmbeddedAction(getFMEFreeModel(), null, this);
 		createNewConcept.setNewConceptName(getNewConceptName());
 		createNewConcept.setNewConceptDescription(getNewConceptDescription());
+		// The structure edited by the user is the one of this action: it is what the embedded action creates
+		createNewConcept.setStructure(getStructure());
 		createNewConcept.setContainerConcept(getContainerConcept());
 		createNewConcept.setContainerGRConcept(retrieveContainerGRFlexoConcept());
 		createNewConcept.doAction();
@@ -217,7 +237,7 @@ public class CreateNewConceptFromNoneConcept extends AbstractInstantiateConcept<
 	@Override
 	public boolean isValid() {
 
-		if (StringUtils.isEmpty(newConceptName)) {
+		if (StringUtils.isEmpty(newConceptName) || !FMENames.isValidConceptName(newConceptName)) {
 			return false;
 		}
 
@@ -225,7 +245,7 @@ public class CreateNewConceptFromNoneConcept extends AbstractInstantiateConcept<
 			return false;
 		}
 
-		return true;
+		return getStructure().isValid();
 	}
 
 	private FlexoConceptInstance retrieveContainerFlexoConceptInstance() {

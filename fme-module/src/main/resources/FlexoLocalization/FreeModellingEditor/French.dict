@@ -64,3 +64,15 @@ would_you_really_like_to_delete_this_concept_and_all_existing_instances_of_that_
 would_you_really_like_to_delete_this_free_model_instance=Voulez vous vraiment supprimer cette instance de FreeModel ?
 you_cannot_specialize_sample_data_if_conceptual_model_is_not_specialized=Vous ne pouvez pas sp\u00E9cialiser le jeu de donn\u00E9es si le mod\u00E8le conceptuel n'est pas sp\u00E9cialis\u00E9
 you_cannot_use_general_sample_data_as_you_specialized_conceptual_model=Vous ne pouvez pas utiliser le jeu de donn\u00E9es g\u00E9n\u00E9ral si vous sp\u00E9cialisez le mod\u00E8le conceptuel
+configure_new_concept_structure=Configurer les propri\u00E9t\u00E9s du nouveau concept
+property=Propri\u00E9t\u00E9
+type=Type
+add_property=Ajouter une propri\u00E9t\u00E9
+delete_property=Supprimer la propri\u00E9t\u00E9
+property_description=Description
+bind_shape_label_to=Lier le libell\u00E9 de la forme \u00E0
+invalid_property_name=Le nom de la propri\u00E9t\u00E9 doit \u00EAtre un identifiant FML valide
+duplicate_property_name=Deux propri\u00E9t\u00E9s portent le m\u00EAme nom
+only_primitive_properties_are_supported=Seules les propri\u00E9t\u00E9s primitives sont support\u00E9es
+no_string_property_for_the_label=Une propri\u00E9t\u00E9 String est n\u00E9cessaire pour le libell\u00E9 de la forme
+invalid_concept_name=Le nom du concept doit \u00EAtre un identifiant FML valide

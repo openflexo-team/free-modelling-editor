@@ -440,9 +440,12 @@ public class FMEInspectorGenerator {
 			}
 			else {
 				// As it has always been: the "Type" entry shows the name of the concept instance, read-only
-				builder.readOnlyTextField(TYPE_ENTRY_NAME, CONCEPT + "." + FMEConceptualModel.NAME_ROLE_NAME);
-				builder.textField(FMEConceptualModel.NAME_ROLE_NAME, CONCEPT + "." + FMEConceptualModel.NAME_ROLE_NAME);
-				shown.add(FMEConceptualModel.NAME_ROLE_NAME);
+				String label = FMEConceptualModel.labelPropertyName(concept);
+				if (label != null) {
+					builder.readOnlyTextField(TYPE_ENTRY_NAME, CONCEPT + "." + label);
+					builder.textField(label, CONCEPT + "." + label);
+					shown.add(label);
+				}
 				shown.add(FMEConceptualModel.DESCRIPTION_ROLE_NAME);
 			}
 
@@ -479,10 +482,11 @@ public class FMEInspectorGenerator {
 				shown.add(FMEConceptualModel.TO_CONCEPT_ROLE_NAME);
 			}
 			else {
-				if (concept.getAccessibleProperty(FMEConceptualModel.NAME_ROLE_NAME) != null) {
-					builder.textField(FMEConceptualModel.NAME_ROLE_NAME, DATA + "." + FMEConceptualModel.NAME_ROLE_NAME);
+				String label = FMEConceptualModel.labelPropertyName(concept);
+				if (label != null) {
+					builder.textField(label, DATA + "." + label);
+					shown.add(label);
 				}
-				shown.add(FMEConceptualModel.NAME_ROLE_NAME);
 				shown.add(FMEConceptualModel.DESCRIPTION_ROLE_NAME);
 			}
 
@@ -507,7 +511,7 @@ public class FMEInspectorGenerator {
 
 	private static boolean isConceptualConcept(FlexoConcept concept) {
 		return concept != null && !(concept instanceof FlexoEnum)
-				&& (concept.getAccessibleProperty(FMEConceptualModel.NAME_ROLE_NAME) != null || isRelationship(concept));
+				&& (FMEConceptualModel.labelPropertyName(concept) != null || isRelationship(concept));
 	}
 
 	/**

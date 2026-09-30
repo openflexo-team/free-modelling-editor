@@ -251,6 +251,14 @@ public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellin
 		 * @return
 		 * @throws FlexoException
 		 */
+		/**
+		 * The property the label of a concept instance is bound to: the one the renderer of the concept reads, <code>name</code> by default
+		 */
+		protected String labelPropertyNameOf(FlexoConcept concept) {
+			String returned = FMEConceptualModel.labelPropertyName(concept);
+			return returned != null ? returned : NAME_ROLE_NAME;
+		}
+
 		@Override
 		public FlexoConcept getGRFlexoConcept(FlexoConcept concept, FlexoConcept containerConceptGR, FlexoEditor editor,
 				FlexoAction<?, ?, ?> ownerAction, boolean createWhenNotExistant) {
@@ -335,7 +343,8 @@ public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellin
 				// Bind shapes's label to name property
 				if (concept != null) {
 					// If we are bound to a concept instance, use name of concept
-					returned.setRenderer(new DataBinding<String>("instance." + CONCEPT_ROLE_NAME + ".name"));
+					returned.setRenderer(new DataBinding<String>(
+							"instance." + CONCEPT_ROLE_NAME + "." + labelPropertyNameOf(concept)));
 				}
 				else {
 					// Otherwise, this is the NoneGR, use primitive name

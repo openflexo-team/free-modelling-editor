@@ -42,6 +42,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.type.PrimitiveType;
@@ -52,6 +54,7 @@ import org.openflexo.foundation.fml.CreationScheme;
 import org.openflexo.foundation.fml.DeletionScheme;
 import org.openflexo.foundation.fml.FlexoBehaviourParameter.WidgetType;
 import org.openflexo.foundation.fml.FlexoConcept;
+import org.openflexo.foundation.fml.FlexoProperty;
 import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.action.CreateEditionAction;
 import org.openflexo.foundation.fml.action.CreateFlexoBehaviour;
@@ -59,6 +62,7 @@ import org.openflexo.foundation.fml.action.CreateFlexoConcept;
 import org.openflexo.foundation.fml.action.CreateFlexoConceptInstanceRole;
 import org.openflexo.foundation.fml.action.CreateGenericBehaviourParameter;
 import org.openflexo.foundation.fml.action.CreatePrimitiveRole;
+import org.openflexo.foundation.fml.action.PropertyEntry;
 import org.openflexo.foundation.fml.editionaction.AssignationAction;
 import org.openflexo.foundation.fml.editionaction.ExpressionAction;
 import org.openflexo.foundation.fml.rm.CompilationUnitResourceFactory;
@@ -66,6 +70,7 @@ import org.openflexo.foundation.fml.rt.VirtualModelInstance;
 import org.openflexo.foundation.nature.NatureObject;
 import org.openflexo.foundation.nature.VirtualModelBasedNatureObject;
 import org.openflexo.logging.FlexoLogger;
+import org.apache.commons.lang3.StringUtils;
 import org.openflexo.pamela.annotations.Getter;
 import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
@@ -128,6 +133,60 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 	public FlexoConcept getRelationalFlexoConcept(String conceptName, FlexoConcept fromConcept, FlexoConcept toConcept, FlexoEditor editor,
 			FlexoAction<?, ?, ?> ownerAction) throws FlexoException;
 
+	/**
+	 * Same as {@link #getFlexoConcept(String, FlexoConcept, FlexoEditor, FlexoAction)}, with the structure of the created concept given
+	 * instead of the default <code>name</code> and <code>description</code> properties.
+	 * 
+	 * @param conceptName
+	 *            name of concept beeing created
+	 * @param description
+	 *            description of the concept (stored as its <code>@Description</code>), or null
+	 * @param properties
+	 *            the properties to create, all of them primitive ones as far as this editor is concerned
+	 * @param labelPropertyName
+	 *            name of the String property giving the label of the instances (their renderer, and the label of their shape), and
+	 *            receiving the parameter of the creation scheme
+	 * @param containerConcept
+	 *            container of created concept, or null
+	 * @param editor
+	 * @param ownerAction
+	 *            the action creating the concept: it must not be null, since properties are created by embedded actions
+	 * @return
+	 * @throws FlexoException
+	 */
+	public FlexoConcept getFlexoConcept(String conceptName, String description, List<PropertyEntry<?>> properties,
+			String labelPropertyName, FlexoConcept containerConcept, FlexoEditor editor, FlexoAction<?, ?, ?> ownerAction)
+			throws FlexoException;
+
+	/** The renderer of a conceptual concept created by this editor: <code>instance.<i>label property</i></code> */
+	static final Pattern LABEL_RENDERER = Pattern.compile("instance\\.([\\p{L}\\p{Nd}$_]+)");
+
+	/**
+	 * Name of the property giving the label of the instances of supplied conceptual concept, or null when it has none.<br>
+	 * That property is the one its renderer reads (<code>instance.title</code>), which is what the editor writes when it creates the
+	 * concept. Otherwise <code>name</code> when the concept has it, then its first String property.
+	 */
+	public static String labelPropertyName(FlexoConcept concept) {
+		if (concept == null) {
+			return null;
+		}
+		if (concept.getRenderer() != null && concept.getRenderer().isSet()) {
+			Matcher matcher = LABEL_RENDERER.matcher(String.valueOf(concept.getRenderer()));
+			if (matcher.matches() && concept.getAccessibleProperty(matcher.group(1)) != null) {
+				return matcher.group(1);
+			}
+		}
+		if (concept.getAccessibleProperty(NAME_ROLE_NAME) != null) {
+			return NAME_ROLE_NAME;
+		}
+		for (FlexoProperty<?> property : concept.getDeclaredProperties()) {
+			if (String.class.equals(property.getResultingType())) {
+				return property.getName();
+			}
+		}
+		return null;
+	}
+
 	public String getName();
 
 	@Getter(value = OWNER_KEY)
@@ -169,6 +228,14 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 		public FlexoConcept getFlexoConcept(String conceptName, FlexoConcept containerConcept, FlexoEditor editor,
 				FlexoAction<?, ?, ?> ownerAction) throws FlexoException {
 
+			return getFlexoConcept(conceptName, null, null, NAME_ROLE_NAME, containerConcept, editor, ownerAction);
+		}
+
+		@Override
+		public FlexoConcept getFlexoConcept(String conceptName, String description, List<PropertyEntry<?>> properties,
+				String labelPropertyName, FlexoConcept containerConcept, FlexoEditor editor, FlexoAction<?, ?, ?> ownerAction)
+				throws FlexoException {
+
 			// As typed by the user: FML would not parse it back if it were written as is
 			conceptName = FMENames.conceptName(conceptName);
 			FlexoConcept returned = getAccessedVirtualModel().getFlexoConcept(conceptName);
@@ -188,29 +255,41 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 				action.doAction();
 				returned = action.getNewFlexoConcept();
 
-				// Create new PrimitiveRole (String type) to store the name of this instance
-				CreatePrimitiveRole createNameRole = null;
-				if (ownerAction != null) {
-					createNameRole = CreatePrimitiveRole.actionType.makeNewEmbeddedAction(returned, null, ownerAction);
+				if (StringUtils.isNotEmpty(description)) {
+					returned.setDescription(description);
 				}
-				else {
-					createNameRole = CreatePrimitiveRole.actionType.makeNewAction(returned, null, editor);
-				}
-				createNameRole.setRoleName(NAME_ROLE_NAME);
-				createNameRole.setPrimitiveType(PrimitiveType.String);
-				createNameRole.doAction();
 
-				// Create new PrimitiveRole (String type) to store the description of this instance
-				CreatePrimitiveRole createDescRole = null;
-				if (ownerAction != null) {
-					createDescRole = CreatePrimitiveRole.actionType.makeNewEmbeddedAction(returned, null, ownerAction);
+				if (properties == null) {
+					// The default structure: the name and the description of the instance
+					// Create new PrimitiveRole (String type) to store the name of this instance
+					CreatePrimitiveRole createNameRole = null;
+					if (ownerAction != null) {
+						createNameRole = CreatePrimitiveRole.actionType.makeNewEmbeddedAction(returned, null, ownerAction);
+					}
+					else {
+						createNameRole = CreatePrimitiveRole.actionType.makeNewAction(returned, null, editor);
+					}
+					createNameRole.setRoleName(NAME_ROLE_NAME);
+					createNameRole.setPrimitiveType(PrimitiveType.String);
+					createNameRole.doAction();
+
+					// Create new PrimitiveRole (String type) to store the description of this instance
+					CreatePrimitiveRole createDescRole = null;
+					if (ownerAction != null) {
+						createDescRole = CreatePrimitiveRole.actionType.makeNewEmbeddedAction(returned, null, ownerAction);
+					}
+					else {
+						createDescRole = CreatePrimitiveRole.actionType.makeNewAction(returned, null, editor);
+					}
+					createDescRole.setRoleName(DESCRIPTION_ROLE_NAME);
+					createDescRole.setPrimitiveType(PrimitiveType.String);
+					createDescRole.doAction();
 				}
 				else {
-					createDescRole = CreatePrimitiveRole.actionType.makeNewAction(returned, null, editor);
+					for (PropertyEntry<?> entry : properties) {
+						entry.performCreateProperty(returned, ownerAction);
+					}
 				}
-				createDescRole.setRoleName(DESCRIPTION_ROLE_NAME);
-				createDescRole.setPrimitiveType(PrimitiveType.String);
-				createDescRole.doAction();
 
 				// Create new CreationScheme
 				CreateFlexoBehaviour createCreationScheme = null;
@@ -251,7 +330,7 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 				}
 				// givesNameAction.actionChoice = CreateEditionActionChoice.BuiltInAction;
 				givesNameAction.setEditionActionClass(ExpressionAction.class);
-				givesNameAction.setAssignation(new DataBinding<>(NAME_ROLE_NAME));
+				givesNameAction.setAssignation(new DataBinding<>(labelPropertyName));
 				givesNameAction.doAction();
 
 				AssignationAction<?> nameAssignation = (AssignationAction<?>) givesNameAction.getNewEditionAction();
@@ -272,7 +351,7 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 				DeletionScheme deletionScheme = (DeletionScheme) createDeletionScheme.getNewFlexoBehaviour();
 				deletionScheme.setSkipConfirmationPanel(true);
 
-				returned.setRenderer(new DataBinding<String>("instance.name"));
+				returned.setRenderer(new DataBinding<String>("instance." + labelPropertyName));
 
 				FMEInspectorGenerator.updateConceptualInspector(returned);
 			}
