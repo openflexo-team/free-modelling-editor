@@ -42,11 +42,12 @@ import java.util.logging.Logger;
 
 import javax.swing.JTabbedPane;
 
+import org.openflexo.diana.DianaUtils;
 import org.openflexo.diana.ShapeGraphicalRepresentation;
 import org.openflexo.diana.Drawing.ContainerNode;
 import org.openflexo.diana.ShapeGraphicalRepresentation.LocationConstraints;
 import org.openflexo.diana.geom.DianaPoint;
-import org.openflexo.diana.shapes.ShapeSpecification.ShapeType;
+import org.openflexo.diana.palettes.DianaPalettes.PaletteDefinition;
 import org.openflexo.diana.swing.control.SwingToolFactory;
 import org.openflexo.diana.swing.control.tools.JDianaPalette;
 import org.openflexo.fme.controller.FreeModelPasteHandler;
@@ -131,8 +132,8 @@ public class FreeModelDiagramEditor extends FMLControlledDiagramEditor {
 	}
 
 	@Override
-	public DiagramEditorPaletteModel makeCommonPalette() {
-		return new FreeShapesPalette(this);
+	public DiagramEditorPaletteModel makeCommonPalette(PaletteDefinition palette) {
+		return new FreeShapesPalette(this, palette);
 	}
 
 	@Override
@@ -196,15 +197,8 @@ public class FreeModelDiagramEditor extends FMLControlledDiagramEditor {
 		shapeGR.setLocationConstraints(LocationConstraints.FREELY_MOVABLE);
 
 		if (resize) {
-			if (shapeGR.getShapeSpecification().getShapeType() == ShapeType.SQUARE
-					|| shapeGR.getShapeSpecification().getShapeType() == ShapeType.CIRCLE) {
-				shapeGR.setWidth(50);
-				shapeGR.setHeight(50);
-			}
-			else {
-				shapeGR.setWidth(60);
-				shapeGR.setHeight(45);
-			}
+			// Keep the aspect ratio of the palette element, and its floating label centered
+			DianaUtils.fitInBox(shapeGR, 60, 45);
 		}
 		if (applyCurrentForeground) {
 			shapeGR.setForeground(getInspectedForegroundStyle().cloneStyle());
