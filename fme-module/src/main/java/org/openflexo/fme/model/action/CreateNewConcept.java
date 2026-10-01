@@ -117,6 +117,8 @@ public class CreateNewConcept extends FMEAction<CreateNewConcept, FMEFreeModel, 
 	public NewConceptStructure getStructure() {
 		if (structure == null) {
 			structure = new NewConceptStructure();
+			structure.setContextIssue(() -> getFocusedObject().getAccessedVirtualModel()
+					.getAccessibleProperty(structure.getConceptRoleName()) != null ? "concept_role_name_already_used" : null);
 			structure.getPropertyChangeSupport().addPropertyChangeListener(evt -> {
 				boolean wasValid = isValid();
 				getPropertyChangeSupport().firePropertyChange("isValid", wasValid, isValid());
@@ -138,7 +140,8 @@ public class CreateNewConcept extends FMEAction<CreateNewConcept, FMEFreeModel, 
 				getStructure().getPropertiesEntries(), getStructure().getLabelPropertyName(), getContainerConcept(), getEditor(), this);
 
 		// Now we create the new concept GR
-		newGRFlexoConcept = getFocusedObject().getGRFlexoConcept(newFlexoConcept, getContainerGRConcept(), getEditor(), this, true);
+		newGRFlexoConcept = getFocusedObject().getGRFlexoConcept(newFlexoConcept, getContainerGRConcept(), getStructure().getConceptRoleName(),
+				getEditor(), this, true);
 	}
 
 	public String getNewConceptName() {

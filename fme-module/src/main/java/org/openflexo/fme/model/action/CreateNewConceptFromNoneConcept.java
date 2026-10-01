@@ -123,6 +123,8 @@ public class CreateNewConceptFromNoneConcept extends AbstractInstantiateConcept<
 	public NewConceptStructure getStructure() {
 		if (structure == null) {
 			structure = new NewConceptStructure();
+			structure.setContextIssue(() -> getFMEFreeModel() != null && getFMEFreeModel().getAccessedVirtualModel()
+					.getAccessibleProperty(structure.getConceptRoleName()) != null ? "concept_role_name_already_used" : null);
 			structure.getPropertyChangeSupport().addPropertyChangeListener(evt -> {
 				boolean wasValid = isValid();
 				getPropertyChangeSupport().firePropertyChange("isValid", wasValid, isValid());
@@ -188,7 +190,7 @@ public class CreateNewConceptFromNoneConcept extends AbstractInstantiateConcept<
 
 		// We will here bypass the classical DropScheme
 		flexoConceptInstance.setFlexoConcept(newGRFlexoConcept);
-		flexoConceptInstance.setFlexoPropertyValue(FMEFreeModel.CONCEPT_ROLE_NAME, conceptInstance);
+		flexoConceptInstance.setFlexoPropertyValue(FMEFreeModel.conceptRoleName(newGRFlexoConcept), conceptInstance);
 
 		// We should notify the creation of a new FlexoConcept
 		freeModelInstance.getPropertyChangeSupport().firePropertyChange("usedFlexoConcepts", null, newFlexoConcept);
@@ -256,7 +258,7 @@ public class CreateNewConceptFromNoneConcept extends AbstractInstantiateConcept<
 			ObjectLookupResult lookup = getFocusedObject().getVirtualModelInstance().lookup(shape.getParent());
 			if (lookup != null) {
 				FlexoConceptInstance containerGRFCI = lookup.flexoConceptInstance;
-				return containerGRFCI.getFlexoActor(FMEFreeModel.CONCEPT_ROLE_NAME);
+				return containerGRFCI.getFlexoActor(FMEFreeModel.conceptRoleName(containerGRFCI.getFlexoConcept()));
 			}
 		}
 		return null;
@@ -283,7 +285,7 @@ public class CreateNewConceptFromNoneConcept extends AbstractInstantiateConcept<
 			ObjectLookupResult lookup = getFocusedObject().getVirtualModelInstance().lookup(shape.getParent());
 			if (lookup != null) {
 				FlexoConcept containerConceptGR = lookup.flexoConceptInstance.getFlexoConcept();
-				FlexoProperty<?> p = containerConceptGR.getAccessibleProperty(FMEFreeModel.CONCEPT_ROLE_NAME);
+				FlexoProperty<?> p = FMEFreeModel.conceptRole(containerConceptGR);
 				FlexoConcept containerConcept = null;
 				if (p instanceof FlexoConceptInstanceRole) {
 					FlexoConceptInstanceRole fciRole = (FlexoConceptInstanceRole) p;

@@ -170,9 +170,8 @@ public interface FMEFreeModelInstance extends VirtualModelInstanceBasedNatureObj
 					returned.add(concept);
 				}
 				else if (concept.getContainerFlexoConcept() == null) {
-					if (concept.getAccessibleProperty(FMEFreeModel.CONCEPT_ROLE_NAME) instanceof FlexoConceptInstanceRole) {
-						FlexoConcept conceptualConcept = ((FlexoConceptInstanceRole) concept
-								.getAccessibleProperty(FMEFreeModel.CONCEPT_ROLE_NAME)).getFlexoConceptType();
+					if (FMEFreeModel.conceptRole(concept) != null) {
+						FlexoConcept conceptualConcept = FMEFreeModel.conceptRole(concept).getFlexoConceptType();
 
 						// First we try to access conceptual layer
 						if (conceptualConcept != null) {
@@ -212,7 +211,7 @@ public interface FMEFreeModelInstance extends VirtualModelInstanceBasedNatureObj
 		@Override
 		@NotificationUnsafe
 		public List<FlexoConceptInstance> getEmbeddedInstances(FlexoConceptInstance flexoConceptInstance) {
-			FlexoConceptInstance conceptFCI = flexoConceptInstance.getFlexoActor(FMEFreeModel.CONCEPT_ROLE_NAME);
+			FlexoConceptInstance conceptFCI = flexoConceptInstance.getFlexoActor(FMEFreeModel.conceptRoleName(flexoConceptInstance.getFlexoConcept()));
 			if (conceptFCI != null) {
 				List<FlexoConceptInstance> conceptualInstances = conceptFCI.getEmbeddedFlexoConceptInstances();
 				List<FlexoConceptInstance> returned = new ArrayList<>();

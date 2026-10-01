@@ -276,7 +276,7 @@ public interface FMEPPTFreeModel extends FMEFreeModel {
 			// Bind shapes's label to name property
 			if (concept != null) {
 				// If we are bound to a concept instance, use that name
-				role.setLabel(new DataBinding<>(CONCEPT_ROLE_NAME + "." + labelPropertyNameOf(concept)));
+				role.setLabel(new DataBinding<>(FMEFreeModel.conceptRoleName(returned) + "." + labelPropertyNameOf(concept)));
 			}
 			else {
 				// Otherwise, this is the NoneGR, use primitive name
@@ -341,7 +341,7 @@ public interface FMEPPTFreeModel extends FMEFreeModel {
 				}
 				createAddFlexoConceptInstance.setModelSlot(getSampleDataModelSlot());
 				createAddFlexoConceptInstance.setEditionActionClass(AddFlexoConceptInstance.class);
-				createAddFlexoConceptInstance.setAssignation(new DataBinding<>(CONCEPT_ROLE_NAME));
+				createAddFlexoConceptInstance.setAssignation(new DataBinding<>(FMEFreeModel.conceptRoleName(returned)));
 				createAddFlexoConceptInstance.doAction();
 				AddFlexoConceptInstance<?> addFCI = (AddFlexoConceptInstance<?>) createAddFlexoConceptInstance.getBaseEditionAction();
 				addFCI.setCreationScheme(concept.getCreationSchemes().get(0));
@@ -352,7 +352,7 @@ public interface FMEPPTFreeModel extends FMEFreeModel {
 					addFCI.setContainer(new DataBinding<>(SAMPLE_DATA_MODEL_SLOT_NAME));
 				}
 				else {
-					addFCI.setContainer(new DataBinding<>(DropScheme.TARGET_KEY + "." + FMEFreeModel.CONCEPT_ROLE_NAME));
+					addFCI.setContainer(new DataBinding<>(DropScheme.TARGET_KEY + "." + FMEFreeModel.conceptRoleName(containerConceptGR)));
 				}
 			}
 			else {
@@ -437,7 +437,7 @@ public interface FMEPPTFreeModel extends FMEFreeModel {
 
 			// Bind shapes's label to renderer
 			// role.setReadOnlyLabel(true);
-			role.setLabel(new DataBinding<>(CONCEPT_ROLE_NAME + ".render"));
+			role.setLabel(new DataBinding<>(FMEFreeModel.conceptRoleName(returned) + ".render"));
 
 			// Sets connector
 			ShapeRole fromShapeRole = (ShapeRole) fromConceptGR.getAccessibleProperty(SHAPE_ROLE_NAME);
@@ -474,7 +474,7 @@ public interface FMEPPTFreeModel extends FMEFreeModel {
 			}
 			createAddFlexoConceptInstance.setModelSlot(getSampleDataModelSlot());
 			createAddFlexoConceptInstance.setEditionActionClass(AddFlexoConceptInstance.class);
-			createAddFlexoConceptInstance.setAssignation(new DataBinding<>(CONCEPT_ROLE_NAME));
+			createAddFlexoConceptInstance.setAssignation(new DataBinding<>(FMEFreeModel.conceptRoleName(returned)));
 			createAddFlexoConceptInstance.doAction();
 			AddFlexoConceptInstance<?> addFCI = (AddFlexoConceptInstance<?>) createAddFlexoConceptInstance.getBaseEditionAction();
 			addFCI.setCreationScheme(concept.getCreationSchemes().get(0));

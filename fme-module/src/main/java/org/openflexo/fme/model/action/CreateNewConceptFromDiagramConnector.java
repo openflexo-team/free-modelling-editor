@@ -129,12 +129,12 @@ public class CreateNewConceptFromDiagramConnector extends FMEAction<CreateNewCon
 			fromGRFlexoConceptInstance = startConceptLookup.flexoConceptInstance;
 			fromFlexoConceptGR = fromGRFlexoConceptInstance.getFlexoConcept();
 			// System.out.println("START lookup: " + startConceptLookup.flexoConceptInstance + " of=" + fromFlexoConceptGR);
-			FlexoProperty<?> p = fromFlexoConceptGR.getAccessibleProperty(FMEFreeModel.CONCEPT_ROLE_NAME);
+			FlexoProperty<?> p = FMEFreeModel.conceptRole(fromFlexoConceptGR);
 			if (p instanceof FlexoConceptInstanceRole) {
 				FlexoConceptInstanceRole fciRole = (FlexoConceptInstanceRole) p;
 				fromFlexoConcept = fciRole.getFlexoConceptType();
 			}
-			fromFlexoConceptInstance = fromGRFlexoConceptInstance.getFlexoPropertyValue(FMEFreeModel.CONCEPT_ROLE_NAME);
+			fromFlexoConceptInstance = fromGRFlexoConceptInstance.getFlexoPropertyValue(FMEFreeModel.conceptRoleName(fromFlexoConceptGR));
 		}
 
 		ObjectLookupResult endConceptLookup = getFreeModelInstance().getAccessedVirtualModelInstance()
@@ -143,12 +143,12 @@ public class CreateNewConceptFromDiagramConnector extends FMEAction<CreateNewCon
 			toGRFlexoConceptInstance = endConceptLookup.flexoConceptInstance;
 			toFlexoConceptGR = toGRFlexoConceptInstance.getFlexoConcept();
 			// System.out.println("END lookup: " + endConceptLookup.flexoConceptInstance + " of=" + toFlexoConceptGR);
-			FlexoProperty<?> p = toFlexoConceptGR.getAccessibleProperty(FMEFreeModel.CONCEPT_ROLE_NAME);
+			FlexoProperty<?> p = FMEFreeModel.conceptRole(toFlexoConceptGR);
 			if (p instanceof FlexoConceptInstanceRole) {
 				FlexoConceptInstanceRole fciRole = (FlexoConceptInstanceRole) p;
 				toFlexoConcept = fciRole.getFlexoConceptType();
 			}
-			toFlexoConceptInstance = toGRFlexoConceptInstance.getFlexoPropertyValue(FMEFreeModel.CONCEPT_ROLE_NAME);
+			toFlexoConceptInstance = toGRFlexoConceptInstance.getFlexoPropertyValue(FMEFreeModel.conceptRoleName(toFlexoConceptGR));
 		}
 
 	}
@@ -255,8 +255,8 @@ public class CreateNewConceptFromDiagramConnector extends FMEAction<CreateNewCon
 			instantiateConcept.setFlexoConcept(newFlexoConcept);
 			CreationScheme cs = newFlexoConcept.getCreationSchemes().get(0);
 			instantiateConcept.setCreationScheme(cs);
-			FlexoConceptInstance fromFCI = fromGRFlexoConceptInstance.execute("fmeConcept");
-			FlexoConceptInstance toFCI = toGRFlexoConceptInstance.execute("fmeConcept");
+			FlexoConceptInstance fromFCI = fromGRFlexoConceptInstance.execute(FMEFreeModel.conceptRoleName(fromGRFlexoConceptInstance.getFlexoConcept()));
+			FlexoConceptInstance toFCI = toGRFlexoConceptInstance.execute(FMEFreeModel.conceptRoleName(toGRFlexoConceptInstance.getFlexoConcept()));
 
 			instantiateConcept.setParameterValue(cs.getParameters().get(0), fromFCI);
 			instantiateConcept.setParameterValue(cs.getParameters().get(1), toFCI);
@@ -267,8 +267,7 @@ public class CreateNewConceptFromDiagramConnector extends FMEAction<CreateNewCon
 					.makeNewFlexoConceptInstance(newGRFlexoConcept, null, null);
 			ConnectorRole geRole = (ConnectorRole) newGRFlexoConcept.getAccessibleProperty(FMEDiagramFreeModel.CONNECTOR_ROLE_NAME);
 			newFlexoConceptInstance.setFlexoActor(getFocusedObject(), geRole);
-			FlexoConceptInstanceRole fciRole = (FlexoConceptInstanceRole) newGRFlexoConcept
-					.getAccessibleProperty(FMEFreeModel.CONCEPT_ROLE_NAME);
+			FlexoConceptInstanceRole fciRole = FMEFreeModel.conceptRole(newGRFlexoConcept);
 			newFlexoConceptInstance.setFlexoActor(conceptInstance, fciRole);
 
 		} catch (TypeMismatchException e) {

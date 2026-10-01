@@ -51,6 +51,7 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.openflexo.fme.model.action.CreateFMEDiagramFreeModel;
 import org.openflexo.fme.model.action.CreateNewConcept;
+import org.openflexo.fme.model.action.CreateNewRelationalConcept;
 import org.openflexo.fme.model.action.NewConceptStructure;
 import org.openflexo.foundation.FlexoEditor;
 import org.openflexo.foundation.FlexoProject;
@@ -98,6 +99,11 @@ public class TestCreateConceptWithStructure extends OpenflexoProjectAtRunTimeTes
 	}
 
 	/** The default structure is the one there has always been: a name and a description, the name labelling the instances */
+	private static FlexoConcept personConcept;
+	private static FlexoConcept personGR;
+	private static FlexoConcept starConcept;
+	private static FlexoConcept starGRConcept;
+
 	@Test
 	@TestOrder(2)
 	@Category(UITest.class)
@@ -118,6 +124,12 @@ public class TestCreateConceptWithStructure extends OpenflexoProjectAtRunTimeTes
 		assertEquals("Somebody", person.getDescription());
 		assertEquals("name", FMEConceptualModel.labelPropertyName(person));
 		assertEquals("instance.name", person.getRenderer().toString());
+
+		// By default, the graphical representation points to its concept instance through 'representedConcept'
+		assertEquals("representedConcept", FMEFreeModel.CONCEPT_ROLE_NAME);
+		assertEquals("representedConcept", FMEFreeModel.conceptRoleName(action.getNewGRFlexoConcept()));
+		personGR = action.getNewGRFlexoConcept();
+		personConcept = person;
 	}
 
 	/** Properties, description and label property are the ones the user configured */
@@ -140,11 +152,15 @@ public class TestCreateConceptWithStructure extends OpenflexoProjectAtRunTimeTes
 		magnitude.setName("magnitude");
 		magnitude.setType(Double.class);
 		magnitude.setDescription("Apparent magnitude");
+		// The identifier of the instance of the concept in its graphical representation
+		structure.setConceptRoleName("starInstance");
 		assertTrue(action.isValid());
 		action.doAction();
 		assertTrue(action.hasActionExecutionSucceeded());
 
 		FlexoConcept star = action.getNewFlexoConcept();
+		starConcept = star;
+		starGRConcept = action.getNewGRFlexoConcept();
 		assertNull(star.getAccessibleProperty("name"));
 		assertNull(star.getAccessibleProperty("description"));
 		assertNotNull(star.getAccessibleProperty("title"));
@@ -157,9 +173,14 @@ public class TestCreateConceptWithStructure extends OpenflexoProjectAtRunTimeTes
 		assertEquals("instance.title", star.getRenderer().toString());
 
 		FlexoConcept starGR = action.getNewGRFlexoConcept();
-		assertEquals("instance.fmeConcept.stringRepresentation", starGR.getRenderer().toString());
+		assertEquals("starInstance", FMEFreeModel.conceptRoleName(starGR));
+		assertNull(starGR.getAccessibleProperty("fmeConcept"));
+		assertEquals(star, FMEFreeModel.conceptRole(starGR).getFlexoConceptType());
 		assertTrue(starGR.getRenderer().isValid());
-		assertEquals("fmeConcept.title", ((ShapeRole) starGR.getAccessibleProperty(FMEDiagramFreeModel.SHAPE_ROLE_NAME)).getLabel().toString());
+		assertTrue(starGR.getRenderer().toString().startsWith("instance.starInstance."));
+		assertEquals("starInstance.title",
+				((ShapeRole) starGR.getAccessibleProperty(FMEDiagramFreeModel.SHAPE_ROLE_NAME)).getLabel().toString());
+		assertEquals("starInstance", starGR.getDerivedInspector().toString());
 
 		// The parameter of the creation scheme gives the label
 		CreateFlexoConceptInstance instantiate = CreateFlexoConceptInstance.actionType
@@ -202,10 +223,51 @@ public class TestCreateConceptWithStructure extends OpenflexoProjectAtRunTimeTes
 		assertEquals("invalid_property_name", structure.getIssue());
 		structure.getPropertiesEntries().get(1).setName("description");
 
+		// The identifier of the concept instance: an FML identifier, not used by the graphical representation
+		for (String invalid : new String[] { "Bad", "shape", "sampleData", "new", "two words", "" }) {
+			structure.setConceptRoleName(invalid);
+			assertEquals("'" + invalid + "' should be refused", "invalid_concept_role_name", structure.getIssue());
+		}
+		structure.setConceptRoleName("thing");
+		assertTrue(action.isValid());
+		structure.setConceptRoleName(FMEFreeModel.CONCEPT_ROLE_NAME);
+
 		// No String property to label the instances
 		structure.getPropertiesEntries().get(0).setType(Integer.class);
 		structure.getPropertiesEntries().get(1).setType(Integer.class);
 		assertEquals("no_string_property_for_the_label", structure.getIssue());
 		assertFalse(action.isValid());
+	}
+
+	/** The identifier of the represented relationship is configurable as well, and the link scheme follows the identifiers of its ends */
+	@Test
+	@TestOrder(5)
+	@Category(UITest.class)
+	public void testConfiguredRelationalConcept() throws Exception {
+
+		CreateNewRelationalConcept action = CreateNewRelationalConcept.actionType.makeNewAction(freeModel, null, editor);
+		action.setNewConceptName("Orbits");
+		action.setFromConcept(starConcept);
+		action.setToConcept(personConcept);
+		action.setFromGRConcept(starGRConcept);
+		action.setToGRConcept(personGR);
+
+		for (String invalid : new String[] { "Bad", "shape", "new", "two words", "" }) {
+			action.setConceptRoleName(invalid);
+			assertFalse("'" + invalid + "' should be refused", action.isValid());
+		}
+		assertEquals("representedConcept", FMEFreeModel.CONCEPT_ROLE_NAME);
+		action.setConceptRoleName("orbit");
+		assertTrue(action.isValid());
+		action.doAction();
+		assertTrue(action.hasActionExecutionSucceeded());
+
+		FlexoConcept orbitsGR = action.getNewGRFlexoConcept();
+		assertEquals("orbit", FMEFreeModel.conceptRoleName(orbitsGR));
+		assertNull(orbitsGR.getAccessibleProperty("representedConcept"));
+		assertEquals(action.getNewFlexoConcept(), FMEFreeModel.conceptRole(orbitsGR).getFlexoConceptType());
+		assertEquals("instance.orbit.render", orbitsGR.getRenderer().toString());
+		assertTrue(orbitsGR.getRenderer().isValid());
+		assertEquals("orbit", orbitsGR.getDerivedInspector().toString());
 	}
 }

@@ -88,7 +88,7 @@ public class CreateNewFMEProperty extends FMEAction<CreateNewFMEProperty, FlexoC
 
 		@Override
 		public boolean isVisibleForSelection(FlexoConcept object, Vector<FlexoObject> globalSelection) {
-			return object.getAccessibleProperty(FMEFreeModel.CONCEPT_ROLE_NAME) != null;
+			return FMEFreeModel.conceptRole(object) != null;
 		}
 
 		@Override
@@ -191,7 +191,7 @@ public class CreateNewFMEProperty extends FMEAction<CreateNewFMEProperty, FlexoC
 	 */
 	public FlexoConcept getConcept() {
 		if (getGRConcept() != null) {
-			FlexoProperty<?> p = getGRConcept().getAccessibleProperty(FMEFreeModel.CONCEPT_ROLE_NAME);
+			FlexoProperty<?> p = FMEFreeModel.conceptRole(getGRConcept());
 			if (p instanceof FlexoConceptInstanceRole) {
 				FlexoConceptInstanceRole fciRole = (FlexoConceptInstanceRole) p;
 				return fciRole.getFlexoConceptType();

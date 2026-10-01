@@ -48,6 +48,7 @@ import org.openflexo.connie.BindingVariable;
 import org.openflexo.connie.DataBinding;
 import org.openflexo.fme.model.FMEConceptualModel;
 import org.openflexo.fme.model.FMEFreeModel;
+import org.openflexo.fme.model.FMENames;
 import org.openflexo.fme.model.FreeModellingProjectNature;
 import org.openflexo.foundation.FlexoEditor;
 import org.openflexo.foundation.FlexoException;
@@ -104,6 +105,8 @@ public class CreateNewRelationalConcept extends FMEAction<CreateNewRelationalCon
 	private FlexoConcept fromGRConcept;
 	private FlexoConcept toGRConcept;
 
+	private String conceptRoleName = FMEFreeModel.CONCEPT_ROLE_NAME;
+
 	private FlexoConcept newFlexoConcept;
 	private FlexoConcept newGRFlexoConcept;
 
@@ -128,7 +131,29 @@ public class CreateNewRelationalConcept extends FMEAction<CreateNewRelationalCon
 
 		// Now we create the new concept GR
 		newGRFlexoConcept = getFocusedObject().getGRRelationalFlexoConcept(newFlexoConcept, getFromGRConcept(), getToGRConcept(),
-				getEditor(), this, true);
+				getConceptRoleName(), getEditor(), this, true);
+	}
+
+	/**
+	 * The name of the role the graphical representation of the relationship uses to point to its instance (<code>representedConcept</code>
+	 * by default)
+	 */
+	public String getConceptRoleName() {
+		return conceptRoleName;
+	}
+
+	public void setConceptRoleName(String conceptRoleName) {
+		boolean wasValid = isValid();
+		this.conceptRoleName = conceptRoleName;
+		getPropertyChangeSupport().firePropertyChange("conceptRoleName", null, conceptRoleName);
+		getPropertyChangeSupport().firePropertyChange("isValid", wasValid, isValid());
+	}
+
+	/**
+	 * The reason why the identifier of the relationship cannot be used, as the key of a localized message, or null
+	 */
+	public String getConceptRoleNameIssue() {
+		return NewConceptStructure.conceptRoleNameIssue(conceptRoleName, getFocusedObject());
 	}
 
 	public String getNewConceptName() {
@@ -212,7 +237,7 @@ public class CreateNewRelationalConcept extends FMEAction<CreateNewRelationalCon
 	@Override
 	public boolean isValid() {
 
-		if (StringUtils.isEmpty(newConceptName)) {
+		if (StringUtils.isEmpty(newConceptName) || !FMENames.isValidConceptName(newConceptName)) {
 			return false;
 		}
 
@@ -221,7 +246,7 @@ public class CreateNewRelationalConcept extends FMEAction<CreateNewRelationalCon
 			return false;
 		}
 
-		return true;
+		return getConceptRoleNameIssue() == null;
 	}
 
 	private DataBinding<String> renderer;

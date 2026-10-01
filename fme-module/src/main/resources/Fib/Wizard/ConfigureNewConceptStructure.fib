@@ -47,6 +47,12 @@
 			enable="(propertiesTable.selected != null)" localize="true"
 			constraints="twocols(expandHorizontally=true;expandVertically=false;location=right)"
 			name="PropertyDescriptionTextField" />
+		<Label label="concept_instance_role_name" align="right" localize="true"
+			constraints="twocols(expandHorizontally=false;expandVertically=false;location=left)"
+			name="ConceptRoleNameLabel" />
+		<TextField data="data.structure.conceptRoleName" columns="20" localize="true"
+			constraints="twocols(expandHorizontally=true;expandVertically=false;location=right)"
+			name="ConceptRoleNameTextField" />
 		<Label label="bind_shape_label_to" align="right" localize="true"
 			constraints="twocols(expandHorizontally=false;expandVertically=false;location=left)"
 			name="LabelPropertyLabel" />

@@ -111,7 +111,7 @@ public class FMEFIBController extends FlexoFIBController {
 			if (concept.getName().equals(FMEFreeModel.NONE_FLEXO_CONCEPT_NAME)) {
 				return getLocales().localizedForKey("unclassified");
 			}
-			FlexoConceptInstanceRole conceptRole = (FlexoConceptInstanceRole) concept.getAccessibleRole(FMEFreeModel.CONCEPT_ROLE_NAME);
+			FlexoConceptInstanceRole conceptRole = FMEFreeModel.conceptRole(concept);
 			if (conceptRole != null && conceptRole.getFlexoConceptType() != null) {
 				return conceptRole.getFlexoConceptType().getName();
 			}

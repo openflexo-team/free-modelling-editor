@@ -45,11 +45,13 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import org.openflexo.connie.type.TypeUtils;
 import org.openflexo.foundation.fml.action.PropertyEntry;
 import org.openflexo.foundation.fml.action.PropertyEntry.PropertyType;
 import org.openflexo.fme.model.FMEConceptualModel;
+import org.openflexo.fme.model.FMEFreeModel;
 import org.openflexo.fme.model.FMENames;
 import org.openflexo.localization.FlexoLocalization;
 import org.openflexo.localization.LocalizedDelegate;
@@ -68,10 +70,17 @@ public class NewConceptStructure extends PropertyChangedSupportDefaultImplementa
 	public static final String PROPERTIES_ENTRIES = "propertiesEntries";
 	public static final String LABEL_PROPERTY_NAME = "labelPropertyName";
 	public static final String STRING_PROPERTIES_NAMES = "stringPropertiesNames";
+	public static final String CONCEPT_ROLE_NAME = "conceptRoleName";
+
+	/** Names the identifier of the concept instance cannot take, since the graphical representation already uses them */
+	private static final Set<String> RESERVED_ROLE_NAMES = new HashSet<>(java.util.Arrays.asList("shape", "connector", "sampleData",
+			"diagram", "instance", "parameters", "container", "this", "super"));
 
 	private final LocalizedDelegate locales;
 	private final List<PropertyEntry<?>> propertiesEntries = new ArrayList<>();
 	private String labelPropertyName = FMEConceptualModel.NAME_ROLE_NAME;
+	private String conceptRoleName = FMEFreeModel.CONCEPT_ROLE_NAME;
+	private Supplier<String> contextIssue;
 	// The name each entry had when last seen: renaming the entry giving the label makes the label follow
 	private final Map<PropertyEntry<?>, String> knownNames = new IdentityHashMap<>();
 
@@ -194,6 +203,47 @@ public class NewConceptStructure extends PropertyChangedSupportDefaultImplementa
 	}
 
 	/**
+	 * The name of the role the graphical representation of the concept uses to point to the instance of the concept (<code>fmeConcept</code>
+	 * by default)
+	 */
+	/**
+	 * The reason why supplied name cannot be the name of the role of a graphical representation pointing to its concept instance, as the key
+	 * of a localized message, or null when it can: it must be a valid property name, not used by the graphical representation itself, nor by
+	 * the supplied free model (when not null).
+	 */
+	public static String conceptRoleNameIssue(String name, FMEFreeModel freeModel) {
+		if (!FMENames.isValidPropertyName(name) || RESERVED_ROLE_NAMES.contains(name)) {
+			return "invalid_concept_role_name";
+		}
+		if (freeModel != null && freeModel.getAccessedVirtualModel() != null
+				&& freeModel.getAccessedVirtualModel().getAccessibleProperty(name) != null) {
+			return "concept_role_name_already_used";
+		}
+		return null;
+	}
+
+	public String getConceptRoleName() {
+		return conceptRoleName;
+	}
+
+	public void setConceptRoleName(String conceptRoleName) {
+		if ((conceptRoleName == null && this.conceptRoleName != null)
+				|| (conceptRoleName != null && !conceptRoleName.equals(this.conceptRoleName))) {
+			String oldValue = this.conceptRoleName;
+			this.conceptRoleName = conceptRoleName;
+			getPropertyChangeSupport().firePropertyChange(CONCEPT_ROLE_NAME, oldValue, conceptRoleName);
+		}
+	}
+
+	/**
+	 * Supplies the issues depending on where the concept is created (an identifier already used in the free model, for instance): the key of
+	 * a localized message, or null
+	 */
+	public void setContextIssue(Supplier<String> contextIssue) {
+		this.contextIssue = contextIssue;
+	}
+
+	/**
 	 * The reason why this structure cannot be used to create a concept, as the key of a localized message, or null when it is fine
 	 */
 	public String getIssue() {
@@ -212,7 +262,11 @@ public class NewConceptStructure extends PropertyChangedSupportDefaultImplementa
 		if (labelPropertyName == null || !getStringPropertiesNames().contains(labelPropertyName)) {
 			return "no_string_property_for_the_label";
 		}
-		return null;
+		String roleNameIssue = conceptRoleNameIssue(conceptRoleName, null);
+		if (roleNameIssue != null) {
+			return roleNameIssue;
+		}
+		return contextIssue != null ? contextIssue.get() : null;
 	}
 
 	public boolean isValid() {

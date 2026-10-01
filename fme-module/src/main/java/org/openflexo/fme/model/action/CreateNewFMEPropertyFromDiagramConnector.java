@@ -143,12 +143,12 @@ public class CreateNewFMEPropertyFromDiagramConnector
 			fromGRFlexoConceptInstance = startConceptLookup.flexoConceptInstance;
 			fromFlexoConceptGR = fromGRFlexoConceptInstance.getFlexoConcept();
 			// System.out.println("START lookup: " + startConceptLookup.flexoConceptInstance + " of=" + fromFlexoConceptGR);
-			FlexoProperty<?> p = fromFlexoConceptGR.getAccessibleProperty(FMEFreeModel.CONCEPT_ROLE_NAME);
+			FlexoProperty<?> p = FMEFreeModel.conceptRole(fromFlexoConceptGR);
 			if (p instanceof FlexoConceptInstanceRole) {
 				FlexoConceptInstanceRole fciRole = (FlexoConceptInstanceRole) p;
 				fromFlexoConcept = fciRole.getFlexoConceptType();
 			}
-			fromFlexoConceptInstance = fromGRFlexoConceptInstance.getFlexoPropertyValue(FMEFreeModel.CONCEPT_ROLE_NAME);
+			fromFlexoConceptInstance = fromGRFlexoConceptInstance.getFlexoPropertyValue(FMEFreeModel.conceptRoleName(fromFlexoConceptGR));
 		}
 
 		ObjectLookupResult endConceptLookup = getFreeModelInstance().getAccessedVirtualModelInstance()
@@ -157,12 +157,12 @@ public class CreateNewFMEPropertyFromDiagramConnector
 			toGRFlexoConceptInstance = endConceptLookup.flexoConceptInstance;
 			toFlexoConceptGR = toGRFlexoConceptInstance.getFlexoConcept();
 			// System.out.println("END lookup: " + endConceptLookup.flexoConceptInstance + " of=" + toFlexoConceptGR);
-			FlexoProperty<?> p = toFlexoConceptGR.getAccessibleProperty(FMEFreeModel.CONCEPT_ROLE_NAME);
+			FlexoProperty<?> p = FMEFreeModel.conceptRole(toFlexoConceptGR);
 			if (p instanceof FlexoConceptInstanceRole) {
 				FlexoConceptInstanceRole fciRole = (FlexoConceptInstanceRole) p;
 				toFlexoConcept = fciRole.getFlexoConceptType();
 			}
-			toFlexoConceptInstance = toGRFlexoConceptInstance.getFlexoPropertyValue(FMEFreeModel.CONCEPT_ROLE_NAME);
+			toFlexoConceptInstance = toGRFlexoConceptInstance.getFlexoPropertyValue(FMEFreeModel.conceptRoleName(toFlexoConceptGR));
 		}
 
 	}
@@ -424,10 +424,10 @@ public class CreateNewFMEPropertyFromDiagramConnector
 				this);
 		setPropertyAction.setEditionActionClass(ExpressionAction.class);
 		setPropertyAction
-				.setAssignation(new DataBinding<>(FROM_CONCEPT_INSTANCE + "." + FMEFreeModel.CONCEPT_ROLE_NAME + "." + getCreatedPropertyName()));
+				.setAssignation(new DataBinding<>(FROM_CONCEPT_INSTANCE + "." + FMEFreeModel.conceptRoleName(fromFlexoConceptGR) + "." + getCreatedPropertyName()));
 		setPropertyAction.doAction();
 		ExpressionAction<?> expAction3 = (ExpressionAction<?>) setPropertyAction.getBaseEditionAction();
-		expAction3.setExpression(new DataBinding<>(TO_CONCEPT_INSTANCE + "." + FMEFreeModel.CONCEPT_ROLE_NAME));
+		expAction3.setExpression(new DataBinding<>(TO_CONCEPT_INSTANCE + "." + FMEFreeModel.conceptRoleName(toFlexoConceptGR)));
 
 		CreateEditionAction createAddConnector = null;
 		createAddConnector = CreateEditionAction.actionType.makeNewEmbeddedAction(linkScheme.getControlGraph(), null, this);

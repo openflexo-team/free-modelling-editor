@@ -217,7 +217,7 @@ public class FreeShapesPalette extends CommonPalette {
 			// We will just add shape in container shape
 
 		}
-		else if (conceptGR.getFlexoConcept().getAccessibleProperty(FMEFreeModel.CONCEPT_ROLE_NAME) != null) {
+		else if (FMEFreeModel.conceptRole(conceptGR.getFlexoConcept()) != null) {
 			// OK, its a concept GR
 			// We will just add shape in container shape
 		}

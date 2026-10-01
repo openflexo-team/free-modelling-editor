@@ -76,3 +76,6 @@ duplicate_property_name=Two properties have the same name
 only_primitive_properties_are_supported=Only primitive properties are supported
 no_string_property_for_the_label=A String property is needed to label the shape
 invalid_concept_name=Concept name must be a valid FML identifier
+concept_instance_role_name=Identifier of the concept instance
+invalid_concept_role_name=Identifier must be a valid FML identifier
+concept_role_name_already_used=This identifier is already used

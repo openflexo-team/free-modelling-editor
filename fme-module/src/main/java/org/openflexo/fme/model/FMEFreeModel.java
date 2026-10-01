@@ -53,6 +53,8 @@ import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.Visibility;
 import org.openflexo.foundation.fml.action.CreateEditionAction;
 import org.openflexo.foundation.fml.action.CreateFlexoBehaviour;
+import org.openflexo.foundation.fml.FlexoConceptInstanceRole;
+import org.openflexo.foundation.fml.FlexoProperty;
 import org.openflexo.foundation.fml.action.CreateFlexoConcept;
 import org.openflexo.foundation.fml.action.CreateFlexoConceptInstanceRole;
 import org.openflexo.foundation.fml.action.CreatePrimitiveRole;
@@ -92,7 +94,7 @@ import org.openflexo.pamela.annotations.XMLElement;
 public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellingProjectNature> {
 
 	public static final String NONE_FLEXO_CONCEPT_NAME = "NoneGR";
-	public static final String CONCEPT_ROLE_NAME = "fmeConcept";
+	public static final String CONCEPT_ROLE_NAME = "representedConcept";
 	public static final String NAME_ROLE_NAME = "name";
 	public static final String SAMPLE_DATA_MODEL_SLOT_NAME = "sampleData";
 
@@ -174,6 +176,47 @@ public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellin
 			FlexoAction<?, ?, ?> ownerAction, boolean createWhenNotExistant);
 
 	/**
+	 * Same as {@link #getGRFlexoConcept(FlexoConcept, FlexoConcept, FlexoEditor, FlexoAction, boolean)}, giving the name of the role of
+	 * the created GR concept pointing to the instance of the conceptual concept (<code>fmeConcept</code> by default).
+	 * 
+	 * @param conceptRoleName
+	 *            name of that role, which must be a valid property name, or null
+	 */
+	public FlexoConcept getGRFlexoConcept(FlexoConcept concept, FlexoConcept containerConceptGR, String conceptRoleName,
+			FlexoEditor editor, FlexoAction<?, ?, ?> ownerAction, boolean createWhenNotExistant);
+
+	/**
+	 * The role of supplied GR concept pointing to the instance of the conceptual concept it stands for, or null for the NoneGR.<br>
+	 * It is the role reading the sample data, whatever its name: the name is chosen when the concept is created, {@link #CONCEPT_ROLE_NAME}
+	 * being the default.
+	 */
+	public static FlexoConceptInstanceRole conceptRole(FlexoConcept grConcept) {
+		if (grConcept == null) {
+			return null;
+		}
+		for (FlexoProperty<?> property : grConcept.getAccessibleProperties()) {
+			if (property instanceof FlexoConceptInstanceRole) {
+				FlexoConceptInstanceRole role = (FlexoConceptInstanceRole) property;
+				if (role.getVirtualModelInstance() != null && role.getVirtualModelInstance().isSet()
+						&& SAMPLE_DATA_MODEL_SLOT_NAME.equals(role.getVirtualModelInstance().toString())) {
+					return role;
+				}
+			}
+		}
+		FlexoProperty<?> byDefaultName = grConcept.getAccessibleProperty(CONCEPT_ROLE_NAME);
+		return byDefaultName instanceof FlexoConceptInstanceRole ? (FlexoConceptInstanceRole) byDefaultName : null;
+	}
+
+	/**
+	 * The name of the role of supplied GR concept pointing to the instance of its conceptual concept: {@link #CONCEPT_ROLE_NAME} unless
+	 * the concept was created with another one
+	 */
+	public static String conceptRoleName(FlexoConcept grConcept) {
+		FlexoConceptInstanceRole role = conceptRole(grConcept);
+		return role != null ? role.getName() : CONCEPT_ROLE_NAME;
+	}
+
+	/**
 	 * Return (creates when non-existant) a FlexoConcept (in the context of FreeModellingEditor) Created {@link FlexoConcept} will be
 	 * designed as a concept linking two other concepts
 	 * 
@@ -188,6 +231,16 @@ public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellin
 	 */
 	public FlexoConcept getGRRelationalFlexoConcept(FlexoConcept concept, FlexoConcept fromConceptGR, FlexoConcept toConceptGR,
 			FlexoEditor editor, FlexoAction<?, ?, ?> ownerAction, boolean createWhenNotExistant);
+
+	/**
+	 * Same as {@link #getGRRelationalFlexoConcept(FlexoConcept, FlexoConcept, FlexoConcept, FlexoEditor, FlexoAction, boolean)}, giving the
+	 * name of the role of the created GR concept pointing to the instance of the relational concept ({@link #CONCEPT_ROLE_NAME} by default).
+	 * 
+	 * @param conceptRoleName
+	 *            name of that role, which must be a valid property name, or null
+	 */
+	public FlexoConcept getGRRelationalFlexoConcept(FlexoConcept concept, FlexoConcept fromConceptGR, FlexoConcept toConceptGR,
+			String conceptRoleName, FlexoEditor editor, FlexoAction<?, ?, ?> ownerAction, boolean createWhenNotExistant);
 
 	/**
 	 * (Re)generate the inspector of supplied graphical representation concept of this free model, from its current structure. See
@@ -243,6 +296,14 @@ public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellin
 		}
 
 		/**
+		 * The property the label of a concept instance is bound to: the one the renderer of the concept reads, <code>name</code> by default
+		 */
+		protected String labelPropertyNameOf(FlexoConcept concept) {
+			String returned = FMEConceptualModel.labelPropertyName(concept);
+			return returned != null ? returned : NAME_ROLE_NAME;
+		}
+
+		/**
 		 * Return (creates when non-existant) a FlexoConcept (in the context of FreeModellingEditor)
 		 * 
 		 * @param conceptName
@@ -251,17 +312,17 @@ public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellin
 		 * @return
 		 * @throws FlexoException
 		 */
-		/**
-		 * The property the label of a concept instance is bound to: the one the renderer of the concept reads, <code>name</code> by default
-		 */
-		protected String labelPropertyNameOf(FlexoConcept concept) {
-			String returned = FMEConceptualModel.labelPropertyName(concept);
-			return returned != null ? returned : NAME_ROLE_NAME;
-		}
-
 		@Override
 		public FlexoConcept getGRFlexoConcept(FlexoConcept concept, FlexoConcept containerConceptGR, FlexoEditor editor,
 				FlexoAction<?, ?, ?> ownerAction, boolean createWhenNotExistant) {
+			return getGRFlexoConcept(concept, containerConceptGR, null, editor, ownerAction, createWhenNotExistant);
+		}
+
+		@Override
+		public FlexoConcept getGRFlexoConcept(FlexoConcept concept, FlexoConcept containerConceptGR, String conceptRoleName,
+				FlexoEditor editor, FlexoAction<?, ?, ?> ownerAction, boolean createWhenNotExistant) {
+
+			String roleName = conceptRoleName != null ? conceptRoleName : CONCEPT_ROLE_NAME;
 
 			FlexoConcept returned = getAccessedVirtualModel()
 					.getFlexoConcept(concept != null ? concept.getName() + "GR" : NONE_FLEXO_CONCEPT_NAME);
@@ -289,7 +350,7 @@ public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellin
 					else {
 						createConceptRole = CreateFlexoConceptInstanceRole.actionType.makeNewAction(returned, null, editor);
 					}
-					createConceptRole.setRoleName(CONCEPT_ROLE_NAME);
+					createConceptRole.setRoleName(roleName);
 					createConceptRole.setFlexoConceptInstanceType(concept);
 					createConceptRole.setVirtualModelInstance(new DataBinding<VirtualModelInstance<?, ?>>(SAMPLE_DATA_MODEL_SLOT_NAME));
 					createConceptRole.doAction();
@@ -337,13 +398,13 @@ public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellin
 					deleteConceptAction.doAction();
 
 					DeleteAction<?> deleteConcept = (DeleteAction<?>) deleteConceptAction.getNewEditionAction();
-					deleteConcept.setObject(new DataBinding<>(CONCEPT_ROLE_NAME));
+					deleteConcept.setObject(new DataBinding<>(roleName));
 				}
 
 				// Bind shapes's label to name property
 				if (concept != null) {
 					// If we are bound to a concept instance, this is its own representation (given by the renderer of its concept)
-					returned.setRenderer(new DataBinding<String>("instance." + CONCEPT_ROLE_NAME + ".stringRepresentation"));
+					returned.setRenderer(new DataBinding<String>("instance." + roleName + ".stringRepresentation"));
 				}
 				else {
 					// Otherwise, this is the NoneGR, use primitive name
@@ -375,7 +436,14 @@ public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellin
 		@Override
 		public FlexoConcept getGRRelationalFlexoConcept(FlexoConcept concept, FlexoConcept fromConceptGR, FlexoConcept toConceptGR,
 				FlexoEditor editor, FlexoAction<?, ?, ?> ownerAction, boolean createWhenNotExistant) {
+			return getGRRelationalFlexoConcept(concept, fromConceptGR, toConceptGR, null, editor, ownerAction, createWhenNotExistant);
+		}
 
+		@Override
+		public FlexoConcept getGRRelationalFlexoConcept(FlexoConcept concept, FlexoConcept fromConceptGR, FlexoConcept toConceptGR,
+				String conceptRoleName, FlexoEditor editor, FlexoAction<?, ?, ?> ownerAction, boolean createWhenNotExistant) {
+
+			String roleName = conceptRoleName != null ? conceptRoleName : CONCEPT_ROLE_NAME;
 			FlexoConcept returned = getAccessedVirtualModel().getFlexoConcept(concept.getName() + "GR");
 
 			if (returned == null && createWhenNotExistant) {
@@ -400,7 +468,7 @@ public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellin
 				else {
 					createConceptRole = CreateFlexoConceptInstanceRole.actionType.makeNewAction(returned, null, editor);
 				}
-				createConceptRole.setRoleName(CONCEPT_ROLE_NAME);
+				createConceptRole.setRoleName(roleName);
 				createConceptRole.setFlexoConceptInstanceType(concept);
 				createConceptRole.setVirtualModelInstance(new DataBinding<VirtualModelInstance<?, ?>>(SAMPLE_DATA_MODEL_SLOT_NAME));
 				createConceptRole.doAction();
@@ -433,11 +501,11 @@ public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellin
 				deleteConceptAction.doAction();
 
 				DeleteFlexoConceptInstance<?> deleteConcept = (DeleteFlexoConceptInstance<?>) deleteConceptAction.getNewEditionAction();
-				deleteConcept.setObject(new DataBinding<>(CONCEPT_ROLE_NAME));
+				deleteConcept.setObject(new DataBinding<>(roleName));
 
 				// Bind shapes's label to name property
 				// If we are bound to a concept instance, use name of concept
-				returned.setRenderer(new DataBinding<String>("instance." + CONCEPT_ROLE_NAME + ".render"));
+				returned.setRenderer(new DataBinding<String>("instance." + roleName + ".render"));
 
 				configureGRRelationalFlexoConcept(returned, concept, fromConceptGR, toConceptGR, editor, ownerAction);
 

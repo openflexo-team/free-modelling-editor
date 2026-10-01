@@ -28,6 +28,8 @@
   </Custom>
   <Label id="24" label="description" align="right" localize="true" constraints="twocols(anchor=north_east;expandHorizontally=false;expandVertically=false;fill=none;gridHeight=1;gridWidth=1;gridX=-1;gridY=-1;index=12;insetsBottom=0;insetsLeft=20;insetsRight=10;insetsTop=0;location=left;padX=0;padY=0;weightX=0.0;weightY=0.0)" index="9" name="DescriptionLabel" />
   <TextArea id="25" rows="5" columns="6" text="TextArea" localize="true" data="data.newConceptDescription" constraints="twocols(anchor=center;expandHorizontally=true;expandVertically=true;fill=both;gridHeight=1;gridWidth=0;gridX=-1;gridY=-1;index=13;insetsBottom=20;insetsLeft=0;insetsRight=20;insetsTop=0;location=right;padX=0;padY=0;weightX=1.0;weightY=1.0)" index="10" name="TextArea" />
+  <Label label="concept_instance_role_name" align="right" localize="true" index="14" name="ConceptRoleNameLabel" constraints="twocols(anchor=east;expandHorizontally=false;expandVertically=false;fill=none;insetsBottom=0;insetsLeft=20;insetsRight=10;insetsTop=0;location=left)" />
+  <TextField columns="20" localize="true" index="15" data="data.conceptRoleName" name="ConceptRoleNameTextField" constraints="twocols(anchor=center;expandHorizontally=true;expandVertically=false;fill=horizontal;insetsBottom=0;insetsLeft=0;insetsRight=20;insetsTop=0;location=right)" />
   <LocalizedDictionary id="26">
     <Localized id="27" lang="English" value="Name" key="name" />
     <Localized id="28" lang="Dutch" value="Naam" key="name" />

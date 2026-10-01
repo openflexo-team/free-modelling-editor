@@ -76,3 +76,6 @@ duplicate_property_name=Deux propri\u00E9t\u00E9s portent le m\u00EAme nom
 only_primitive_properties_are_supported=Seules les propri\u00E9t\u00E9s primitives sont support\u00E9es
 no_string_property_for_the_label=Une propri\u00E9t\u00E9 String est n\u00E9cessaire pour le libell\u00E9 de la forme
 invalid_concept_name=Le nom du concept doit \u00EAtre un identifiant FML valide
+concept_instance_role_name=Identifiant de l'instance du concept
+invalid_concept_role_name=L'identifiant doit \u00EAtre un identifiant FML valide
+concept_role_name_already_used=Cet identifiant est d\u00E9j\u00E0 utilis\u00E9

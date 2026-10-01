@@ -79,7 +79,7 @@ public class InstantiateNewFMEProperty extends FMEAction<InstantiateNewFMEProper
 
 		@Override
 		public boolean isVisibleForSelection(FlexoConceptInstance object, Vector<FlexoObject> globalSelection) {
-			return object.getFlexoConcept().getAccessibleProperty(FMEFreeModel.CONCEPT_ROLE_NAME) != null;
+			return FMEFreeModel.conceptRole(object.getFlexoConcept()) != null;
 		}
 
 		@Override
@@ -149,7 +149,7 @@ public class InstantiateNewFMEProperty extends FMEAction<InstantiateNewFMEProper
 	public FlexoConceptInstance getConceptInstance() {
 		if (getFocusedObject() != null) {
 			try {
-				return getFocusedObject().execute(FMEFreeModel.CONCEPT_ROLE_NAME);
+				return getFocusedObject().execute(FMEFreeModel.conceptRoleName(getFocusedObject().getFlexoConcept()));
 			} catch (TypeMismatchException e) {
 				e.printStackTrace();
 			} catch (NullReferenceException e) {

@@ -112,7 +112,7 @@ public class CreateNewConceptFromDiagramElement extends AbstractInstantiateConce
 			if (lookup != null) {
 				// System.out.println("lookup: " + lookup.flexoConceptInstance + " pty=" + lookup.property);
 				FlexoConcept containerConceptGR = lookup.flexoConceptInstance.getFlexoConcept();
-				FlexoProperty<?> p = containerConceptGR.getAccessibleProperty(FMEFreeModel.CONCEPT_ROLE_NAME);
+				FlexoProperty<?> p = FMEFreeModel.conceptRole(containerConceptGR);
 				if (p instanceof FlexoConceptInstanceRole) {
 					FlexoConceptInstanceRole fciRole = (FlexoConceptInstanceRole) p;
 					// Unused containerConcept = fciRole.getFlexoConceptType();

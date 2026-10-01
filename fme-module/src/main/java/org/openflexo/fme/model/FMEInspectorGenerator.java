@@ -113,7 +113,6 @@ public class FMEInspectorGenerator {
 	public static final String RELATIONSHIP_ENTRY_NAME = "Relationship";
 
 	private static final String DATA = FIBComponent.DEFAULT_DATA_VARIABLE;
-	private static final String CONCEPT = DATA + "." + FMEFreeModel.CONCEPT_ROLE_NAME;
 
 	private FMEInspectorGenerator() {
 	}
@@ -172,7 +171,7 @@ public class FMEInspectorGenerator {
 			grConcept.removeFromMetaData(grConcept.getMetaData(FlexoConcept.INSPECTOR_METADATA));
 		}
 
-		grConcept.setDerivedInspector(new DataBinding<>(FMEFreeModel.CONCEPT_ROLE_NAME));
+		grConcept.setDerivedInspector(new DataBinding<>(FMEFreeModel.conceptRoleName(grConcept)));
 
 		// Tell whoever shows the FML source: the FML editor listens to "FMLPrettyPrint" on the compilation unit, which
 		// setIsModified() fires - see CreateFIBComponent#declareComponent (openflexo-ui) for the full explanation.
@@ -420,6 +419,8 @@ public class FMEInspectorGenerator {
 		public void append(Builder builder) {
 
 			FlexoConcept concept = conceptOf(grConcept);
+			// The role of the GR pointing to its conceptual instance has the name chosen when the concept was created
+			final String CONCEPT = DATA + "." + FMEFreeModel.conceptRoleName(grConcept);
 
 			if (concept == null) {
 				// NoneGR: an unclassified element, carrying its own name
@@ -518,8 +519,8 @@ public class FMEInspectorGenerator {
 	 * The conceptual concept a graphical representation stands for, or null for the NoneGR
 	 */
 	private static FlexoConcept conceptOf(FlexoConcept grConcept) {
-		FlexoProperty<?> conceptRole = grConcept.getAccessibleProperty(FMEFreeModel.CONCEPT_ROLE_NAME);
-		return conceptRole instanceof FlexoConceptInstanceRole ? ((FlexoConceptInstanceRole) conceptRole).getFlexoConceptType() : null;
+		FlexoConceptInstanceRole conceptRole = FMEFreeModel.conceptRole(grConcept);
+		return conceptRole != null ? conceptRole.getFlexoConceptType() : null;
 	}
 
 	private static boolean isRelationship(FlexoConcept concept) {

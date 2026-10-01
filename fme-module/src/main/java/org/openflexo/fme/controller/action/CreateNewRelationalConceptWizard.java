@@ -118,9 +118,19 @@ public class CreateNewRelationalConceptWizard extends FlexoActionWizard<CreateNe
 				return false;
 			}
 
-			if (getFreeModel().getAccessedVirtualModel().getFlexoConcept(FMENames.conceptName(getNewConceptName())) != null) {
+			if (!FMENames.isValidConceptName(getNewConceptName())) {
+				setIssueMessage(getAction().getLocales().localizedForKey("invalid_concept_name"), IssueMessageType.ERROR);
+				return false;
+			}
+
+			if (getFreeModel().getAccessedVirtualModel().getFlexoConcept(getNewConceptName()) != null) {
 				setIssueMessage(getAction().getLocales().localizedForKey("a_concept_with_that_name_already_exists"),
 						IssueMessageType.ERROR);
+				return false;
+			}
+
+			if (getAction().getConceptRoleNameIssue() != null) {
+				setIssueMessage(getAction().getLocales().localizedForKey(getAction().getConceptRoleNameIssue()), IssueMessageType.ERROR);
 				return false;
 			}
 
@@ -143,6 +153,19 @@ public class CreateNewRelationalConceptWizard extends FlexoActionWizard<CreateNe
 				getAction().setNewConceptName(newConceptName);
 				getPropertyChangeSupport().firePropertyChange("newConceptName", oldValue, newConceptName);
 				getPropertyChangeSupport().firePropertyChange("renderer", null, getRenderer());
+				checkValidity();
+			}
+		}
+
+		public String getConceptRoleName() {
+			return getAction().getConceptRoleName();
+		}
+
+		public void setConceptRoleName(String conceptRoleName) {
+			if (conceptRoleName != null && !conceptRoleName.equals(getConceptRoleName())) {
+				String oldValue = getConceptRoleName();
+				getAction().setConceptRoleName(conceptRoleName);
+				getPropertyChangeSupport().firePropertyChange("conceptRoleName", oldValue, conceptRoleName);
 				checkValidity();
 			}
 		}

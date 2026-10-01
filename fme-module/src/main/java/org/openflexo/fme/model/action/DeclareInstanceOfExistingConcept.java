@@ -240,7 +240,7 @@ public class DeclareInstanceOfExistingConcept extends AbstractInstantiateConcept
 
 		// We will here bypass the classical DropScheme
 		flexoConceptInstance.setFlexoConcept(grConcept);
-		flexoConceptInstance.setFlexoPropertyValue(FMEFreeModel.CONCEPT_ROLE_NAME, conceptInstance);
+		flexoConceptInstance.setFlexoPropertyValue(FMEFreeModel.conceptRoleName(grConcept), conceptInstance);
 
 		// In case of GRStrategy is to redefine concept shape, we now need to set GR of all instances
 		if (grConceptWasExisting) {
