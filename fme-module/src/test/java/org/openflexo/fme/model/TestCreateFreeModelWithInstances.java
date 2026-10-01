@@ -389,7 +389,7 @@ public class TestCreateFreeModelWithInstances extends OpenflexoProjectAtRunTimeT
 		action.doAction();
 		assertTrue(action.hasActionExecutionSucceeded());
 
-		FMEInspectorAssertions.assertInspectorIsValid(action.getNewFlexoConcept(), "sourceConceptSelector", "destinationConceptSelector");
+		FMEInspectorAssertions.assertInspectorIsValid(action.getNewFlexoConcept(), "sourceTutuConceptSelector", "destinationTutuConceptSelector");
 		FMEInspectorAssertions.assertDerivesToConceptualInspector(action.getNewGRFlexoConcept());
 	}
 

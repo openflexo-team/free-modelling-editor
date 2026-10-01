@@ -38,6 +38,7 @@
 
 package org.openflexo.fme.controller.action;
 
+import java.awt.Dimension;
 import java.awt.Image;
 import java.util.logging.Logger;
 
@@ -68,11 +69,18 @@ public class CreateNewRelationalConceptWizard extends FlexoActionWizard<CreateNe
 	public CreateNewRelationalConceptWizard(CreateNewRelationalConcept action, FlexoController controller) {
 		super(action, controller);
 		addStep(configureNewConcept = new ConfigureNewRelationalConcept());
+		addStep(new ConfigureNewConceptStructureStep(action.getStructure(), action.getLocales(), controller.getApplicationContext()));
 	}
 
 	@Override
 	public String getWizardTitle() {
 		return getAction().getLocales().localizedForKey("create_new_relational_concept");
+	}
+
+	@Override
+	public Dimension getExtraSize() {
+		// Room for the table of properties of the second step
+		return new Dimension(0, 150);
 	}
 
 	@Override
@@ -129,8 +137,18 @@ public class CreateNewRelationalConceptWizard extends FlexoActionWizard<CreateNe
 				return false;
 			}
 
-			if (getAction().getConceptRoleNameIssue() != null) {
-				setIssueMessage(getAction().getLocales().localizedForKey(getAction().getConceptRoleNameIssue()), IssueMessageType.ERROR);
+			if (getFromConcept() == null) {
+				setIssueMessage(getAction().getLocales().localizedForKey("no_source_concept_defined"), IssueMessageType.ERROR);
+				return false;
+			}
+
+			if (getToConcept() == null) {
+				setIssueMessage(getAction().getLocales().localizedForKey("no_destination_concept_defined"), IssueMessageType.ERROR);
+				return false;
+			}
+
+			if (getAction().getRelationEndNamesIssue() != null) {
+				setIssueMessage(getAction().getLocales().localizedForKey(getAction().getRelationEndNamesIssue()), IssueMessageType.ERROR);
 				return false;
 			}
 
@@ -157,15 +175,35 @@ public class CreateNewRelationalConceptWizard extends FlexoActionWizard<CreateNe
 			}
 		}
 
-		public String getConceptRoleName() {
-			return getAction().getConceptRoleName();
+		/** The default names of the roles depend on the related concepts */
+		private void relayRoleNames() {
+			getPropertyChangeSupport().firePropertyChange("fromRoleName", null, getFromRoleName());
+			getPropertyChangeSupport().firePropertyChange("toRoleName", null, getToRoleName());
+			getPropertyChangeSupport().firePropertyChange("renderer", null, getRenderer());
 		}
 
-		public void setConceptRoleName(String conceptRoleName) {
-			if (conceptRoleName != null && !conceptRoleName.equals(getConceptRoleName())) {
-				String oldValue = getConceptRoleName();
-				getAction().setConceptRoleName(conceptRoleName);
-				getPropertyChangeSupport().firePropertyChange("conceptRoleName", oldValue, conceptRoleName);
+		public String getFromRoleName() {
+			return getAction().getFromRoleName();
+		}
+
+		public void setFromRoleName(String name) {
+			if (name != null && !name.equals(getFromRoleName())) {
+				String oldValue = getFromRoleName();
+				getAction().setFromRoleName(name);
+				getPropertyChangeSupport().firePropertyChange("fromRoleName", oldValue, getFromRoleName());
+				checkValidity();
+			}
+		}
+
+		public String getToRoleName() {
+			return getAction().getToRoleName();
+		}
+
+		public void setToRoleName(String name) {
+			if (name != null && !name.equals(getToRoleName())) {
+				String oldValue = getToRoleName();
+				getAction().setToRoleName(name);
+				getPropertyChangeSupport().firePropertyChange("toRoleName", oldValue, getToRoleName());
 				checkValidity();
 			}
 		}
@@ -183,6 +221,7 @@ public class CreateNewRelationalConceptWizard extends FlexoActionWizard<CreateNe
 				FlexoConcept oldValue = getFromConcept();
 				getAction().setFromConcept(concept);
 				getPropertyChangeSupport().firePropertyChange("fromConcept", oldValue, concept);
+				relayRoleNames();
 				checkValidity();
 			}
 		}
@@ -196,6 +235,7 @@ public class CreateNewRelationalConceptWizard extends FlexoActionWizard<CreateNe
 				FlexoConcept oldValue = getToConcept();
 				getAction().setToConcept(concept);
 				getPropertyChangeSupport().firePropertyChange("toConcept", oldValue, concept);
+				relayRoleNames();
 				checkValidity();
 			}
 		}

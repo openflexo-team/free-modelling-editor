@@ -79,16 +79,41 @@ public class NewConceptStructure extends PropertyChangedSupportDefaultImplementa
 	private final LocalizedDelegate locales;
 	private final List<PropertyEntry<?>> propertiesEntries = new ArrayList<>();
 	private String labelPropertyName = FMEConceptualModel.NAME_ROLE_NAME;
+	private final boolean labelRequired;
+	// Names the properties of the concept cannot take, since the concept already has a property of that name
+	private final Set<String> reservedPropertyNames = new HashSet<>();
 	private String conceptRoleName = FMEFreeModel.CONCEPT_ROLE_NAME;
 	private Supplier<String> contextIssue;
 	// The name each entry had when last seen: renaming the entry giving the label makes the label follow
 	private final Map<PropertyEntry<?>, String> knownNames = new IdentityHashMap<>();
 
+	/**
+	 * The structure of a classic concept: a <code>name</code> and a <code>description</code> by default, and the <code>name</code> labels
+	 * the instances
+	 */
 	public NewConceptStructure() {
+		this(true);
+	}
+
+	/**
+	 * The structure of a relational concept: no property by default, and no label property since the label of its instances (the one of its
+	 * connector) is given by a renderer
+	 */
+	public static NewConceptStructure forRelationalConcept() {
+		return new NewConceptStructure(false);
+	}
+
+	private NewConceptStructure(boolean classicConcept) {
 		// The entries only use their locales for the progress messages of the actions creating the properties
 		this.locales = FlexoLocalization.getMainLocalizer();
-		propertiesEntries.add(newPrimitiveEntry(FMEConceptualModel.NAME_ROLE_NAME));
-		propertiesEntries.add(newPrimitiveEntry(FMEConceptualModel.DESCRIPTION_ROLE_NAME));
+		this.labelRequired = classicConcept;
+		if (classicConcept) {
+			propertiesEntries.add(newPrimitiveEntry(FMEConceptualModel.NAME_ROLE_NAME));
+			propertiesEntries.add(newPrimitiveEntry(FMEConceptualModel.DESCRIPTION_ROLE_NAME));
+		}
+		else {
+			labelPropertyName = null;
+		}
 	}
 
 	private PropertyEntry<?> newPrimitiveEntry(String name) {
@@ -154,7 +179,7 @@ public class NewConceptStructure extends PropertyChangedSupportDefaultImplementa
 		getPropertyChangeSupport().firePropertyChange(PROPERTIES_ENTRIES, removed, added);
 		getPropertyChangeSupport().firePropertyChange(STRING_PROPERTIES_NAMES, null, getStringPropertiesNames());
 		// The label property is one of the properties: it must still exist
-		if (!getStringPropertiesNames().contains(labelPropertyName)) {
+		if (labelRequired && !getStringPropertiesNames().contains(labelPropertyName)) {
 			setLabelPropertyName(getStringPropertiesNames().isEmpty() ? null : getStringPropertiesNames().get(0));
 		}
 	}
@@ -187,6 +212,35 @@ public class NewConceptStructure extends PropertyChangedSupportDefaultImplementa
 			}
 		}
 		return returned;
+	}
+
+	/**
+	 * Whether the instances of the concept are labelled with one of its String properties: true for a classic concept, false for a
+	 * relational one
+	 */
+	/**
+	 * Sets the names the properties cannot take, since the concept already has a property of that name (the roles pointing to the concepts a
+	 * relational concept relates, for instance)
+	 */
+	public void setReservedPropertyNames(java.util.Collection<String> names) {
+		reservedPropertyNames.clear();
+		reservedPropertyNames.addAll(names);
+		getPropertyChangeSupport().firePropertyChange(PROPERTIES_ENTRIES, null, propertiesEntries);
+	}
+
+	/**
+	 * The reason why supplied name cannot be the name of a role of a relational concept pointing to a concept it relates, as the key of a
+	 * localized message, or null when it can: it must be a valid property name, and not a name the concept or its instances already use
+	 */
+	public static String relationEndNameIssue(String name) {
+		if (!FMENames.isValidPropertyName(name) || RESERVED_ROLE_NAMES.contains(name)) {
+			return "invalid_relation_end_name";
+		}
+		return null;
+	}
+
+	public boolean getLabelRequired() {
+		return labelRequired;
 	}
 
 	public String getLabelPropertyName() {
@@ -252,14 +306,14 @@ public class NewConceptStructure extends PropertyChangedSupportDefaultImplementa
 			if (entry.getName() == null || !FMENames.isValidPropertyName(entry.getName())) {
 				return "invalid_property_name";
 			}
-			if (!names.add(entry.getName())) {
+			if (!names.add(entry.getName()) || reservedPropertyNames.contains(entry.getName())) {
 				return "duplicate_property_name";
 			}
 			if (entry.getPropertyType() != PropertyType.PRIMITIVE) {
 				return "only_primitive_properties_are_supported";
 			}
 		}
-		if (labelPropertyName == null || !getStringPropertiesNames().contains(labelPropertyName)) {
+		if (labelRequired && (labelPropertyName == null || !getStringPropertiesNames().contains(labelPropertyName))) {
 			return "no_string_property_for_the_label";
 		}
 		String roleNameIssue = conceptRoleNameIssue(conceptRoleName, null);

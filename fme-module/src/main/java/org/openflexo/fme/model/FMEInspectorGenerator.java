@@ -434,10 +434,10 @@ public class FMEInspectorGenerator {
 
 			if (isRelationship(concept)) {
 				builder.readOnlyTextField(RELATIONSHIP_ENTRY_NAME, CONCEPT + ".render");
-				builder.property(concept.getAccessibleProperty(FMEConceptualModel.FROM_CONCEPT_ROLE_NAME), CONCEPT);
-				builder.property(concept.getAccessibleProperty(FMEConceptualModel.TO_CONCEPT_ROLE_NAME), CONCEPT);
-				shown.add(FMEConceptualModel.FROM_CONCEPT_ROLE_NAME);
-				shown.add(FMEConceptualModel.TO_CONCEPT_ROLE_NAME);
+				builder.property(concept.getAccessibleProperty(FMEConceptualModel.fromRoleName(concept)), CONCEPT);
+				builder.property(concept.getAccessibleProperty(FMEConceptualModel.toRoleName(concept)), CONCEPT);
+				shown.add(FMEConceptualModel.fromRoleName(concept));
+				shown.add(FMEConceptualModel.toRoleName(concept));
 			}
 			else {
 				// As it has always been: the "Type" entry shows the name of the concept instance, read-only
@@ -477,10 +477,10 @@ public class FMEInspectorGenerator {
 			List<String> shown = new ArrayList<>();
 
 			if (isRelationship(concept)) {
-				builder.property(concept.getAccessibleProperty(FMEConceptualModel.FROM_CONCEPT_ROLE_NAME), DATA);
-				builder.property(concept.getAccessibleProperty(FMEConceptualModel.TO_CONCEPT_ROLE_NAME), DATA);
-				shown.add(FMEConceptualModel.FROM_CONCEPT_ROLE_NAME);
-				shown.add(FMEConceptualModel.TO_CONCEPT_ROLE_NAME);
+				builder.property(concept.getAccessibleProperty(FMEConceptualModel.fromRoleName(concept)), DATA);
+				builder.property(concept.getAccessibleProperty(FMEConceptualModel.toRoleName(concept)), DATA);
+				shown.add(FMEConceptualModel.fromRoleName(concept));
+				shown.add(FMEConceptualModel.toRoleName(concept));
 			}
 			else {
 				String label = FMEConceptualModel.labelPropertyName(concept);
@@ -524,8 +524,7 @@ public class FMEInspectorGenerator {
 	}
 
 	private static boolean isRelationship(FlexoConcept concept) {
-		return concept.getAccessibleProperty(FMEConceptualModel.FROM_CONCEPT_ROLE_NAME) instanceof FlexoConceptInstanceRole
-				&& concept.getAccessibleProperty(FMEConceptualModel.TO_CONCEPT_ROLE_NAME) instanceof FlexoConceptInstanceRole;
+		return FMEConceptualModel.isRelationship(concept);
 	}
 
 	/**

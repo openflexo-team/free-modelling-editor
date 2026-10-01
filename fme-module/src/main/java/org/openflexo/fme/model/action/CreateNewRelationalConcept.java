@@ -38,6 +38,7 @@
 
 package org.openflexo.fme.model.action;
 
+import java.util.Arrays;
 import java.util.Vector;
 import java.util.logging.Logger;
 
@@ -105,7 +106,10 @@ public class CreateNewRelationalConcept extends FMEAction<CreateNewRelationalCon
 	private FlexoConcept fromGRConcept;
 	private FlexoConcept toGRConcept;
 
-	private String conceptRoleName = FMEFreeModel.CONCEPT_ROLE_NAME;
+	private NewConceptStructure structure;
+	// The names the user typed for the roles pointing to the related concepts: null while the default ones apply
+	private String fromRoleName;
+	private String toRoleName;
 
 	private FlexoConcept newFlexoConcept;
 	private FlexoConcept newGRFlexoConcept;
@@ -125,8 +129,9 @@ public class CreateNewRelationalConcept extends FMEAction<CreateNewRelationalCon
 	protected void doAction(Object context) throws FlexoException {
 
 		// Now we create the new concept
-		newFlexoConcept = getFocusedObject().getConceptualModel().getRelationalFlexoConcept(getNewConceptName(), getFromConcept(),
-				getToConcept(), getEditor(), this);
+		newFlexoConcept = getFocusedObject().getConceptualModel().getRelationalFlexoConcept(getNewConceptName(), getNewConceptDescription(),
+				getStructure().getPropertiesEntries(), getFromRoleName(), getToRoleName(), getFromConcept(), getToConcept(), getEditor(),
+				this);
 		newFlexoConcept.setRenderer(getRenderer());
 
 		// Now we create the new concept GR
@@ -135,25 +140,109 @@ public class CreateNewRelationalConcept extends FMEAction<CreateNewRelationalCon
 	}
 
 	/**
-	 * The name of the role the graphical representation of the relationship uses to point to its instance (<code>representedConcept</code>
-	 * by default)
+	 * The properties of the relational concept to create (none by default, besides its source and destination concepts), and the identifier
+	 * of its instance in its graphical representation
 	 */
-	public String getConceptRoleName() {
-		return conceptRoleName;
+	public NewConceptStructure getStructure() {
+		if (structure == null) {
+			structure = NewConceptStructure.forRelationalConcept();
+			structure.setReservedPropertyNames(Arrays.asList(getFromRoleName(), getToRoleName()));
+			structure.setContextIssue(() -> NewConceptStructure.conceptRoleNameIssue(structure.getConceptRoleName(), getFocusedObject()));
+			structure.getPropertyChangeSupport().addPropertyChangeListener(evt -> {
+				boolean wasValid = isValid();
+				getPropertyChangeSupport().firePropertyChange("isValid", wasValid, isValid());
+			});
+		}
+		return structure;
 	}
 
-	public void setConceptRoleName(String conceptRoleName) {
+	/**
+	 * The name of the role of the relational concept pointing to its source concept: what the user typed, or by default the name of that
+	 * concept in lower case (<code>star</code> for <code>Star</code>). When both ends are the same concept they are told apart with a
+	 * prefix (<code>sourceStar</code> and <code>destinationStar</code>).
+	 */
+	public String getFromRoleName() {
+		return fromRoleName != null ? fromRoleName : getDefaultFromRoleName();
+	}
+
+	public void setFromRoleName(String name) {
+		String formerName = getFromRoleName();
+		// An empty name gives back the default one
+		fromRoleName = StringUtils.isEmpty(name) || name.equals(getDefaultFromRoleName()) ? null : name;
+		relationEndNamesChanged("fromRoleName", formerName, getFromRoleName());
+	}
+
+	/** Same as {@link #getFromRoleName()}, for the destination concept */
+	public String getToRoleName() {
+		return toRoleName != null ? toRoleName : getDefaultToRoleName();
+	}
+
+	public void setToRoleName(String name) {
+		String formerName = getToRoleName();
+		toRoleName = StringUtils.isEmpty(name) || name.equals(getDefaultToRoleName()) ? null : name;
+		relationEndNamesChanged("toRoleName", formerName, getToRoleName());
+	}
+
+	public String getDefaultFromRoleName() {
+		return defaultRoleName(getFromConcept(), FMEConceptualModel.FROM_CONCEPT_ROLE_NAME, "source");
+	}
+
+	public String getDefaultToRoleName() {
+		return defaultRoleName(getToConcept(), FMEConceptualModel.TO_CONCEPT_ROLE_NAME, "destination");
+	}
+
+	private String defaultRoleName(FlexoConcept concept, String fallback, String prefix) {
+		if (concept == null || StringUtils.isEmpty(concept.getName())) {
+			return fallback;
+		}
+		String lowerCase = Character.toLowerCase(concept.getName().charAt(0)) + concept.getName().substring(1);
+		if (getFromConcept() != null && getFromConcept() == getToConcept()) {
+			return prefix + concept.getName();
+		}
+		return lowerCase;
+	}
+
+	private void relatedConceptsChanged() {
+		rendererBM = null;
+		relationEndNamesChanged("fromRoleName", null, getFromRoleName());
+		relationEndNamesChanged("toRoleName", null, getToRoleName());
+	}
+
+	private void relationEndNamesChanged(String property, String oldValue, String newValue) {
 		boolean wasValid = isValid();
-		this.conceptRoleName = conceptRoleName;
-		getPropertyChangeSupport().firePropertyChange("conceptRoleName", null, conceptRoleName);
+		rendererBM = null;
+		if (structure != null) {
+			structure.setReservedPropertyNames(Arrays.asList(getFromRoleName(), getToRoleName()));
+		}
+		getPropertyChangeSupport().firePropertyChange(property, oldValue, newValue);
+		getPropertyChangeSupport().firePropertyChange("renderer", null, getRenderer());
 		getPropertyChangeSupport().firePropertyChange("isValid", wasValid, isValid());
 	}
 
 	/**
-	 * The reason why the identifier of the relationship cannot be used, as the key of a localized message, or null
+	 * The reason why the names of the roles pointing to the related concepts cannot be used, as the key of a localized message, or null
 	 */
-	public String getConceptRoleNameIssue() {
-		return NewConceptStructure.conceptRoleNameIssue(conceptRoleName, getFocusedObject());
+	public String getRelationEndNamesIssue() {
+		String issue = NewConceptStructure.relationEndNameIssue(getFromRoleName());
+		if (issue == null) {
+			issue = NewConceptStructure.relationEndNameIssue(getToRoleName());
+		}
+		if (issue == null && getFromRoleName().equals(getToRoleName())) {
+			issue = "same_relation_end_names";
+		}
+		return issue;
+	}
+
+	/**
+	 * The name of the role the graphical representation of the relationship uses to point to its instance (<code>representedConcept</code>
+	 * by default)
+	 */
+	public String getConceptRoleName() {
+		return getStructure().getConceptRoleName();
+	}
+
+	public void setConceptRoleName(String conceptRoleName) {
+		getStructure().setConceptRoleName(conceptRoleName);
 	}
 
 	public String getNewConceptName() {
@@ -187,6 +276,7 @@ public class CreateNewRelationalConcept extends FMEAction<CreateNewRelationalCon
 			FlexoConcept oldValue = this.fromConcept;
 			this.fromConcept = fromConcept;
 			getPropertyChangeSupport().firePropertyChange("fromConcept", oldValue, fromConcept);
+			relatedConceptsChanged();
 		}
 	}
 
@@ -199,6 +289,7 @@ public class CreateNewRelationalConcept extends FMEAction<CreateNewRelationalCon
 			FlexoConcept oldValue = this.toConcept;
 			this.toConcept = toConcept;
 			getPropertyChangeSupport().firePropertyChange("toConcept", oldValue, toConcept);
+			relatedConceptsChanged();
 		}
 	}
 
@@ -237,6 +328,10 @@ public class CreateNewRelationalConcept extends FMEAction<CreateNewRelationalCon
 	@Override
 	public boolean isValid() {
 
+		if (getFromConcept() == null || getToConcept() == null || getRelationEndNamesIssue() != null) {
+			return false;
+		}
+
 		if (StringUtils.isEmpty(newConceptName) || !FMENames.isValidConceptName(newConceptName)) {
 			return false;
 		}
@@ -246,7 +341,7 @@ public class CreateNewRelationalConcept extends FMEAction<CreateNewRelationalCon
 			return false;
 		}
 
-		return getConceptRoleNameIssue() == null;
+		return getStructure().isValid();
 	}
 
 	private DataBinding<String> renderer;
@@ -254,7 +349,8 @@ public class CreateNewRelationalConcept extends FMEAction<CreateNewRelationalCon
 	private RendererBindingModel rendererBM;
 
 	private String getDefaultRendererAsString() {
-		return "\"" + getNewConceptName() + " \"+sourceConcept.name+\" - \"+destinationConcept.name";
+		return "\"" + getNewConceptName() + " \"+" + getFromRoleName() + ".stringRepresentation+\" - \"+" + getToRoleName()
+				+ ".stringRepresentation";
 	}
 
 	public DataBinding<String> getDefaultRenderer() {
@@ -330,12 +426,12 @@ public class CreateNewRelationalConcept extends FMEAction<CreateNewRelationalCon
 			super(getFocusedObject().getAccessedVirtualModel() != null ? getFocusedObject().getAccessedVirtualModel().getBindingModel()
 					: null);
 
-			BindingVariable fromConceptBV = new BindingVariable(FMEConceptualModel.FROM_CONCEPT_ROLE_NAME,
+			BindingVariable fromConceptBV = new BindingVariable(getFromRoleName(),
 					FlexoConceptInstanceType.getFlexoConceptInstanceType(getFromConcept()));
 			fromConceptBV.setCacheable(false);
 			addToBindingVariables(fromConceptBV);
 
-			BindingVariable toConceptBV = new BindingVariable(FMEConceptualModel.TO_CONCEPT_ROLE_NAME,
+			BindingVariable toConceptBV = new BindingVariable(getToRoleName(),
 					FlexoConceptInstanceType.getFlexoConceptInstanceType(getToConcept()));
 			toConceptBV.setCacheable(false);
 			addToBindingVariables(toConceptBV);

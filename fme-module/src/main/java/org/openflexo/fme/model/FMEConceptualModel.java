@@ -39,6 +39,7 @@
 package org.openflexo.fme.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
@@ -54,6 +55,7 @@ import org.openflexo.foundation.fml.CreationScheme;
 import org.openflexo.foundation.fml.DeletionScheme;
 import org.openflexo.foundation.fml.FlexoBehaviourParameter.WidgetType;
 import org.openflexo.foundation.fml.FlexoConcept;
+import org.openflexo.foundation.fml.FlexoConceptInstanceRole;
 import org.openflexo.foundation.fml.FlexoProperty;
 import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.action.CreateEditionAction;
@@ -185,6 +187,69 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Same as {@link #getRelationalFlexoConcept(String, FlexoConcept, FlexoConcept, FlexoEditor, FlexoAction)}, with a description and
+	 * properties for the created concept (besides its source and destination concepts).
+	 * 
+	 * @param description
+	 *            description of the concept (stored as its <code>@Description</code>), or null
+	 * @param properties
+	 *            the properties to create, or null. A non-empty list needs an owner action, since properties are created by embedded actions
+	 */
+	public FlexoConcept getRelationalFlexoConcept(String conceptName, String description, List<PropertyEntry<?>> properties,
+			String fromRoleName, String toRoleName, FlexoConcept fromConcept, FlexoConcept toConcept, FlexoEditor editor,
+			FlexoAction<?, ?, ?> ownerAction) throws FlexoException;
+
+	/**
+	 * The two roles of supplied relational concept pointing to the concepts it relates: the source one, then the destination one. They are
+	 * the roles reading their instance in the container (<code>container</code>), whatever their names, which are chosen when the
+	 * relational concept is created ({@link #FROM_CONCEPT_ROLE_NAME} and {@link #TO_CONCEPT_ROLE_NAME} by default).
+	 * 
+	 * @return null when supplied concept is not a relational one
+	 */
+	public static List<FlexoConceptInstanceRole> relationEnds(FlexoConcept concept) {
+		if (concept == null) {
+			return null;
+		}
+		List<FlexoConceptInstanceRole> returned = new ArrayList<>();
+		for (FlexoProperty<?> property : concept.getDeclaredProperties()) {
+			if (property instanceof FlexoConceptInstanceRole) {
+				FlexoConceptInstanceRole role = (FlexoConceptInstanceRole) property;
+				if (role.getVirtualModelInstance() != null && role.getVirtualModelInstance().isSet()
+						&& "container".equals(role.getVirtualModelInstance().toString())) {
+					returned.add(role);
+				}
+			}
+		}
+		if (returned.size() < 2) {
+			// Concepts created before the names were configurable
+			FlexoProperty<?> from = concept.getAccessibleProperty(FROM_CONCEPT_ROLE_NAME);
+			FlexoProperty<?> to = concept.getAccessibleProperty(TO_CONCEPT_ROLE_NAME);
+			if (from instanceof FlexoConceptInstanceRole && to instanceof FlexoConceptInstanceRole) {
+				return Arrays.asList((FlexoConceptInstanceRole) from, (FlexoConceptInstanceRole) to);
+			}
+			return null;
+		}
+		return returned.subList(0, 2);
+	}
+
+	/** Whether supplied concept is a relational one: it relates two concepts */
+	public static boolean isRelationship(FlexoConcept concept) {
+		return relationEnds(concept) != null;
+	}
+
+	/** Name of the source role of supplied relational concept */
+	public static String fromRoleName(FlexoConcept concept) {
+		List<FlexoConceptInstanceRole> ends = relationEnds(concept);
+		return ends != null ? ends.get(0).getName() : FROM_CONCEPT_ROLE_NAME;
+	}
+
+	/** Name of the destination role of supplied relational concept */
+	public static String toRoleName(FlexoConcept concept) {
+		List<FlexoConceptInstanceRole> ends = relationEnds(concept);
+		return ends != null ? ends.get(1).getName() : TO_CONCEPT_ROLE_NAME;
 	}
 
 	public String getName();
@@ -374,6 +439,14 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 		@Override
 		public FlexoConcept getRelationalFlexoConcept(String conceptName, FlexoConcept fromConcept, FlexoConcept toConcept,
 				FlexoEditor editor, FlexoAction<?, ?, ?> ownerAction) throws FlexoException {
+			return getRelationalFlexoConcept(conceptName, null, null, FROM_CONCEPT_ROLE_NAME, TO_CONCEPT_ROLE_NAME, fromConcept, toConcept,
+					editor, ownerAction);
+		}
+
+		@Override
+		public FlexoConcept getRelationalFlexoConcept(String conceptName, String description, List<PropertyEntry<?>> properties,
+				String fromRoleName, String toRoleName, FlexoConcept fromConcept, FlexoConcept toConcept, FlexoEditor editor,
+				FlexoAction<?, ?, ?> ownerAction) throws FlexoException {
 
 			conceptName = FMENames.conceptName(conceptName);
 			FlexoConcept returned = getAccessedVirtualModel().getFlexoConcept(conceptName);
@@ -391,6 +464,18 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 				action.setNewFlexoConceptName(conceptName);
 				action.doAction();
 				returned = action.getNewFlexoConcept();
+
+				if (StringUtils.isNotEmpty(description)) {
+					returned.setDescription(description);
+				}
+				if (properties != null && !properties.isEmpty()) {
+					if (ownerAction == null) {
+						throw new IllegalArgumentException("Properties are created by embedded actions: an owner action is required");
+					}
+					for (PropertyEntry<?> entry : properties) {
+						entry.performCreateProperty(returned, ownerAction);
+					}
+				}
 
 				// Create new CreationScheme
 				CreateFlexoBehaviour createCreationScheme = null;
@@ -430,7 +515,7 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 				else {
 					fromConceptRoleAction = CreateFlexoConceptInstanceRole.actionType.makeNewAction(returned, null, editor);
 				}
-				fromConceptRoleAction.setRoleName(FROM_CONCEPT_ROLE_NAME);
+				fromConceptRoleAction.setRoleName(fromRoleName);
 				fromConceptRoleAction.setFlexoConceptInstanceType(fromConcept);
 				fromConceptRoleAction.setVirtualModelInstance(new DataBinding<VirtualModelInstance<?, ?>>("container"));
 				fromConceptRoleAction.doAction();
@@ -443,7 +528,7 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 				else {
 					toConceptRoleAction = CreateFlexoConceptInstanceRole.actionType.makeNewAction(returned, null, editor);
 				}
-				toConceptRoleAction.setRoleName(TO_CONCEPT_ROLE_NAME);
+				toConceptRoleAction.setRoleName(toRoleName);
 				toConceptRoleAction.setFlexoConceptInstanceType(toConcept);
 				toConceptRoleAction.setVirtualModelInstance(new DataBinding<VirtualModelInstance<?, ?>>("container"));
 				toConceptRoleAction.doAction();
@@ -457,7 +542,7 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 				else {
 					createSourceConceptParameter = CreateGenericBehaviourParameter.actionType.makeNewAction(creationScheme, null, editor);
 				}
-				createSourceConceptParameter.setParameterName(FROM_CONCEPT_ROLE_NAME);
+				createSourceConceptParameter.setParameterName(fromRoleName);
 				createSourceConceptParameter.setParameterType(fromConcept.getInstanceType());
 				createSourceConceptParameter.setWidgetType(WidgetType.CUSTOM_WIDGET);
 				createSourceConceptParameter.doAction();
@@ -471,12 +556,12 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 					setsFromConceptAction = CreateEditionAction.actionType.makeNewAction(creationScheme.getControlGraph(), null, editor);
 				}
 				setsFromConceptAction.setEditionActionClass(ExpressionAction.class);
-				setsFromConceptAction.setAssignation(new DataBinding<>(FROM_CONCEPT_ROLE_NAME));
+				setsFromConceptAction.setAssignation(new DataBinding<>(fromRoleName));
 				setsFromConceptAction.doAction();
 
 				AssignationAction<?> sourceConceptAssignation = (AssignationAction<?>) setsFromConceptAction.getNewEditionAction();
 				((ExpressionAction<?>) sourceConceptAssignation.getAssignableAction())
-						.setExpression(new DataBinding<>("parameters." + FROM_CONCEPT_ROLE_NAME));
+						.setExpression(new DataBinding<>("parameters." + fromRoleName));
 
 				// Create and set destination concept parameter for CreationScheme
 				CreateGenericBehaviourParameter createDestinationConceptParameter = null;
@@ -488,7 +573,7 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 					createDestinationConceptParameter = CreateGenericBehaviourParameter.actionType.makeNewAction(creationScheme, null,
 							editor);
 				}
-				createDestinationConceptParameter.setParameterName(TO_CONCEPT_ROLE_NAME);
+				createDestinationConceptParameter.setParameterName(toRoleName);
 				createDestinationConceptParameter.setParameterType(toConcept.getInstanceType());
 				createDestinationConceptParameter.setWidgetType(WidgetType.CUSTOM_WIDGET);
 				createDestinationConceptParameter.doAction();
@@ -503,12 +588,12 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 				}
 				// givesNameAction.actionChoice = CreateEditionActionChoice.BuiltInAction;
 				setsToConceptAction.setEditionActionClass(ExpressionAction.class);
-				setsToConceptAction.setAssignation(new DataBinding<>(TO_CONCEPT_ROLE_NAME));
+				setsToConceptAction.setAssignation(new DataBinding<>(toRoleName));
 				setsToConceptAction.doAction();
 
 				AssignationAction<?> destinationConceptAssignation = (AssignationAction<?>) setsToConceptAction.getNewEditionAction();
 				((ExpressionAction<?>) destinationConceptAssignation.getAssignableAction())
-						.setExpression(new DataBinding<>("parameters." + TO_CONCEPT_ROLE_NAME));
+						.setExpression(new DataBinding<>("parameters." + toRoleName));
 
 				FMEInspectorGenerator.updateConceptualInspector(returned);
 			}

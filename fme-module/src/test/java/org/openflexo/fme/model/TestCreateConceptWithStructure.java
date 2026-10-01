@@ -247,6 +247,13 @@ public class TestCreateConceptWithStructure extends OpenflexoProjectAtRunTimeTes
 
 		CreateNewRelationalConcept action = CreateNewRelationalConcept.actionType.makeNewAction(freeModel, null, editor);
 		action.setNewConceptName("Orbits");
+		// Both ends are required
+		assertFalse(action.isValid());
+		action.setFromConcept(starConcept);
+		assertFalse(action.isValid());
+		action.setFromConcept(null);
+		action.setToConcept(personConcept);
+		assertFalse(action.isValid());
 		action.setFromConcept(starConcept);
 		action.setToConcept(personConcept);
 		action.setFromGRConcept(starGRConcept);
@@ -259,8 +266,61 @@ public class TestCreateConceptWithStructure extends OpenflexoProjectAtRunTimeTes
 		assertEquals("representedConcept", FMEFreeModel.CONCEPT_ROLE_NAME);
 		action.setConceptRoleName("orbit");
 		assertTrue(action.isValid());
+
+		// By default, the roles pointing to the related concepts are named after them, in lower case
+		assertEquals("star", action.getFromRoleName());
+		assertEquals("person", action.getToRoleName());
+		// A relationship between a concept and itself tells its ends apart with a prefix
+		action.setToConcept(starConcept);
+		assertEquals("sourceStar", action.getFromRoleName());
+		assertEquals("destinationStar", action.getToRoleName());
+		action.setToConcept(personConcept);
+		assertEquals("star", action.getFromRoleName());
+		assertEquals("person", action.getToRoleName());
+		// They can be changed, but not to something invalid or identical
+		action.setFromRoleName("orbiter");
+		assertEquals("orbiter", action.getFromRoleName());
+		action.setToRoleName("orbiter");
+		assertEquals("same_relation_end_names", action.getRelationEndNamesIssue());
+		assertFalse(action.isValid());
+		action.setToRoleName("Bad name");
+		assertEquals("invalid_relation_end_name", action.getRelationEndNamesIssue());
+		action.setToRoleName("");
+		assertEquals("person", action.getToRoleName());
+		action.setToRoleName("planet");
+		assertTrue(action.isValid());
+
+		// A relational concept has no property by default, nor any label property (its connector is labelled by its renderer)
+		assertTrue(action.getStructure().getPropertiesEntries().isEmpty());
+		assertFalse(action.getStructure().getLabelRequired());
+
+		// Its properties are configured like the ones of a classic concept, but cannot hide its source and destination concepts
+		action.setNewConceptDescription("A star orbits a planet");
+		PropertyEntry<?> since = action.getStructure().newPropertyEntry();
+		since.setName("orbiter");
+		assertEquals("duplicate_property_name", action.getStructure().getIssue());
+		assertFalse(action.isValid());
+		since.setName("since");
+		since.setType(Integer.class);
+		since.setDescription("Since when");
+		assertTrue(action.isValid());
 		action.doAction();
 		assertTrue(action.hasActionExecutionSucceeded());
+
+		FlexoConcept orbits = action.getNewFlexoConcept();
+		assertEquals("orbiter", FMEConceptualModel.fromRoleName(orbits));
+		assertEquals("planet", FMEConceptualModel.toRoleName(orbits));
+		assertNotNull(orbits.getAccessibleProperty("orbiter"));
+		assertNotNull(orbits.getAccessibleProperty("planet"));
+		assertNull(orbits.getAccessibleProperty("sourceConcept"));
+		assertEquals(starConcept, ((org.openflexo.foundation.fml.FlexoConceptInstanceRole) orbits.getAccessibleProperty("orbiter")).getFlexoConceptType());
+		assertEquals(personConcept, ((org.openflexo.foundation.fml.FlexoConceptInstanceRole) orbits.getAccessibleProperty("planet")).getFlexoConceptType());
+		assertNotNull(orbits.getAccessibleProperty("since"));
+		assertEquals("Since when", orbits.getAccessibleProperty("since").getDescription());
+		assertNull(orbits.getAccessibleProperty("name"));
+		assertEquals("A star orbits a planet", orbits.getDescription());
+		assertEquals(1, orbits.getCreationSchemes().size());
+		assertEquals(2, orbits.getCreationSchemes().get(0).getParameters().size());
 
 		FlexoConcept orbitsGR = action.getNewGRFlexoConcept();
 		assertEquals("orbit", FMEFreeModel.conceptRoleName(orbitsGR));

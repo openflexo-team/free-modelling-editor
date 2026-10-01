@@ -53,11 +53,11 @@
 		<TextField data="data.structure.conceptRoleName" columns="20" localize="true"
 			constraints="twocols(expandHorizontally=true;expandVertically=false;location=right)"
 			name="ConceptRoleNameTextField" />
-		<Label label="bind_shape_label_to" align="right" localize="true"
+		<Label label="bind_shape_label_to" align="right" localize="true" visible="data.structure.labelRequired"
 			constraints="twocols(expandHorizontally=false;expandVertically=false;location=left)"
 			name="LabelPropertyLabel" />
 		<DropDown list="data.structure.stringPropertiesNames"
-			data="data.structure.labelPropertyName" iteratorClassName="java.lang.String"
+			data="data.structure.labelPropertyName" iteratorClassName="java.lang.String" visible="data.structure.labelRequired"
 			showText="true" showIcon="false" localize="true"
 			constraints="twocols(expandHorizontally=true;expandVertically=false;location=right)"
 			name="LabelPropertyDropDown" />
