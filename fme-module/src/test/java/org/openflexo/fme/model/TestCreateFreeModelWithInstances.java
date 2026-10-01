@@ -47,6 +47,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
@@ -196,6 +197,12 @@ public class TestCreateFreeModelWithInstances extends OpenflexoProjectAtRunTimeT
 
 		assertEquals(1, freeModelInstance.getInstances(freeModelInstance.getFreeModel().getNoneFlexoConcept(editor, null)).size());
 
+		// Whoever displays the representation of the shape (the browser of the instances caches its label) reads it before the shape is
+		// promoted - it is then the one of the NoneGR - then must keep following it once it is the one of the new concept
+		final List<String> representations = new ArrayList<>();
+		tutu.getStringRepresentation();
+		tutu.getPropertyChangeSupport().addPropertyChangeListener("stringRepresentation", evt -> representations.add((String) evt.getNewValue()));
+
 		CreateNewConceptFromNoneConcept action = CreateNewConceptFromNoneConcept.actionType.makeNewAction(tutu, null, editor);
 		action.setNewConceptName("TutuConcept");
 		action.setNewConceptDescription("This is the description for TutuConcept");
@@ -225,6 +232,18 @@ public class TestCreateFreeModelWithInstances extends OpenflexoProjectAtRunTimeT
 		assertEquals(1, freeModelInstance.getAccessedVirtualModelInstance().getFlexoConceptInstances().size());
 
 		tutuConceptGR = tutu.getFlexoConcept();
+
+		// The representation of the shape follows the new concept instance it points to
+		FlexoConceptInstance tutuConceptInstance = tutu.getFlexoActor(FMEFreeModel.conceptRoleName(tutuConceptGR));
+		assertNotNull(tutuConceptInstance);
+		String formerName = tutuConceptInstance.getFlexoPropertyValue("name");
+		assertEquals(formerName, tutu.getStringRepresentation());
+		representations.clear();
+		tutuConceptInstance.setFlexoPropertyValue("name", "Renamed tutu");
+		assertEquals("Renamed tutu", tutu.getStringRepresentation());
+		assertFalse("the representation of the shape was not notified", representations.isEmpty());
+		assertEquals("Renamed tutu", representations.get(representations.size() - 1));
+		tutuConceptInstance.setFlexoPropertyValue("name", formerName);
 		// The GR hands inspection entirely to the conceptual concept - it has no inspector of its own to generate
 		FMEInspectorAssertions.assertDerivesToConceptualInspector(tutu);
 		FMEInspectorAssertions.assertInspectorIsValid(tutuConcept, "nameTextField", "descriptionTextArea");
