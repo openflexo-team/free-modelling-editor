@@ -112,7 +112,9 @@ public class DynamicPalette extends DiagramEditorPaletteModel implements Propert
 				ShapeGraphicalRepresentation.MINIMAL_HEIGHT, ShapeGraphicalRepresentation.MAXIMAL_HEIGHT,
 				ShapeGraphicalRepresentation.MAXIMAL_WIDTH, ShapeGraphicalRepresentation.MINIMAL_HEIGHT,
 				ShapeGraphicalRepresentation.ALLOW_TO_LEAVE_BOUNDS, ShapeGraphicalRepresentation.SELECTED_BACKGROUND,
-				ShapeGraphicalRepresentation.FOCUSED_FOREGROUND };
+				ShapeGraphicalRepresentation.FOCUSED_FOREGROUND,
+				// The anchor of a floating label follows the shape when it is resized
+				GraphicalRepresentation.ABSOLUTE_TEXT_X, GraphicalRepresentation.ABSOLUTE_TEXT_Y };
 
 		public static <T> T valueForParameter(GraphicalRepresentation gr, GRProperty<T> parameter) {
 			if (gr.hasKey(parameter.getName())) {
