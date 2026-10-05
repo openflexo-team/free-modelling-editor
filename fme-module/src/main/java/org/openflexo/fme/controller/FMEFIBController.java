@@ -106,6 +106,17 @@ public class FMEFIBController extends FlexoFIBController {
 		return null;
 	}
 
+	/**
+	 * Same as {@link #getFlexoConceptName(FlexoConcept)}, for a browser label: the name displayed is the one of the conceptual concept
+	 * (or <code>concept</code> is the NoneGR), and nothing tells a browser to compute it again when the concept is renamed - a binding
+	 * observes the properties its path goes through, and the arguments of a function, not what the function reads. Giving it
+	 * <code>concept.name</code> as second argument is what makes the label follow the rename of the GR concept (renamed along with the
+	 * conceptual one, see RenameFMEConcept).
+	 */
+	public String getFlexoConceptName(FlexoConcept concept, String observedGRConceptName) {
+		return getFlexoConceptName(concept);
+	}
+
 	public String getFlexoConceptName(FlexoConcept concept) {
 		if (getFreeModellingProjectNature() != null) {
 			if (concept.getName().equals(FMEFreeModel.NONE_FLEXO_CONCEPT_NAME)) {

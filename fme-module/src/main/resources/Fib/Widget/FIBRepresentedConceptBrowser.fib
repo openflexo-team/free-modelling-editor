@@ -20,7 +20,7 @@
 				<Children data="freeModel.usedTopLevelFlexoConcepts" name="usedTopLevelFlexoConcepts" />
 			</BrowserElement>
 			<BrowserElement dataClassName="org.openflexo.foundation.fml.FlexoConcept"
-				label="controller.getFlexoConceptName(concept)" icon="controller.iconForObject(concept)"
+				label="controller.getFlexoConceptName(concept, concept.name)" icon="controller.iconForObject(concept)"
 				isEditable="false" filtered="false" defaultVisible="true" name="concept">
 				<Children data="data.getInstances(concept)" name="instances" />
 			</BrowserElement>

@@ -57,7 +57,7 @@ public class TestFMELocalization {
 		LocalizedDelegateImpl locales = new LocalizedDelegateImpl(ResourceLocator.locateResource("FlexoLocalization/FreeModellingEditor"),
 				null, false, false);
 		for (String key : new String[] { "invalid_concept_name", "invalid_property_name",
-				"duplicate_property_name", "no_source_concept_defined", "no_destination_concept_defined", "source_role_name", "destination_role_name", "invalid_relation_end_name", "same_relation_end_names", "concept_instance_role_name", "invalid_concept_role_name", "concept_role_name_already_used", "no_string_property_for_the_label", "bind_shape_label_to", "no_concept_name_defined" }) {
+				"duplicate_property_name", "no_source_concept_defined", "no_destination_concept_defined", "source_role_name", "destination_role_name", "invalid_relation_end_name", "same_relation_end_names", "concept_instance_role_name", "invalid_concept_role_name", "concept_role_name_already_used", "no_string_property_for_the_label", "bind_shape_label_to", "no_concept_name_defined", "rename_concept", "configure_rename_concept", "cannot_rename_that_concept", "that_is_already_the_name_of_the_concept", "a_concept_with_that_name_already_exists" }) {
 			String english = locales.localizedForKeyAndLanguage(key, Language.ENGLISH);
 			assertNotNull(key, english);
 			assertTrue("'" + key + "' is not defined in English: " + english, !english.equals(key) && english.trim().length() > 0);

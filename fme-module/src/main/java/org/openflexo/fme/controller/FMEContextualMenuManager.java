@@ -38,6 +38,12 @@
 
 package org.openflexo.fme.controller;
 
+import javax.swing.JPopupMenu;
+
+import org.openflexo.fme.model.action.RenameFMEConcept;
+import org.openflexo.foundation.FlexoObject;
+import org.openflexo.foundation.fml.action.RenameFlexoConcept;
+import org.openflexo.foundation.action.FlexoActionFactory;
 import org.openflexo.selection.ContextualMenuManager;
 
 /**
@@ -50,6 +56,23 @@ public class FMEContextualMenuManager extends ContextualMenuManager {
 
 	public FMEContextualMenuManager(FMESelectionManager selectionManager, FMEController controller) {
 		super(selectionManager, controller);
+	}
+
+	/**
+	 * A concept of the FreeModellingEditor is renamed with its graphical representation: the generic rename of a concept, which would
+	 * leave them apart, is not offered on it
+	 */
+	@Override
+	public JPopupMenu makePopupMenu(FlexoObject focusedObject, MenuFilter filter) {
+		return super.makePopupMenu(focusedObject, new MenuFilter() {
+			@Override
+			public boolean acceptActionType(FlexoActionFactory<?, ?, ?> actionType) {
+				if (actionType == RenameFlexoConcept.actionType && RenameFMEConcept.conceptToRename(focusedObject) != null) {
+					return false;
+				}
+				return filter.acceptActionType(actionType);
+			}
+		});
 	}
 
 }

@@ -304,8 +304,40 @@ public class FMEInspectorGenerator {
 		if (returned == null || returned.getIODelegate() == null || concept.getDeclaringCompilationUnit() == null) {
 			return null;
 		}
-		Resource conventional = concept.getDeclaringCompilationUnit().getContainedArtefact(inspectorFileName(concept));
+		Resource conventional = concept.getDeclaringCompilationUnit().getContainedArtefact(ownInspectorFileName(concept));
 		return conventional != null && conventional.equals(returned.getIODelegate().getSerializationArtefactAsResource()) ? returned : null;
+	}
+
+	/**
+	 * The file name of the inspector of supplied concept: the one it declares (<code>@Inspector("...")</code>), which a rename of the
+	 * concept leaves as it was, otherwise the conventional one
+	 */
+	private static String ownInspectorFileName(FlexoConcept concept) {
+		if (concept.hasMetaData(FlexoConcept.INSPECTOR_METADATA)
+				&& concept.getMetaData(FlexoConcept.INSPECTOR_METADATA) instanceof SingleMetaData) {
+			String declared = concept.getSingleMetaData(FlexoConcept.INSPECTOR_METADATA, String.class);
+			if (declared != null && !declared.isEmpty()) {
+				return declared;
+			}
+		}
+		return inspectorFileName(concept);
+	}
+
+	/**
+	 * Called once supplied conceptual concept has been renamed: the inspector it owns keeps its file (see
+	 * {@link FlexoConcept#freezeConventionalUIComponentNames()}) and what its author wrote in it, but its root, which names the tab
+	 * showing the concept, follows the concept.
+	 */
+	public static void conceptRenamed(FlexoConcept concept, String oldConceptName) {
+		FIBComponentResource resource = ownInspectorResource(concept);
+		FIBComponent root = resource != null ? resource.getComponent() : null;
+		if (root != null) {
+			if ((lowerCamelCase(oldConceptName) + "Inspector").equals(root.getName())) {
+				root.setName(lowerCamelCase(concept.getName()) + "Inspector");
+				root.setModified(true);
+				resource.setModified(true);
+			}
+		}
 	}
 
 	private static String inspectorFileName(FlexoConcept concept) {

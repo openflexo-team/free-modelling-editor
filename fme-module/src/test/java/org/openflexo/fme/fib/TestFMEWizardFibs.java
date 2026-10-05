@@ -111,6 +111,11 @@ public class TestFMEWizardFibs extends GenericFIBTestCase {
 	}
 
 	@Test
+	public void testConfigureRenameConcept() {
+		validateFIB("Fib/Wizard/ConfigureRenameConcept.fib");
+	}
+
+	@Test
 	public void testConfigureNewConceptStructure() {
 		validateFIB("Fib/Wizard/ConfigureNewConceptStructure.fib");
 	}

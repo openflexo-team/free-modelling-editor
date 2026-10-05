@@ -195,6 +195,12 @@ public interface FMEDiagramFreeModel extends FMEFreeModel {
 		}
 
 		@Override
+		public void conceptRenamed(FlexoConcept grConcept, FlexoConcept concept, String oldConceptName) {
+			super.conceptRenamed(grConcept, concept, oldConceptName);
+			FMEDiagramConceptRenamer.rename(getTypedDiagramModelSlot(), grConcept, concept, oldConceptName);
+		}
+
+		@Override
 		public DiagramPalette getConceptsPalette() throws FlexoException {
 			if (getDiagramSpecification().getPalette(PALETTE_NAME) == null) {
 				// Should not happen, but...

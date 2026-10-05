@@ -186,6 +186,19 @@ public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellin
 			FlexoEditor editor, FlexoAction<?, ?, ?> ownerAction, boolean createWhenNotExistant);
 
 	/**
+	 * Called once supplied concept and its GR concept have been renamed: brings up to date what this free model derived from the name
+	 * of the concept as text, which nothing follows by itself (default value of the drop parameter, palette element, default shape...)
+	 * 
+	 * @param grConcept
+	 *            the GR concept of this free model, already renamed
+	 * @param concept
+	 *            the conceptual concept, already renamed
+	 * @param oldConceptName
+	 *            name of the conceptual concept before the rename
+	 */
+	public void conceptRenamed(FlexoConcept grConcept, FlexoConcept concept, String oldConceptName);
+
+	/**
 	 * The role of supplied GR concept pointing to the instance of the conceptual concept it stands for, or null for the NoneGR.<br>
 	 * It is the role reading the sample data, whatever its name: the name is chosen when the concept is created, {@link #CONCEPT_ROLE_NAME}
 	 * being the default.
@@ -513,6 +526,11 @@ public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellin
 			}
 
 			return returned;
+		}
+
+		@Override
+		public void conceptRenamed(FlexoConcept grConcept, FlexoConcept concept, String oldConceptName) {
+			// Nothing derived from the name by default
 		}
 
 		protected abstract void configureGRFlexoConcept(FlexoConcept returned, FlexoConcept concept, FlexoConcept containerConceptGR,

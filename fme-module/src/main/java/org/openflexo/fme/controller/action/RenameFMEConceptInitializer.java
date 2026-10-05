@@ -40,66 +40,42 @@ package org.openflexo.fme.controller.action;
 
 import java.util.logging.Logger;
 
-import org.openflexo.fme.controller.FMEController;
-import org.openflexo.selection.SelectionManager;
+import org.openflexo.components.wizard.Wizard;
+import org.openflexo.components.wizard.WizardDialog;
+import org.openflexo.fme.model.action.RenameFMEConcept;
+import org.openflexo.foundation.FlexoObject;
+import org.openflexo.foundation.action.FlexoActionRunnable;
+import org.openflexo.gina.controller.FIBController.Status;
+import org.openflexo.view.controller.ActionInitializer;
 import org.openflexo.view.controller.ControllerActionInitializer;
 
-/**
- * 
- * Action initializing for this module
- * 
- * @author yourname
- */
-public class FMEControllerActionInitializer extends ControllerActionInitializer {
+public class RenameFMEConceptInitializer extends ActionInitializer<RenameFMEConcept, FlexoObject, FlexoObject> {
 
 	private static final Logger logger = Logger.getLogger(ControllerActionInitializer.class.getPackage().getName());
 
-	public FMEControllerActionInitializer(FMEController controller) {
-		super(controller);
-	}
-
-	protected FMEController getFMEController() {
-		return (FMEController) getController();
-	}
-
-	protected SelectionManager getFMESelectionManager() {
-		return getFMEController().getSelectionManager();
+	public RenameFMEConceptInitializer(ControllerActionInitializer actionInitializer) {
+		super(RenameFMEConcept.actionType, actionInitializer);
 	}
 
 	@Override
-	public void initializeActions() {
-		super.initializeActions();
+	protected FlexoActionRunnable<RenameFMEConcept, FlexoObject, FlexoObject> getDefaultInitializer() {
+		return (e, action) -> {
+			logger.info("RenameFMEConcept initializer");
+			Wizard wizard = new RenameFMEConceptWizard(action, getController());
+			WizardDialog dialog = new WizardDialog(wizard, getController());
+			dialog.showDialog();
+			// Operation cancelled unless validated
+			return dialog.getStatus() == Status.VALIDATED;
+		};
+	}
 
-		new GivesFMENatureInitializer(this);
-
-		new CreateFMEDiagramFreeModelInitializer(this);
-		new InstantiateFMEDiagramFreeModelInitializer(this);
-		// new CreateFreeModelFromPPTInitializer(this);
-
-		new CreateFMEPPTFreeModelInitializer(this);
-
-		new DropFreeShapeInitializer(this);
-		new CreateNewConceptInitializer(this);
-		new CreateNewRelationalConceptInitializer(this);
-		new CreateNewConceptFromNoneInitializer(this);
-		new DeclareInstanceOfExistingConceptInitializer(this);
-		// new CreateFreeModelDiagramInitializer(this);
-		// new CreateFreeModelDiagramFromPPTInitializer(this);
-
-		// Actions applied on Diagram Elements(not currently associated with flexo concept)
-		new CreateNewConceptFromDiagramElementInitializer(this);
-		new DeclareInstanceOfExistingConceptFromDiagramElementInitializer(this);
-		new CreateNewFMEPropertyFromDiagramConnectorInitializer(this);
-
-		new DeleteFreeModelInitializer(this);
-		new DeleteFreeModelInstanceInitializer(this);
-
-		new DeleteFlexoConceptObjectsInitializer(this);
-
-		new CreateNewFMEPropertyInitializer(this);
-		new InstantiateNewFMEPropertyInitializer(this);
-
-		new RenameFMEConceptInitializer(this);
+	@Override
+	protected FlexoActionRunnable<RenameFMEConcept, FlexoObject, FlexoObject> getDefaultFinalizer() {
+		return (e, action) -> {
+			logger.info("RenameFMEConcept finalizer");
+			getController().selectAndFocusObject(action.getFocusedObject());
+			return true;
+		};
 	}
 
 }
