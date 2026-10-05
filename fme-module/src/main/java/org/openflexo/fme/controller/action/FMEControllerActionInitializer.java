@@ -83,6 +83,7 @@ public class FMEControllerActionInitializer extends ControllerActionInitializer 
 		new CreateNewRelationalConceptInitializer(this);
 		new CreateNewConceptFromNoneInitializer(this);
 		new DeclareInstanceOfExistingConceptInitializer(this);
+		new DisconnectInstanceFromConceptInitializer(this);
 		// new CreateFreeModelDiagramInitializer(this);
 		// new CreateFreeModelDiagramFromPPTInitializer(this);
 

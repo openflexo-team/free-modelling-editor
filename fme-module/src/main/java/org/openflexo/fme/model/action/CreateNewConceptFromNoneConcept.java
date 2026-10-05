@@ -243,7 +243,7 @@ public class CreateNewConceptFromNoneConcept extends AbstractInstantiateConcept<
 			return false;
 		}
 
-		if (getFocusedObject().getVirtualModelInstance().getVirtualModel().getFlexoConcept(newConceptName) != null) {
+		if (getFMEFreeModel() != null && getFMEFreeModel().isConceptNameUsed(newConceptName)) {
 			return false;
 		}
 

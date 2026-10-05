@@ -130,7 +130,7 @@ public class CreateNewConceptFromNoneConceptWizard extends FlexoActionWizard<Cre
 				return false;
 			}
 
-			if (getFlexoConceptInstance().getVirtualModelInstance().getVirtualModel().getFlexoConcept(getNewConceptName()) != null) {
+			if (getAction().getFMEFreeModel().isConceptNameUsed(getNewConceptName())) {
 				setIssueMessage(getAction().getLocales().localizedForKey("a_concept_with_that_name_already_exists"),
 						IssueMessageType.ERROR);
 				return false;

@@ -336,7 +336,7 @@ public class CreateNewRelationalConcept extends FMEAction<CreateNewRelationalCon
 			return false;
 		}
 
-		if (getFocusedObject().getAccessedVirtualModel().getFlexoConcept(newConceptName) != null) {
+		if (getFocusedObject().isConceptNameUsed(newConceptName)) {
 			// a_concept_with_that_name_already_exists
 			return false;
 		}

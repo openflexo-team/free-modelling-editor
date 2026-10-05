@@ -186,6 +186,12 @@ public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellin
 			FlexoEditor editor, FlexoAction<?, ?, ?> ownerAction, boolean createWhenNotExistant);
 
 	/**
+	 * Whether supplied name is already used for a concept of this free model: by a concept of the conceptual model, or by a concept
+	 * (its GR, named after it with the <code>GR</code> suffix, or any other) of the free model itself.
+	 */
+	public boolean isConceptNameUsed(String conceptName);
+
+	/**
 	 * Called once supplied concept and its GR concept have been renamed: brings up to date what this free model derived from the name
 	 * of the concept as text, which nothing follows by itself (default value of the drop parameter, palette element, default shape...)
 	 * 
@@ -526,6 +532,19 @@ public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellin
 			}
 
 			return returned;
+		}
+
+		@Override
+		public boolean isConceptNameUsed(String conceptName) {
+			if (conceptName == null) {
+				return false;
+			}
+			if (getConceptualModel() != null && getConceptualModel().getAccessedVirtualModel() != null
+					&& getConceptualModel().getAccessedVirtualModel().getFlexoConcept(conceptName) != null) {
+				return true;
+			}
+			return getAccessedVirtualModel() != null && (getAccessedVirtualModel().getFlexoConcept(conceptName) != null
+					|| getAccessedVirtualModel().getFlexoConcept(conceptName + "GR") != null);
 		}
 
 		@Override

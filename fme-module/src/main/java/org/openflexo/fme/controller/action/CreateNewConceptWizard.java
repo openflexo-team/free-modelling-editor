@@ -129,7 +129,7 @@ public class CreateNewConceptWizard extends FlexoActionWizard<CreateNewConcept> 
 				return false;
 			}
 
-			if (getFreeModel().getAccessedVirtualModel().getFlexoConcept(getNewConceptName()) != null) {
+			if (getFreeModel().isConceptNameUsed(getNewConceptName())) {
 				setIssueMessage(getAction().getLocales().localizedForKey("a_concept_with_that_name_already_exists"),
 						IssueMessageType.ERROR);
 				return false;
