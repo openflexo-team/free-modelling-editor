@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Panel layout="twocols" darkLevel="0" opaque="false" border="empty" borderTop="5"
+	borderBottom="5" borderLeft="5" borderRight="5"
+	controllerClassName="org.openflexo.view.controller.FlexoFIBController"
+	dataClassName="org.openflexo.fme.controller.action.GeneralizeConceptsWizard$ConfigureGeneralizeConcepts">
+	<Label label="generalized_concepts" align="right" localize="true"
+		constraints="twocols(expandHorizontally=false;expandVertically=false;location=left)"
+		name="ConceptsLabel" />
+	<Label data="data.conceptsSummary"
+		constraints="twocols(expandHorizontally=true;expandVertically=false;location=right)"
+		name="ConceptsSummary" />
+	<Label label="name" align="right" localize="true"
+		constraints="twocols(expandHorizontally=false;expandVertically=false;location=left)"
+		name="NameLabel" />
+	<TextField data="data.newConceptName" columns="30" localize="true"
+		constraints="twocols(expandHorizontally=true;expandVertically=false;location=right)"
+		name="NameTextField" />
+	<Label label="description" align="right" localize="true"
+		constraints="twocols(expandHorizontally=false;expandVertically=false;location=left)"
+		name="DescriptionLabel" />
+	<TextField data="data.newConceptDescription" columns="30" localize="true"
+		constraints="twocols(expandHorizontally=true;expandVertically=false;location=right)"
+		name="DescriptionTextField" />
+	<Label label="abstract" align="right" localize="true"
+		constraints="twocols(expandHorizontally=false;expandVertically=false;location=left)"
+		name="AbstractLabel" />
+	<CheckBox data="data.newConceptAbstract" localize="true"
+		constraints="twocols(expandHorizontally=true;expandVertically=false;location=right)"
+		name="AbstractCheckBox" />
+	<Label label="super_concepts" align="right" localize="true"
+		constraints="twocols(expandHorizontally=false;expandVertically=false;location=left)"
+		name="ParentsLabel" />
+	<Label data="data.parentsSummary"
+		constraints="twocols(expandHorizontally=true;expandVertically=false;location=right)"
+		name="ParentsSummary" />
+	<LocalizedDictionary />
+</Panel>

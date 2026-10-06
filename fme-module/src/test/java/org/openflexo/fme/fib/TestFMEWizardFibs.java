@@ -111,6 +111,16 @@ public class TestFMEWizardFibs extends GenericFIBTestCase {
 	}
 
 	@Test
+	public void testChooseFactoredProperties() {
+		validateFIB("Fib/Wizard/ChooseFactoredProperties.fib");
+	}
+
+	@Test
+	public void testConfigureGeneralizeConcepts() {
+		validateFIB("Fib/Wizard/ConfigureGeneralizeConcepts.fib");
+	}
+
+	@Test
 	public void testConfigureRenameConcept() {
 		validateFIB("Fib/Wizard/ConfigureRenameConcept.fib");
 	}

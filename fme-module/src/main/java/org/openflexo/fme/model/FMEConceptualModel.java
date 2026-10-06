@@ -160,6 +160,19 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 			String labelPropertyName, FlexoConcept containerConcept, FlexoEditor editor, FlexoAction<?, ?, ?> ownerAction)
 			throws FlexoException;
 
+	/**
+	 * Makes supplied conceptual concept instantiable: gives it a creation scheme (the parameter of which is the label of the instance, which
+	 * it stores in the property named <code>labelPropertyName</code>), a deletion scheme and the renderer of its instances
+	 * (<code>instance.<i>label property</i></code>)
+	 * 
+	 * @param concept
+	 *            a concept declaring the String property named <code>labelPropertyName</code> (or inheriting it)
+	 * @param ownerAction
+	 *            the action making the concept instantiable: it must not be null, since behaviours are created by embedded actions
+	 */
+	public void makeInstantiable(FlexoConcept concept, String labelPropertyName, FlexoEditor editor, FlexoAction<?, ?, ?> ownerAction)
+			throws FlexoException;
+
 	/** The renderer of a conceptual concept created by this editor: <code>instance.<i>label property</i></code> */
 	static final Pattern LABEL_RENDERER = Pattern.compile("instance\\.([\\p{L}\\p{Nd}$_]+)");
 
@@ -172,8 +185,9 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 		if (concept == null) {
 			return null;
 		}
-		if (concept.getRenderer() != null && concept.getRenderer().isSet()) {
-			Matcher matcher = LABEL_RENDERER.matcher(String.valueOf(concept.getRenderer()));
+		// Own renderer, or the one inherited from a super concept
+		if (concept.getApplicableRenderer() != null && concept.getApplicableRenderer().isSet()) {
+			Matcher matcher = LABEL_RENDERER.matcher(String.valueOf(concept.getApplicableRenderer()));
 			if (matcher.matches() && concept.getAccessibleProperty(matcher.group(1)) != null) {
 				return matcher.group(1);
 			}
@@ -181,7 +195,7 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 		if (concept.getAccessibleProperty(NAME_ROLE_NAME) != null) {
 			return NAME_ROLE_NAME;
 		}
-		for (FlexoProperty<?> property : concept.getDeclaredProperties()) {
+		for (FlexoProperty<?> property : concept.getAccessibleProperties()) {
 			if (String.class.equals(property.getResultingType())) {
 				return property.getName();
 			}
@@ -297,6 +311,75 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 		}
 
 		@Override
+		public void makeInstantiable(FlexoConcept concept, String labelPropertyName, FlexoEditor editor, FlexoAction<?, ?, ?> ownerAction)
+				throws FlexoException {
+
+			FlexoConcept returned = concept;
+
+			// Create new CreationScheme
+			CreateFlexoBehaviour createCreationScheme = null;
+			if (ownerAction != null) {
+				createCreationScheme = CreateFlexoBehaviour.actionType.makeNewEmbeddedAction(returned, null, ownerAction);
+			}
+			else {
+				createCreationScheme = CreateFlexoBehaviour.actionType.makeNewAction(returned, null, editor);
+			}
+			createCreationScheme.setAnonymous(true);
+			// createCreationScheme.setFlexoBehaviourName("create");
+			createCreationScheme.setFlexoBehaviourClass(CreationScheme.class);
+			createCreationScheme.doAction();
+			CreationScheme creationScheme = (CreationScheme) createCreationScheme.getNewFlexoBehaviour();
+			creationScheme.setSkipConfirmationPanel(true);
+
+			// Create new CreationScheme parameter
+			CreateGenericBehaviourParameter createNameParameter = null;
+			if (ownerAction != null) {
+				createNameParameter = CreateGenericBehaviourParameter.actionType.makeNewEmbeddedAction(creationScheme, null,
+						ownerAction);
+			}
+			else {
+				createNameParameter = CreateGenericBehaviourParameter.actionType.makeNewAction(creationScheme, null, editor);
+			}
+			createNameParameter.setParameterName(CONCEPT_NAME_PARAMETER);
+			createNameParameter.setParameterType(String.class);
+			createNameParameter.setWidgetType(WidgetType.TEXT_FIELD);
+			createNameParameter.doAction();
+
+			CreateEditionAction givesNameAction = null;
+			if (ownerAction != null) {
+				givesNameAction = CreateEditionAction.actionType.makeNewEmbeddedAction(creationScheme.getControlGraph(), null,
+						ownerAction);
+			}
+			else {
+				givesNameAction = CreateEditionAction.actionType.makeNewAction(creationScheme.getControlGraph(), null, editor);
+			}
+			// givesNameAction.actionChoice = CreateEditionActionChoice.BuiltInAction;
+			givesNameAction.setEditionActionClass(ExpressionAction.class);
+			givesNameAction.setAssignation(new DataBinding<>(labelPropertyName));
+			givesNameAction.doAction();
+
+			AssignationAction<?> nameAssignation = (AssignationAction<?>) givesNameAction.getNewEditionAction();
+			((ExpressionAction<?>) nameAssignation.getAssignableAction()).setExpression(new DataBinding<>("parameters.conceptName"));
+
+			// Create new DeletionScheme
+			CreateFlexoBehaviour createDeletionScheme = null;
+			if (ownerAction != null) {
+				createDeletionScheme = CreateFlexoBehaviour.actionType.makeNewEmbeddedAction(returned, null, ownerAction);
+			}
+			else {
+				createDeletionScheme = CreateFlexoBehaviour.actionType.makeNewAction(returned, null, editor);
+			}
+			createDeletionScheme.setAnonymous(true);
+			// createDeletionScheme.setFlexoBehaviourName("delete");
+			createDeletionScheme.setFlexoBehaviourClass(DeletionScheme.class);
+			createDeletionScheme.doAction();
+			DeletionScheme deletionScheme = (DeletionScheme) createDeletionScheme.getNewFlexoBehaviour();
+			deletionScheme.setSkipConfirmationPanel(true);
+
+			returned.setRenderer(new DataBinding<String>("instance." + labelPropertyName));
+		}
+
+		@Override
 		public FlexoConcept getFlexoConcept(String conceptName, String description, List<PropertyEntry<?>> properties,
 				String labelPropertyName, FlexoConcept containerConcept, FlexoEditor editor, FlexoAction<?, ?, ?> ownerAction)
 				throws FlexoException {
@@ -356,67 +439,7 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 					}
 				}
 
-				// Create new CreationScheme
-				CreateFlexoBehaviour createCreationScheme = null;
-				if (ownerAction != null) {
-					createCreationScheme = CreateFlexoBehaviour.actionType.makeNewEmbeddedAction(returned, null, ownerAction);
-				}
-				else {
-					createCreationScheme = CreateFlexoBehaviour.actionType.makeNewAction(returned, null, editor);
-				}
-				createCreationScheme.setAnonymous(true);
-				// createCreationScheme.setFlexoBehaviourName("create");
-				createCreationScheme.setFlexoBehaviourClass(CreationScheme.class);
-				createCreationScheme.doAction();
-				CreationScheme creationScheme = (CreationScheme) createCreationScheme.getNewFlexoBehaviour();
-				creationScheme.setSkipConfirmationPanel(true);
-
-				// Create new CreationScheme parameter
-				CreateGenericBehaviourParameter createNameParameter = null;
-				if (ownerAction != null) {
-					createNameParameter = CreateGenericBehaviourParameter.actionType.makeNewEmbeddedAction(creationScheme, null,
-							ownerAction);
-				}
-				else {
-					createNameParameter = CreateGenericBehaviourParameter.actionType.makeNewAction(creationScheme, null, editor);
-				}
-				createNameParameter.setParameterName(CONCEPT_NAME_PARAMETER);
-				createNameParameter.setParameterType(String.class);
-				createNameParameter.setWidgetType(WidgetType.TEXT_FIELD);
-				createNameParameter.doAction();
-
-				CreateEditionAction givesNameAction = null;
-				if (ownerAction != null) {
-					givesNameAction = CreateEditionAction.actionType.makeNewEmbeddedAction(creationScheme.getControlGraph(), null,
-							ownerAction);
-				}
-				else {
-					givesNameAction = CreateEditionAction.actionType.makeNewAction(creationScheme.getControlGraph(), null, editor);
-				}
-				// givesNameAction.actionChoice = CreateEditionActionChoice.BuiltInAction;
-				givesNameAction.setEditionActionClass(ExpressionAction.class);
-				givesNameAction.setAssignation(new DataBinding<>(labelPropertyName));
-				givesNameAction.doAction();
-
-				AssignationAction<?> nameAssignation = (AssignationAction<?>) givesNameAction.getNewEditionAction();
-				((ExpressionAction<?>) nameAssignation.getAssignableAction()).setExpression(new DataBinding<>("parameters.conceptName"));
-
-				// Create new DeletionScheme
-				CreateFlexoBehaviour createDeletionScheme = null;
-				if (ownerAction != null) {
-					createDeletionScheme = CreateFlexoBehaviour.actionType.makeNewEmbeddedAction(returned, null, ownerAction);
-				}
-				else {
-					createDeletionScheme = CreateFlexoBehaviour.actionType.makeNewAction(returned, null, editor);
-				}
-				createDeletionScheme.setAnonymous(true);
-				// createDeletionScheme.setFlexoBehaviourName("delete");
-				createDeletionScheme.setFlexoBehaviourClass(DeletionScheme.class);
-				createDeletionScheme.doAction();
-				DeletionScheme deletionScheme = (DeletionScheme) createDeletionScheme.getNewFlexoBehaviour();
-				deletionScheme.setSkipConfirmationPanel(true);
-
-				returned.setRenderer(new DataBinding<String>("instance." + labelPropertyName));
+				makeInstantiable(returned, labelPropertyName, editor, ownerAction);
 
 				FMEInspectorGenerator.updateConceptualInspector(returned);
 			}

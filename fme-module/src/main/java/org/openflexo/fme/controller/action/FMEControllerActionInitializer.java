@@ -101,6 +101,7 @@ public class FMEControllerActionInitializer extends ControllerActionInitializer 
 		new InstantiateNewFMEPropertyInitializer(this);
 
 		new RenameFMEConceptInitializer(this);
+		new GeneralizeConceptsInitializer(this);
 	}
 
 }

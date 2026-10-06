@@ -483,7 +483,7 @@ public class FMEInspectorGenerator {
 			}
 
 			// The properties the user added to the concept, in declaration order
-			for (FlexoProperty<?> property : concept.getDeclaredProperties()) {
+			for (FlexoProperty<?> property : concept.getAccessibleProperties()) {
 				if (!shown.contains(property.getName())) {
 					builder.property(property, CONCEPT);
 				}
@@ -526,7 +526,7 @@ public class FMEInspectorGenerator {
 			// The properties the user added to the concept, in declaration order - this concept's own inspector is now the
 			// ONLY one a GR deriving to it shows (@Inspector(derived=...)), so nothing may be left out here any more than it
 			// would be in GRContents, which this mirrors.
-			for (FlexoProperty<?> property : concept.getDeclaredProperties()) {
+			for (FlexoProperty<?> property : concept.getAccessibleProperties()) {
 				if (!shown.contains(property.getName())) {
 					builder.property(property, DATA);
 				}
