@@ -163,6 +163,7 @@ public class ConceptsPalette extends ContextualPalette {
 		// and not about an FMLControlledDiagramShape. That's why we need to notify again the new diagram element's parent, to be
 		// sure that the Drawing can discover that the new shape is FML-controlled
 		rootContainer.getPropertyChangeSupport().firePropertyChange(DiagramElement.INVALIDATE, null, rootContainer);
+		getEditor().selectDroppedInstance(action.getNewFlexoConceptInstance());
 		// FlexoConceptInstance newFlexoConceptInstance = action.getNewFlexoConceptInstance();
 		// System.out.println("Created newFlexoConceptInstance:" + newFlexoConceptInstance);
 
@@ -197,6 +198,7 @@ public class ConceptsPalette extends ContextualPalette {
 		// sure that the Drawing can discover that the new shape is FML-controlled
 		container.getDiagramElement().getPropertyChangeSupport().firePropertyChange(DiagramElement.INVALIDATE, null,
 				container.getDiagramElement());
+		getEditor().selectDroppedInstance(action.getNewFlexoConceptInstance());
 		// FlexoConceptInstance newFlexoConceptInstance = action.getNewFlexoConceptInstance();
 		// System.out.println("Created newFlexoConceptInstance:" + newFlexoConceptInstance);
 

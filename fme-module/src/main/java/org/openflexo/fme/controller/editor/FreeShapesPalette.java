@@ -193,7 +193,7 @@ public class FreeShapesPalette extends CommonPalette {
 
 		getEditor().setCurrentTool(EditorTool.SelectionTool);
 
-		// getEditor().setSelectedObject(getEditor().getDrawing().getDrawingTreeNode(newShape));
+		getEditor().selectDroppedInstance(newFlexoConceptInstance);
 
 		return action.hasActionExecutionSucceeded();
 	}
@@ -235,7 +235,7 @@ public class FreeShapesPalette extends CommonPalette {
 		action.setCompoundEdit(edit);
 		action.doAction();
 
-		// Unused DiagramShape newShape = action.getNewShape();
+		DiagramShape newShape = action.getNewShape();
 
 		/*DropShape action = DropShape.actionType.makeNewAction(container, null, getEditor().getFlexoController().getEditor());
 		action.setDiagramFreeModelInstance(getEditor().getDiagramFreeModelInstance());
@@ -256,7 +256,7 @@ public class FreeShapesPalette extends CommonPalette {
 
 		getEditor().setCurrentTool(EditorTool.SelectionTool);
 
-		// getEditor().setSelectedObject(getEditor().getDrawing().getDrawingTreeNode(newShape));
+		getEditor().selectDroppedShape(newShape);
 
 		return action.hasActionExecutionSucceeded();
 	}

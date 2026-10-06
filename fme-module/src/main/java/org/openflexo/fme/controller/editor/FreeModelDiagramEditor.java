@@ -39,8 +39,10 @@
 package org.openflexo.fme.controller.editor;
 
 import java.util.logging.Logger;
+import java.util.List;
 
 import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
 
 import org.openflexo.diana.DianaUtils;
 import org.openflexo.diana.ShapeGraphicalRepresentation;
@@ -55,6 +57,9 @@ import org.openflexo.fme.model.FMEDiagramFreeModelInstance;
 import org.openflexo.fme.model.action.DropShape;
 import org.openflexo.foundation.action.FlexoUndoManager.FlexoActionCompoundEdit;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
+import org.openflexo.technologyadapter.diagram.model.DiagramShape;
+import org.openflexo.technologyadapter.diagram.controller.diagrameditor.FMLControlledDiagramElement;
+import org.openflexo.diana.Drawing.DrawingTreeNode;
 import org.openflexo.gina.controller.FIBController.Status;
 import org.openflexo.gina.model.FIBComponent;
 import org.openflexo.gina.swing.utils.JFIBDialog;
@@ -238,10 +243,50 @@ public class FreeModelDiagramEditor extends FMLControlledDiagramEditor {
 
 		setCurrentTool(EditorTool.SelectionTool);
 
-		// getEditor().setSelectedObject(getEditor().getDrawing().getDrawingTreeNode(newShape));
+		selectDroppedInstance(newFlexoConceptInstance);
 
 		return action.hasActionExecutionSucceeded();
 
+	}
+
+	/**
+	 * Selects, in the diagram, the shape (or the connector) of supplied instance, which has just been created by dropping an element of a
+	 * palette.<br>
+	 * The selection manager already knows the instance (the finalizer of the action selects it) but the drawing does not yet have the node
+	 * representing it: it discovers that it is FML-controlled when its parent is invalidated. The selection is then deferred, once the
+	 * drawing is up to date.
+	 */
+	public void selectDroppedInstance(FlexoConceptInstance flexoConceptInstance) {
+		if (flexoConceptInstance == null) {
+			return;
+		}
+		SwingUtilities.invokeLater(() -> {
+			List<FMLControlledDiagramElement<?, ?>> elements = getDrawing().getFMLControlledDiagramElements(flexoConceptInstance);
+			if (elements != null) {
+				for (FMLControlledDiagramElement<?, ?> element : elements) {
+					DrawingTreeNode<?, ?> node = getDrawing().getDrawingTreeNode(element);
+					if (node != null) {
+						setSelectedObject(node);
+						return;
+					}
+				}
+			}
+		});
+	}
+
+	/**
+	 * Same as {@link #selectDroppedInstance(FlexoConceptInstance)} for a shape which is not the one of any instance
+	 */
+	public void selectDroppedShape(DiagramShape shape) {
+		if (shape == null) {
+			return;
+		}
+		SwingUtilities.invokeLater(() -> {
+			DrawingTreeNode<?, ?> node = getDrawing().getDrawingTreeNode(shape);
+			if (node != null) {
+				setSelectedObject(node);
+			}
+		});
 	}
 
 }
