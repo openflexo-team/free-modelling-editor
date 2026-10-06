@@ -63,6 +63,15 @@ import org.openflexo.foundation.FlexoProject;
 import org.openflexo.inspector.FIBFlexoConceptInstanceInspectorPanel;
 import org.openflexo.module.FlexoModule.WelcomePanel;
 import org.openflexo.pamela.undo.CompoundEdit;
+import javax.swing.SwingUtilities;
+import org.openflexo.foundation.fml.FlexoConcept;
+import org.openflexo.foundation.fml.FlexoConceptInstanceRole;
+import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
+import org.openflexo.foundation.fml.rt.VirtualModelInstance;
+import org.openflexo.inspector.ModuleInspectorController.EmptySelectionActivated;
+import org.openflexo.inspector.ModuleInspectorController.InspectedObjectChanged;
+import org.openflexo.inspector.ModuleInspectorController.MultipleSelectionActivated;
+import org.openflexo.swing.FlexoCollabsiblePanel;
 import org.openflexo.swing.FlexoCollabsiblePanelGroup;
 import org.openflexo.technologyadapter.diagram.controller.DiagramTechnologyAdapterController;
 import org.openflexo.view.ModuleView;
@@ -79,6 +88,7 @@ public class FMEPerspective extends NaturePerspective<FreeModellingProjectNature
 	private final FIBConceptBrowser conceptBrowser;
 
 	private FlexoCollabsiblePanelGroup inspectorPanelGroup;
+	private FlexoCollabsiblePanel representedConceptPanel;
 	private FIBFlexoConceptInstanceInspectorPanel inspectorPanel;
 
 	/**
@@ -107,10 +117,62 @@ public class FMEPerspective extends NaturePerspective<FreeModellingProjectNature
 	public FlexoCollabsiblePanelGroup getInspectorPanelGroup() {
 		if (inspectorPanelGroup == null) {
 			inspectorPanelGroup = getDiagramTechnologyAdapterController(getController()).getInspectors().getPanelGroup();
-			inspectorPanelGroup.insertContentsAtIndex(getController().getModuleLocales().localizedForKey("represented_concept"),
-					inspectorPanel, 0);
+			representedConceptPanel = inspectorPanelGroup.insertContentsAtIndex(
+					getController().getModuleLocales().localizedForKey("represented_concept"), inspectorPanel, 0);
+			getController().getModuleInspectorController().addObserver((o, notification) -> updateInspectorTitle(notification));
 		}
 		return inspectorPanelGroup;
+	}
+
+	/**
+	 * The title of the panel of the inspector follows what is inspected: the name of the concept when it is an instance of a concept, the
+	 * type of the object otherwise (and what it was named at first when nothing, or several objects, are selected)
+	 */
+	private void updateInspectorTitle(Object notification) {
+		String title = null;
+		if (notification instanceof EmptySelectionActivated || notification instanceof MultipleSelectionActivated) {
+			title = getController().getModuleLocales().localizedForKey("represented_concept");
+		}
+		else if (notification instanceof InspectedObjectChanged) {
+			title = titleFor(((InspectedObjectChanged) notification).getInspectedObject());
+		}
+		if (title != null) {
+			final String newTitle = title;
+			SwingUtilities.invokeLater(() -> {
+				if (representedConceptPanel != null) {
+					representedConceptPanel.setTitle(newTitle);
+				}
+			});
+		}
+	}
+
+	private String titleFor(Object inspectedObject) {
+		if (inspectedObject == null) {
+			return getController().getModuleLocales().localizedForKey("represented_concept");
+		}
+		if (inspectedObject instanceof FlexoConceptInstance && !(inspectedObject instanceof VirtualModelInstance)
+				&& ((FlexoConceptInstance) inspectedObject).getFlexoConcept() != null) {
+			return conceptName(((FlexoConceptInstance) inspectedObject).getFlexoConcept());
+		}
+		if (inspectedObject instanceof FlexoObject && ((FlexoObject) inspectedObject).getImplementedInterface() != null) {
+			return ((FlexoObject) inspectedObject).getImplementedInterface().getSimpleName();
+		}
+		return inspectedObject.getClass().getSimpleName();
+	}
+
+	/**
+	 * The name of the concept an instance of supplied concept is an instance of, as the browsers show it: the one of the conceptual concept
+	 * when it is an instance of a GR concept, "unclassified" for what is not an instance of any concept
+	 */
+	private String conceptName(FlexoConcept concept) {
+		if (concept.getName().equals(FMEFreeModel.NONE_FLEXO_CONCEPT_NAME)) {
+			return getController().getModuleLocales().localizedForKey("unclassified");
+		}
+		FlexoConceptInstanceRole conceptRole = FMEFreeModel.conceptRole(concept);
+		if (conceptRole != null && conceptRole.getFlexoConceptType() != null) {
+			return conceptRole.getFlexoConceptType().getName();
+		}
+		return concept.getName();
 	}
 
 	public DiagramTechnologyAdapterController getDiagramTechnologyAdapterController(FlexoController controller) {
