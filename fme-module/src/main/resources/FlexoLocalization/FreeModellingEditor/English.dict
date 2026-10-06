@@ -114,3 +114,6 @@ generalize_ends=Generalize the ends
 relationship_ends=Ends of the relationship
 relationship_ends_have_different_role_names=No end for the super concept: the roles pointing to the ends are not named the same way in all the relationships
 relationship_ends_have_no_common_type=No end for the super concept: the concepts at the ends have no concept in common
+embedding_mode=Embedding mode
+flat_mode=Flat mode
+hierarchical_mode=Hierarchical mode

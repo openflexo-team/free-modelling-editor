@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Panel layout="border" darkLevel="0" dataClassName="org.openflexo.fme.model.FMEFreeModelInstance" controllerClassName="org.openflexo.fme.controller.FMEFIBController">
+<Panel layout="border" darkLevel="0" dataClassName="org.openflexo.fme.model.FMEFreeModelInstance" controllerClassName="org.openflexo.fme.controller.FIBConceptBrowserFIBController">
   <Panel layout="border" darkLevel="0" constraints="border(location=center)">
    <!--   <Table iteratorClassName="org.openflexo.fme.model.Concept" visibleRowCount="3" autoSelectFirstRow="false" createNewRowOnClick="false" boundToSelectionManager="false" showFooter="true" selectionMode="SingleSelection" selected="" localize="true" manageDynamicModel="true" name="list" data="controller.diagramEditor.filteredConcepts" constraints="border(location=center)">
       <IconColumn data="controller.getIcon(iterator)" title="icon" columnWidth="20" resizable="false" displayTitle="false" name="icon" />
@@ -13,8 +13,16 @@
   </Panel>
   <Panel layout="border" borderTitle="Panel" darkLevel="0" constraints="border(location=center)">
     <Panel layout="border" hGap="5" vGap="5" flowAlignment="LEADING" darkLevel="0" constraints="border(location=center)">
-      <TextField data="controller.diagramEditor.conceptFilter" constraints="border(location=north)" name="finder" localize="true" manageDynamicModel="true" columns="7" text="TextField" />
-      <Browser root="data.freeModel.conceptualModel" iteratorClassName="org.openflexo.foundation.FlexoObject" visibleRowCount="5" rowHeight="18" boundToSelectionManager="true" selectionMode="DiscontiguousTreeSelection" showFooter="true" rootVisible="true" showRootsHandle="true" localize="true" enable="" manageDynamicModel="true" name="conceptsBrowser" index="2" constraints="border(location=center)">
+      <Panel layout="border" darkLevel="0" constraints="border(location=north)" name="FilterPanel">
+        <Panel layout="flow" flowAlignment="TRAILING" hGap="5" vGap="1" darkLevel="0" constraints="border(location=north)" name="ModeButtons">
+          <Image localize="true" imageFile="../../Icons/Flat_20x20.png" imageWidth="80" imageHeight="46" sizeAdjustment="OriginalSize" tooltipText="flat_mode" constraints="flow()" name="FlatIcon" clickAction="controller.setViewModeToFlat()" />
+          <Image localize="true" imageFile="../../Icons/HierarchicalModel_20x20.png" imageWidth="80" imageHeight="46" sizeAdjustment="OriginalSize" tooltipText="hierarchical_mode" constraints="flow()" name="HierarchicalIcon" clickAction="controller.setViewModeToHierarchical()" />
+          <Image localize="true" imageFile="../../Icons/Embedding_20x20.png" imageWidth="80" imageHeight="46" sizeAdjustment="OriginalSize" tooltipText="embedding_mode" constraints="flow()" name="EmbeddingIcon" clickAction="controller.setViewModeToEmbedding()" />
+        </Panel>
+        <TextField data="controller.diagramEditor.conceptFilter" constraints="border(location=center)" name="finder" localize="true" manageDynamicModel="true" columns="7" text="TextField" />
+      </Panel>
+      <Panel layout="twocols" darkLevel="0" constraints="border(location=center)" name="BrowsersPanel">
+      <Browser root="data.freeModel.conceptualModel" iteratorClassName="org.openflexo.foundation.FlexoObject" visibleRowCount="5" rowHeight="18" boundToSelectionManager="true" selectionMode="DiscontiguousTreeSelection" showFooter="true" rootVisible="true" showRootsHandle="true" localize="true" enable="" manageDynamicModel="true" name="embeddingConceptsBrowser" visible="controller.viewMode.name==&quot;Embedding&quot;" index="2" constraints="twocols(expandHorizontally=true;expandVertically=true;location=center)">
          <BrowserElement dataClassName="org.openflexo.fme.model.FMEConceptualModel" label="conceptualModel.name" icon="controller.iconForObject(conceptualModel)" isEditable="false" filtered="false" defaultVisible="true" name="conceptualModel">
           <Children data="conceptualModel.accessedVirtualModel.allRootFlexoConcepts" name="children" />
         </BrowserElement>
@@ -26,6 +34,30 @@
 		<BrowserElement dataClassName="org.openflexo.foundation.fml.FlexoProperty"
 			label="flexoProperty.name" icon="controller.iconForObject(flexoProperty)" name="flexoProperty" />
       </Browser>
+      <Browser root="data.freeModel.conceptualModel" iteratorClassName="org.openflexo.foundation.FlexoObject" visibleRowCount="5" rowHeight="18" boundToSelectionManager="true" selectionMode="DiscontiguousTreeSelection" showFooter="true" rootVisible="true" showRootsHandle="true" localize="true" enable="" manageDynamicModel="true" name="hierarchicalConceptsBrowser" visible="controller.viewMode.name==&quot;Hierarchical&quot;" index="2" constraints="twocols(expandHorizontally=true;expandVertically=true;location=center)">
+         <BrowserElement dataClassName="org.openflexo.fme.model.FMEConceptualModel" label="conceptualModel.name" icon="controller.iconForObject(conceptualModel)" isEditable="false" filtered="false" defaultVisible="true" name="conceptualModel">
+          <Children data="conceptualModel.accessedVirtualModel.allSuperFlexoConcepts" name="children" />
+        </BrowserElement>
+        <BrowserElement dataClassName="org.openflexo.foundation.fml.FlexoConcept" label="flexoConcept.name" icon="controller.iconForObject(flexoConcept)" tooltip="" enabled="" visible="" isEditable="false" editableLabel="" filtered="false" defaultVisible="true" dynamicFont="" name="flexoConcept">
+          <Children data="flexoConcept.childFlexoConcepts" name="children" />
+ 			<Children data="flexoConcept.flexoProperties"
+				name="flexoProperties" />
+        </BrowserElement>
+		<BrowserElement dataClassName="org.openflexo.foundation.fml.FlexoProperty"
+			label="flexoProperty.name" icon="controller.iconForObject(flexoProperty)" name="flexoProperty" />
+      </Browser>
+      <Browser root="data.freeModel.conceptualModel" iteratorClassName="org.openflexo.foundation.FlexoObject" visibleRowCount="5" rowHeight="18" boundToSelectionManager="true" selectionMode="DiscontiguousTreeSelection" showFooter="true" rootVisible="true" showRootsHandle="true" localize="true" enable="" manageDynamicModel="true" name="flatConceptsBrowser" visible="controller.viewMode.name==&quot;Flat&quot;" index="2" constraints="twocols(expandHorizontally=true;expandVertically=true;location=center)">
+         <BrowserElement dataClassName="org.openflexo.fme.model.FMEConceptualModel" label="conceptualModel.name" icon="controller.iconForObject(conceptualModel)" isEditable="false" filtered="false" defaultVisible="true" name="conceptualModel">
+          <Children data="conceptualModel.accessedVirtualModel.flexoConcepts" name="children" />
+        </BrowserElement>
+        <BrowserElement dataClassName="org.openflexo.foundation.fml.FlexoConcept" label="flexoConcept.name" icon="controller.iconForObject(flexoConcept)" tooltip="" enabled="" visible="" isEditable="false" editableLabel="" filtered="false" defaultVisible="true" dynamicFont="" name="flexoConcept">
+ 			<Children data="flexoConcept.flexoProperties"
+				name="flexoProperties" />
+        </BrowserElement>
+		<BrowserElement dataClassName="org.openflexo.foundation.fml.FlexoProperty"
+			label="flexoProperty.name" icon="controller.iconForObject(flexoProperty)" name="flexoProperty" />
+      </Browser>
+      </Panel>
     </Panel>
     <Label label="all_concepts" align="center" constraints="border(location=north)" localize="true" />
   </Panel>

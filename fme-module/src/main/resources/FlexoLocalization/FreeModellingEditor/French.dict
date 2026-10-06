@@ -114,3 +114,6 @@ generalize_ends=G\u00E9n\u00E9raliser les extr\u00E9mit\u00E9s
 relationship_ends=Extr\u00E9mit\u00E9s de la relation
 relationship_ends_have_different_role_names=Pas d'extr\u00E9mit\u00E9 pour la super-classe : les r\u00F4les pointant vers les extr\u00E9mit\u00E9s n'ont pas le m\u00EAme nom dans toutes les relations
 relationship_ends_have_no_common_type=Pas d'extr\u00E9mit\u00E9 pour la super-classe : les concepts aux extr\u00E9mit\u00E9s n'ont aucun concept en commun
+embedding_mode=Voir par 'contenance'
+flat_mode=Voir tout \u00E0 plat
+hierarchical_mode=Vue hi\u00E9rarchique
