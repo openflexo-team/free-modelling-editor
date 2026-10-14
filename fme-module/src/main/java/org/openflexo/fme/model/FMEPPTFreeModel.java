@@ -240,7 +240,6 @@ public interface FMEPPTFreeModel extends FMEFreeModel {
 				paletteElementGR.setWidth(40);
 				paletteElementGR.setHeight(30);
 			}
-			paletteElementGR.setText(concept.getName());
 			action.setNewElementName(concept.getName());
 
 			action.setGraphicalRepresentation(paletteElementGR);

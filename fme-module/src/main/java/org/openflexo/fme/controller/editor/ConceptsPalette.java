@@ -234,6 +234,8 @@ public class ConceptsPalette extends ContextualPalette {
 				}
 			}
 		}
+		// No label, and a normalized height: the layout of the palette does the rest
+		DynamicPalette.normalizeElement(element.getGraphicalRepresentation());
 		return super.makePaletteElement(element, editor);
 	}
 
