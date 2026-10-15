@@ -38,13 +38,28 @@
 
 package org.openflexo.fme.controller;
 
+import java.awt.Component;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
+
+import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
+import org.openflexo.fme.model.FMEFreeModel;
 import org.openflexo.fme.model.action.RenameFMEConcept;
 import org.openflexo.foundation.FlexoObject;
-import org.openflexo.foundation.fml.action.RenameFlexoConcept;
+import org.openflexo.foundation.action.ActionGroup;
 import org.openflexo.foundation.action.FlexoActionFactory;
+import org.openflexo.foundation.fml.ActionScheme;
+import org.openflexo.foundation.fml.FlexoConceptInstanceRole;
+import org.openflexo.foundation.fml.Visibility;
+import org.openflexo.foundation.fml.action.RenameFlexoConcept;
+import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
+import org.openflexo.foundation.fml.rt.VirtualModelInstanceObject;
+import org.openflexo.foundation.fml.rt.action.ActionSchemeActionFactory;
 import org.openflexo.selection.ContextualMenuManager;
+import org.openflexo.view.controller.action.MenuItemAction;
 
 /**
  * 
@@ -54,8 +69,14 @@ import org.openflexo.selection.ContextualMenuManager;
  */
 public class FMEContextualMenuManager extends ContextualMenuManager {
 
+	private final FMESelectionManager selectionManager;
+
+	/** Part of the menu being built (true for the one from the edit section on), null when none */
+	private Boolean latePart = null;
+
 	public FMEContextualMenuManager(FMESelectionManager selectionManager, FMEController controller) {
 		super(selectionManager, controller);
+		this.selectionManager = selectionManager;
 	}
 
 	/**
@@ -64,7 +85,7 @@ public class FMEContextualMenuManager extends ContextualMenuManager {
 	 */
 	@Override
 	public JPopupMenu makePopupMenu(FlexoObject focusedObject, MenuFilter filter) {
-		return super.makePopupMenu(focusedObject, new MenuFilter() {
+		MenuFilter baseFilter = new MenuFilter() {
 			@Override
 			public boolean acceptActionType(FlexoActionFactory<?, ?, ?> actionType) {
 				if (actionType == RenameFlexoConcept.actionType && RenameFMEConcept.conceptToRename(focusedObject) != null) {
@@ -72,7 +93,110 @@ public class FMEContextualMenuManager extends ContextualMenuManager {
 				}
 				return filter.acceptActionType(actionType);
 			}
-		});
+		};
+		// The proxied behaviours go where those of a concept instance go in any other module: before the edit section (copy/paste...).
+		// The late part is built first, as the last built menu is the one the manager displays.
+		JPopupMenu late = makePart(focusedObject, baseFilter, true);
+		JPopupMenu returned = makePart(focusedObject, baseFilter, false);
+		addProxiedBehaviours(returned, focusedObject);
+		Component[] lateComponents = late.getComponents();
+		if (lateComponents.length > 0) {
+			if (returned.getComponentCount() > 0) {
+				returned.addSeparator();
+			}
+			for (Component component : lateComponents) {
+				returned.add(component);
+			}
+		}
+		return returned;
+	}
+
+	/**
+	 * Builds the early (before the edit section) or the late part of the menu. The behaviours of the focused instance (deletion scheme...)
+	 * do not go through the filter but through {@link #acceptAction(FlexoActionFactory)}, which is therefore restricted to the part being
+	 * built: otherwise they would show in both parts.
+	 */
+	private JPopupMenu makePart(FlexoObject focusedObject, MenuFilter baseFilter, boolean late) {
+		latePart = late;
+		try {
+			return super.makePopupMenu(focusedObject, new MenuFilter() {
+				@Override
+				public boolean acceptActionType(FlexoActionFactory<?, ?, ?> actionType) {
+					return isLate(actionType) == late && baseFilter.acceptActionType(actionType);
+				}
+			});
+		} finally {
+			latePart = null;
+		}
+	}
+
+	@Override
+	public boolean acceptAction(FlexoActionFactory<?, ?, ?> action) {
+		return super.acceptAction(action) && (latePart == null || isLate(action) == latePart);
+	}
+
+	private static boolean isLate(FlexoActionFactory<?, ?, ?> actionType) {
+		ActionGroup group = actionType.getActionMenu() != null ? actionType.getActionMenu().getActionGroup() : actionType.getActionGroup();
+		return group != null && group.getIndex() >= FlexoActionFactory.editGroup.getIndex();
+	}
+
+	/**
+	 * A GR concept is a proxy of the conceptual concept it represents: the public action schemes of the latter are offered on an instance
+	 * of the former, in a section of its own, and run on the instance of the conceptual concept the GR instance points to.<br>
+	 * With a selection of GR instances of the same concept, they run on all the instances of the conceptual concept.
+	 */
+	private void addProxiedBehaviours(JPopupMenu menu, FlexoObject focusedObject) {
+		if (!(focusedObject instanceof FlexoConceptInstance) || getEditor() == null) {
+			return;
+		}
+		FlexoConceptInstanceRole conceptRole = FMEFreeModel.conceptRole(((FlexoConceptInstance) focusedObject).getFlexoConcept());
+		if (conceptRole == null || conceptRole.getFlexoConceptType() == null) {
+			return;
+		}
+
+		List<FlexoConceptInstance> proxied = new ArrayList<>();
+		List<FlexoObject> selection = new ArrayList<>(selectionManager.getSelection());
+		if (!selection.contains(focusedObject)) {
+			selection.clear();
+			selection.add(focusedObject);
+		}
+		for (FlexoObject o : selection) {
+			if (!(o instanceof FlexoConceptInstance)
+					|| ((FlexoConceptInstance) o).getFlexoConcept() != ((FlexoConceptInstance) focusedObject).getFlexoConcept()) {
+				// Not an homogeneous selection
+				return;
+			}
+			FlexoConceptInstance target = ((FlexoConceptInstance) o).getFlexoActor(conceptRole.getRoleName());
+			if (target == null) {
+				return;
+			}
+			proxied.add(target);
+		}
+		FlexoConceptInstance proxiedFocused = ((FlexoConceptInstance) focusedObject).getFlexoActor(conceptRole.getRoleName());
+
+		boolean separatorAdded = false;
+		for (ActionScheme actionScheme : conceptRole.getFlexoConceptType().getAccessibleActionSchemes()) {
+			if (actionScheme.getVisibility() != Visibility.Public) {
+				continue;
+			}
+			if (!separatorAdded) {
+				if (menu.getComponentCount() > 0) {
+					menu.addSeparator();
+				}
+				separatorAdded = true;
+			}
+			ActionSchemeActionFactory factory = new ActionSchemeActionFactory(actionScheme, proxiedFocused);
+			MenuItemAction<?, FlexoConceptInstance, VirtualModelInstanceObject> action = new MenuItemAction<>(factory, proxiedFocused,
+					new Vector<>(proxied), getEditor());
+			JMenuItem item = menu.add(action);
+			item.setText(action.getLocalizedActionName());
+			if (getEditor().getEnabledIconFor(factory) != null) {
+				item.setIcon(getEditor().getEnabledIconFor(factory));
+			}
+			if (getEditor().getDisabledIconFor(factory) != null) {
+				item.setDisabledIcon(getEditor().getDisabledIconFor(factory));
+			}
+		}
 	}
 
 }
