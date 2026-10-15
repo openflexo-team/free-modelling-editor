@@ -366,7 +366,6 @@ public interface FMEDiagramFreeModel extends FMEFreeModel {
 				try {
 					if (containerConceptGR != null) {
 						bindingPath = BindingPath.parse(DropScheme.TARGET_KEY + "." + FMEFreeModel.conceptRoleName(containerConceptGR), newFCIAction);
-						bindingPath.addBindingPathElement(pathElement);
 					}
 					else {
 						bindingPath = BindingPath.parse(SAMPLE_DATA_MODEL_SLOT_NAME, newFCIAction);
@@ -374,14 +373,14 @@ public interface FMEDiagramFreeModel extends FMEFreeModel {
 						// FMLPrettyPrinter.getInstance());
 					}
 				} catch (ParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.log(Level.SEVERE, "Cannot build binding for the creation of concept " + concept.getName(), e);
 				}
 
-				bindingPath.addBindingPathElement(pathElement);
-
-				expression.setExpression(bindingPath);
-				newFCIAction.setExpression(expression);
+				if (bindingPath != null) {
+					bindingPath.addBindingPathElement(pathElement);
+					expression.setExpression(bindingPath);
+					newFCIAction.setExpression(expression);
+				}
 
 				// Code replacing
 				/*AddFlexoConceptInstance<?> addFCI = (AddFlexoConceptInstance<?>) createAddFlexoConceptInstance.getBaseEditionAction();
