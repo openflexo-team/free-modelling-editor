@@ -326,7 +326,7 @@ public class TestCreateConceptWithStructure extends OpenflexoProjectAtRunTimeTes
 		assertEquals("orbit", FMEFreeModel.conceptRoleName(orbitsGR));
 		assertNull(orbitsGR.getAccessibleProperty("representedConcept"));
 		assertEquals(action.getNewFlexoConcept(), FMEFreeModel.conceptRole(orbitsGR).getFlexoConceptType());
-		assertEquals("instance.orbit.render", orbitsGR.getRenderer().toString());
+		assertEquals("instance.orbit.stringRepresentation", orbitsGR.getRenderer().toString());
 		assertTrue(orbitsGR.getRenderer().isValid());
 		assertEquals("orbit", orbitsGR.getDerivedInspector().toString());
 	}

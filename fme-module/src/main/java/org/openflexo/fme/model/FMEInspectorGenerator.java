@@ -465,7 +465,7 @@ public class FMEInspectorGenerator {
 			List<String> shown = new ArrayList<>();
 
 			if (isRelationship(concept)) {
-				builder.readOnlyTextField(RELATIONSHIP_ENTRY_NAME, CONCEPT + ".render");
+				builder.readOnlyTextField(RELATIONSHIP_ENTRY_NAME, CONCEPT + ".stringRepresentation");
 				builder.property(concept.getAccessibleProperty(FMEConceptualModel.fromRoleName(concept)), CONCEPT);
 				builder.property(concept.getAccessibleProperty(FMEConceptualModel.toRoleName(concept)), CONCEPT);
 				shown.add(FMEConceptualModel.fromRoleName(concept));

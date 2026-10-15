@@ -524,7 +524,7 @@ public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellin
 
 				// Bind shapes's label to name property
 				// If we are bound to a concept instance, use name of concept
-				returned.setRenderer(new DataBinding<String>("instance." + roleName + ".render"));
+				returned.setRenderer(new DataBinding<String>("instance." + roleName + ".stringRepresentation"));
 
 				configureGRRelationalFlexoConcept(returned, concept, fromConceptGR, toConceptGR, editor, ownerAction);
 

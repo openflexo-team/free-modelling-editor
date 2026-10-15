@@ -286,7 +286,7 @@ public interface FMEDiagramFreeModel extends FMEFreeModel {
 			// Bind shapes label to the rendering of the represented concept
 			if (concept != null) {
 				// If we are bound to a concept instance, use its rendering
-				role.setLabel(new DataBinding<>(FMEFreeModel.conceptRoleName(returned) + ".render"));
+				role.setLabel(new DataBinding<>(FMEFreeModel.conceptRoleName(returned) + ".stringRepresentation"));
 			}
 			else {
 				// Otherwise, this is the NoneGR, use primitive name
@@ -481,7 +481,7 @@ public interface FMEDiagramFreeModel extends FMEFreeModel {
 
 			// Bind shapes's label to renderer
 			// role.setReadOnlyLabel(true);
-			role.setLabel(new DataBinding<>(FMEFreeModel.conceptRoleName(returned) + ".render"));
+			role.setLabel(new DataBinding<>(FMEFreeModel.conceptRoleName(returned) + ".stringRepresentation"));
 
 			// Sets connector
 			ShapeRole fromShapeRole = (ShapeRole) fromConceptGR.getAccessibleProperty(SHAPE_ROLE_NAME);
