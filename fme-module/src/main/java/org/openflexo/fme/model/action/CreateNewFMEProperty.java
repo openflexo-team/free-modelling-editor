@@ -226,6 +226,7 @@ public class CreateNewFMEProperty extends FMEAction<CreateNewFMEProperty, FlexoC
 	public void setFMEType(FMEType fmeType) {
 		this.fmeType = fmeType;
 		getPropertyChangeSupport().firePropertyChange("FMEType", null, fmeType);
+		getPropertyChangeSupport().firePropertyChange("fMEType", null, fmeType);
 	}
 
 	public String getDescription() {

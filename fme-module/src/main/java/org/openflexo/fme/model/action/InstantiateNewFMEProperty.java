@@ -38,10 +38,12 @@
 
 package org.openflexo.fme.model.action;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Vector;
 import java.util.logging.Logger;
 
+import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.exception.InvalidBindingException;
 import org.openflexo.connie.exception.NullReferenceException;
 import org.openflexo.connie.exception.TypeMismatchException;
@@ -51,6 +53,8 @@ import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.FlexoObject;
 import org.openflexo.foundation.FlexoObject.FlexoObjectImpl;
 import org.openflexo.foundation.action.FlexoActionFactory;
+import org.openflexo.foundation.fml.FlexoProperty;
+import org.openflexo.foundation.fml.FlexoRole;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 
 /**
@@ -95,11 +99,20 @@ public class InstantiateNewFMEProperty extends FMEAction<InstantiateNewFMEProper
 
 	private String stringValue;
 	private Boolean booleanValue;
-	private Long integerValue;
+	private Integer integerValue;
 	private Double floatValue;
 	private Date dateValue;
 	private String enumerationValue;
 	private FlexoConceptInstance referenceValue;
+
+	// Default value, assigned to all other instances of the concept in the current free model
+	private String defaultStringValue;
+	private Boolean defaultBooleanValue;
+	private Integer defaultIntegerValue;
+	private Double defaultFloatValue;
+	private Date defaultDateValue;
+	private String defaultEnumerationValue;
+	private FlexoConceptInstance defaultReferenceValue;
 
 	private CreateNewFMEProperty createPropertyAction;
 
@@ -115,35 +128,108 @@ public class InstantiateNewFMEProperty extends FMEAction<InstantiateNewFMEProper
 		if (createPropertyAction.getFMEType() != null) {
 			createPropertyAction.doAction();
 
-			switch (createPropertyAction.getFMEType()) {
-				case String:
-					getConceptInstance().setFlexoPropertyValue(createPropertyAction.getCreatedPropertyName(), getStringValue());
-					break;
-				case Boolean:
-					getConceptInstance().setFlexoPropertyValue(createPropertyAction.getCreatedPropertyName(), getBooleanValue());
-					break;
-				case Integer:
-					getConceptInstance().setFlexoPropertyValue(createPropertyAction.getCreatedPropertyName(), getIntegerValue());
-					break;
-				case Float:
-					getConceptInstance().setFlexoPropertyValue(createPropertyAction.getCreatedPropertyName(), getFloatValue());
-					break;
-				case Date:
-					getConceptInstance().setFlexoPropertyValue(createPropertyAction.getCreatedPropertyName(), getDateValue());
-					break;
-				case Enumeration:
-					getConceptInstance().setFlexoPropertyValue(createPropertyAction.getCreatedPropertyName(),
-							createPropertyAction.getNewEnum().getInstance(getEnumerationValue()));
-					break;
-				case Reference:
-					getConceptInstance().setFlexoPropertyValue(createPropertyAction.getCreatedPropertyName(), getReferenceValue());
-					break;
+			String propertyName = createPropertyAction.getCreatedPropertyName();
+			FlexoConceptInstance currentInstance = getConceptInstance();
 
-				default:
-					break;
+			// Default value of the role: it is the one given to the instances created from now on
+			String defaultExpression = getDefaultValueExpression();
+			if (defaultExpression != null) {
+				FlexoProperty<?> property = createPropertyAction.getConcept().getAccessibleProperty(propertyName);
+				if (property instanceof FlexoRole) {
+					((FlexoRole) property).setDefaultValue(new DataBinding<>(defaultExpression));
+				}
 			}
+
+			// Default value: all other instances of the concept in the current free model
+			Object defaultValue = getDefaultValue();
+			if (defaultValue != null && currentInstance != null && currentInstance.getFlexoConcept() != null
+					&& currentInstance.getVirtualModelInstance() != null) {
+				for (FlexoConceptInstance instance : new ArrayList<>(
+						currentInstance.getVirtualModelInstance().getFlexoConceptInstances(createPropertyAction.getConcept()))) {
+					if (instance != currentInstance) {
+						instance.setFlexoPropertyValue(propertyName, defaultValue);
+					}
+				}
+			}
+
+			// Value for this instance
+			currentInstance.setFlexoPropertyValue(propertyName, getValue());
 		}
 
+	}
+
+	/**
+	 * Value to assign to the current instance, according to the type of the new property
+	 */
+	private Object getValue() {
+		switch (createPropertyAction.getFMEType()) {
+			case String:
+				return getStringValue();
+			case Boolean:
+				return getBooleanValue();
+			case Integer:
+				return getIntegerValue();
+			case Float:
+				return getFloatValue();
+			case Date:
+				return getDateValue();
+			case Enumeration:
+				return enumInstance(getEnumerationValue());
+			case Reference:
+				return getReferenceValue();
+			default:
+				return null;
+		}
+	}
+
+	/**
+	 * Default value to assign to other instances, according to the type of the new property (null when none is defined)
+	 */
+	private Object getDefaultValue() {
+		switch (createPropertyAction.getFMEType()) {
+			case String:
+				return getDefaultStringValue();
+			case Boolean:
+				return getDefaultBooleanValue();
+			case Integer:
+				return getDefaultIntegerValue();
+			case Float:
+				return getDefaultFloatValue();
+			case Date:
+				return getDefaultDateValue();
+			case Enumeration:
+				return enumInstance(getDefaultEnumerationValue());
+			case Reference:
+				return getDefaultReferenceValue();
+			default:
+				return null;
+		}
+	}
+
+	/**
+	 * The default value, as the expression stored in the default value of the role (null when none is defined, or when the type has no
+	 * literal)
+	 */
+	private String getDefaultValueExpression() {
+		switch (createPropertyAction.getFMEType()) {
+			case String:
+				// A Connie string literal does not unescape a quote or a backslash: no expression for such a string (the other instances
+				// get it anyway)
+				String text = getDefaultStringValue();
+				return text != null && text.indexOf('"') < 0 && text.indexOf('\\') < 0 ? "\"" + text + "\"" : null;
+			case Boolean:
+				return getDefaultBooleanValue() != null ? getDefaultBooleanValue().toString() : null;
+			case Integer:
+				return getDefaultIntegerValue() != null ? getDefaultIntegerValue().toString() : null;
+			case Float:
+				return getDefaultFloatValue() != null ? getDefaultFloatValue().toString() : null;
+			default:
+				return null;
+		}
+	}
+
+	private Object enumInstance(String enumValueName) {
+		return enumValueName != null ? createPropertyAction.getNewEnum().getInstance(enumValueName) : null;
 	}
 
 	public FlexoConceptInstance getConceptInstance() {
@@ -201,13 +287,13 @@ public class InstantiateNewFMEProperty extends FMEAction<InstantiateNewFMEProper
 		}
 	}
 
-	public Long getIntegerValue() {
+	public Integer getIntegerValue() {
 		return integerValue;
 	}
 
-	public void setIntegerValue(Long integerValue) {
+	public void setIntegerValue(Integer integerValue) {
 		if ((integerValue == null && this.integerValue != null) || (integerValue != null && !integerValue.equals(this.integerValue))) {
-			Long oldValue = this.integerValue;
+			Integer oldValue = this.integerValue;
 			this.integerValue = integerValue;
 			getPropertyChangeSupport().firePropertyChange("integerValue", oldValue, integerValue);
 		}
@@ -260,6 +346,90 @@ public class InstantiateNewFMEProperty extends FMEAction<InstantiateNewFMEProper
 			FlexoConceptInstance oldValue = this.referenceValue;
 			this.referenceValue = referenceValue;
 			getPropertyChangeSupport().firePropertyChange("referenceValue", oldValue, referenceValue);
+		}
+	}
+
+	public String getDefaultStringValue() {
+		return defaultStringValue;
+	}
+
+	public void setDefaultStringValue(String defaultStringValue) {
+		if ((defaultStringValue == null && this.defaultStringValue != null) || (defaultStringValue != null && !defaultStringValue.equals(this.defaultStringValue))) {
+			String oldValue = this.defaultStringValue;
+			this.defaultStringValue = defaultStringValue;
+			getPropertyChangeSupport().firePropertyChange("defaultStringValue", oldValue, defaultStringValue);
+		}
+	}
+
+	public Boolean getDefaultBooleanValue() {
+		return defaultBooleanValue;
+	}
+
+	public void setDefaultBooleanValue(Boolean defaultBooleanValue) {
+		if ((defaultBooleanValue == null && this.defaultBooleanValue != null) || (defaultBooleanValue != null && !defaultBooleanValue.equals(this.defaultBooleanValue))) {
+			Boolean oldValue = this.defaultBooleanValue;
+			this.defaultBooleanValue = defaultBooleanValue;
+			getPropertyChangeSupport().firePropertyChange("defaultBooleanValue", oldValue, defaultBooleanValue);
+		}
+	}
+
+	public Integer getDefaultIntegerValue() {
+		return defaultIntegerValue;
+	}
+
+	public void setDefaultIntegerValue(Integer defaultIntegerValue) {
+		if ((defaultIntegerValue == null && this.defaultIntegerValue != null) || (defaultIntegerValue != null && !defaultIntegerValue.equals(this.defaultIntegerValue))) {
+			Integer oldValue = this.defaultIntegerValue;
+			this.defaultIntegerValue = defaultIntegerValue;
+			getPropertyChangeSupport().firePropertyChange("defaultIntegerValue", oldValue, defaultIntegerValue);
+		}
+	}
+
+	public Double getDefaultFloatValue() {
+		return defaultFloatValue;
+	}
+
+	public void setDefaultFloatValue(Double defaultFloatValue) {
+		if ((defaultFloatValue == null && this.defaultFloatValue != null) || (defaultFloatValue != null && !defaultFloatValue.equals(this.defaultFloatValue))) {
+			Double oldValue = this.defaultFloatValue;
+			this.defaultFloatValue = defaultFloatValue;
+			getPropertyChangeSupport().firePropertyChange("defaultFloatValue", oldValue, defaultFloatValue);
+		}
+	}
+
+	public Date getDefaultDateValue() {
+		return defaultDateValue;
+	}
+
+	public void setDefaultDateValue(Date defaultDateValue) {
+		if ((defaultDateValue == null && this.defaultDateValue != null) || (defaultDateValue != null && !defaultDateValue.equals(this.defaultDateValue))) {
+			Date oldValue = this.defaultDateValue;
+			this.defaultDateValue = defaultDateValue;
+			getPropertyChangeSupport().firePropertyChange("defaultDateValue", oldValue, defaultDateValue);
+		}
+	}
+
+	public String getDefaultEnumerationValue() {
+		return defaultEnumerationValue;
+	}
+
+	public void setDefaultEnumerationValue(String defaultEnumerationValue) {
+		if ((defaultEnumerationValue == null && this.defaultEnumerationValue != null) || (defaultEnumerationValue != null && !defaultEnumerationValue.equals(this.defaultEnumerationValue))) {
+			String oldValue = this.defaultEnumerationValue;
+			this.defaultEnumerationValue = defaultEnumerationValue;
+			getPropertyChangeSupport().firePropertyChange("defaultEnumerationValue", oldValue, defaultEnumerationValue);
+		}
+	}
+
+	public FlexoConceptInstance getDefaultReferenceValue() {
+		return defaultReferenceValue;
+	}
+
+	public void setDefaultReferenceValue(FlexoConceptInstance defaultReferenceValue) {
+		if ((defaultReferenceValue == null && this.defaultReferenceValue != null) || (defaultReferenceValue != null && !defaultReferenceValue.equals(this.defaultReferenceValue))) {
+			FlexoConceptInstance oldValue = this.defaultReferenceValue;
+			this.defaultReferenceValue = defaultReferenceValue;
+			getPropertyChangeSupport().firePropertyChange("defaultReferenceValue", oldValue, defaultReferenceValue);
 		}
 	}
 }

@@ -173,6 +173,8 @@ public class CreateNewFMEPropertyWizard extends FlexoActionWizard<CreateNewFMEPr
 				FMEType oldValue = getFMEType();
 				getAction().setFMEType(fmeType);
 				getPropertyChangeSupport().firePropertyChange("FMEType", oldValue, fmeType);
+				// the name the bindings of the .fib listen to (data.fMEType)
+				getPropertyChangeSupport().firePropertyChange("fMEType", oldValue, fmeType);
 				checkValidity();
 			}
 		}
