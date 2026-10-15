@@ -179,15 +179,19 @@ public class FMEContextualMenuManager extends ContextualMenuManager {
 			if (actionScheme.getVisibility() != Visibility.Public) {
 				continue;
 			}
+			ActionSchemeActionFactory factory = new ActionSchemeActionFactory(actionScheme, proxiedFocused);
+			Vector<VirtualModelInstanceObject> proxiedSelection = new Vector<>(proxied);
+			if (!getEditor().isActionVisible(factory, proxiedFocused, proxiedSelection)) {
+				continue;
+			}
 			if (!separatorAdded) {
 				if (menu.getComponentCount() > 0) {
 					menu.addSeparator();
 				}
 				separatorAdded = true;
 			}
-			ActionSchemeActionFactory factory = new ActionSchemeActionFactory(actionScheme, proxiedFocused);
 			MenuItemAction<?, FlexoConceptInstance, VirtualModelInstanceObject> action = new MenuItemAction<>(factory, proxiedFocused,
-					new Vector<>(proxied), getEditor());
+					proxiedSelection, getEditor());
 			JMenuItem item = menu.add(action);
 			item.setText(action.getLocalizedActionName());
 			if (getEditor().getEnabledIconFor(factory) != null) {
