@@ -43,6 +43,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openflexo.connie.DataBinding;
@@ -523,7 +524,14 @@ public interface FMEDiagramFreeModel extends FMEFreeModel {
 			ExpressionAction<FlexoConceptInstance> addFCI = (ExpressionAction<FlexoConceptInstance>) createAddFlexoConceptInstance
 					.getBaseEditionAction();
 
-			BindingPath bv = new BindingPath(addFCI, FMLPrettyPrinter.getInstance());
+			// The concept lives in the sample data model: the instance must be created as sampleData.new Concept(...)
+			BindingPath bv;
+			try {
+				bv = BindingPath.parse(SAMPLE_DATA_MODEL_SLOT_NAME, addFCI);
+			} catch (ParseException e) {
+				logger.log(Level.SEVERE, "Cannot build binding to " + SAMPLE_DATA_MODEL_SLOT_NAME, e);
+				bv = new BindingPath(addFCI, FMLPrettyPrinter.getInstance());
+			}
 			List<DataBinding<?>> args = new ArrayList<>();
 			args.add(new DataBinding<>(LinkScheme.FROM_TARGET_KEY + "." + FMEFreeModel.conceptRoleName(fromConceptGR)));
 			args.add(new DataBinding<>(LinkScheme.TO_TARGET_KEY + "." + FMEFreeModel.conceptRoleName(toConceptGR)));
