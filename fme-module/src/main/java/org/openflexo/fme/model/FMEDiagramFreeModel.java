@@ -283,10 +283,10 @@ public interface FMEDiagramFreeModel extends FMEFreeModel {
 			createShapeRole.doAction();
 			ShapeRole role = (ShapeRole) createShapeRole.getNewFlexoRole();
 
-			// Bind shapes's label to name property
+			// Bind shapes label to the rendering of the represented concept
 			if (concept != null) {
-				// If we are bound to a concept instance, use that name
-				role.setLabel(new DataBinding<>(FMEFreeModel.conceptRoleName(returned) + "." + labelPropertyNameOf(concept)));
+				// If we are bound to a concept instance, use its rendering
+				role.setLabel(new DataBinding<>(FMEFreeModel.conceptRoleName(returned) + ".render"));
 			}
 			else {
 				// Otherwise, this is the NoneGR, use primitive name
