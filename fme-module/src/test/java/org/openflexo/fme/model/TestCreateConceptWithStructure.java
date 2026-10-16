@@ -178,7 +178,7 @@ public class TestCreateConceptWithStructure extends OpenflexoProjectAtRunTimeTes
 		assertEquals(star, FMEFreeModel.conceptRole(starGR).getFlexoConceptType());
 		assertTrue(starGR.getRenderer().isValid());
 		assertTrue(starGR.getRenderer().toString().startsWith("instance.starInstance."));
-		assertEquals("starInstance.title",
+		assertEquals("starInstance.stringRepresentation",
 				((ShapeRole) starGR.getAccessibleProperty(FMEDiagramFreeModel.SHAPE_ROLE_NAME)).getLabel().toString());
 		assertEquals("starInstance", starGR.getDerivedInspector().toString());
 

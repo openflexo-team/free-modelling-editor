@@ -180,7 +180,7 @@ public class TestInstantiateNewFMEProperty extends OpenflexoProjectAtRunTimeTest
 		d.setFloatValue(1.5);
 		d.setDefaultFloatValue(2.5);
 		d.doAction();
-		check("weight", 1.5, 2.5, "2.5");
+		check("weight", 1.5f, 2.5f, "2.5");
 
 		// A string with a quote has no literal: the other instances get it, the role has no default
 		InstantiateNewFMEProperty q = instantiate("quoted", FMEType.String);
