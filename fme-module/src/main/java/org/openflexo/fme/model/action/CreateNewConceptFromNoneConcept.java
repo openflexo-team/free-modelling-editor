@@ -44,6 +44,7 @@ import java.util.logging.Logger;
 import org.openflexo.fme.model.FMEDiagramFreeModel;
 import org.openflexo.fme.model.FMEDiagramFreeModelInstance;
 import org.openflexo.fme.model.FMEFreeModel;
+import org.openflexo.fme.model.FMENames;
 import org.openflexo.foundation.FlexoEditor;
 import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.FlexoObject;
@@ -109,8 +110,27 @@ public class CreateNewConceptFromNoneConcept extends AbstractInstantiateConcept<
 	private FlexoConcept newFlexoConcept;
 	private FlexoConcept newGRFlexoConcept;
 
+	private NewConceptStructure structure;
+
 	private CreateNewConceptFromNoneConcept(FlexoConceptInstance focusedObject, Vector<FlexoObject> globalSelection, FlexoEditor editor) {
 		super(actionType, focusedObject, globalSelection, editor);
+	}
+
+	/**
+	 * The properties of the concept to create, and the one labelling its instances: <code>name</code> and <code>description</code> unless
+	 * configured
+	 */
+	public NewConceptStructure getStructure() {
+		if (structure == null) {
+			structure = new NewConceptStructure();
+			structure.setContextIssue(() -> getFMEFreeModel() != null && getFMEFreeModel().getAccessedVirtualModel()
+					.getAccessibleProperty(structure.getConceptRoleName()) != null ? "concept_role_name_already_used" : null);
+			structure.getPropertyChangeSupport().addPropertyChangeListener(evt -> {
+				boolean wasValid = isValid();
+				getPropertyChangeSupport().firePropertyChange("isValid", wasValid, isValid());
+			});
+		}
+		return structure;
 	}
 
 	@Override
@@ -136,6 +156,8 @@ public class CreateNewConceptFromNoneConcept extends AbstractInstantiateConcept<
 		CreateNewConcept createNewConcept = CreateNewConcept.actionType.makeNewEmbeddedAction(getFMEFreeModel(), null, this);
 		createNewConcept.setNewConceptName(getNewConceptName());
 		createNewConcept.setNewConceptDescription(getNewConceptDescription());
+		// The structure edited by the user is the one of this action: it is what the embedded action creates
+		createNewConcept.setStructure(getStructure());
 		createNewConcept.setContainerConcept(getContainerConcept());
 		createNewConcept.setContainerGRConcept(retrieveContainerGRFlexoConcept());
 		createNewConcept.doAction();
@@ -168,7 +190,7 @@ public class CreateNewConceptFromNoneConcept extends AbstractInstantiateConcept<
 
 		// We will here bypass the classical DropScheme
 		flexoConceptInstance.setFlexoConcept(newGRFlexoConcept);
-		flexoConceptInstance.setFlexoPropertyValue(FMEFreeModel.CONCEPT_ROLE_NAME, conceptInstance);
+		flexoConceptInstance.setFlexoPropertyValue(FMEFreeModel.conceptRoleName(newGRFlexoConcept), conceptInstance);
 
 		// We should notify the creation of a new FlexoConcept
 		freeModelInstance.getPropertyChangeSupport().firePropertyChange("usedFlexoConcepts", null, newFlexoConcept);
@@ -217,15 +239,15 @@ public class CreateNewConceptFromNoneConcept extends AbstractInstantiateConcept<
 	@Override
 	public boolean isValid() {
 
-		if (StringUtils.isEmpty(newConceptName)) {
+		if (StringUtils.isEmpty(newConceptName) || !FMENames.isValidConceptName(newConceptName)) {
 			return false;
 		}
 
-		if (getFocusedObject().getVirtualModelInstance().getVirtualModel().getFlexoConcept(newConceptName) != null) {
+		if (getFMEFreeModel() != null && getFMEFreeModel().isConceptNameUsed(newConceptName)) {
 			return false;
 		}
 
-		return true;
+		return getStructure().isValid();
 	}
 
 	private FlexoConceptInstance retrieveContainerFlexoConceptInstance() {
@@ -236,7 +258,7 @@ public class CreateNewConceptFromNoneConcept extends AbstractInstantiateConcept<
 			ObjectLookupResult lookup = getFocusedObject().getVirtualModelInstance().lookup(shape.getParent());
 			if (lookup != null) {
 				FlexoConceptInstance containerGRFCI = lookup.flexoConceptInstance;
-				return containerGRFCI.getFlexoActor(FMEFreeModel.CONCEPT_ROLE_NAME);
+				return containerGRFCI.getFlexoActor(FMEFreeModel.conceptRoleName(containerGRFCI.getFlexoConcept()));
 			}
 		}
 		return null;
@@ -263,7 +285,7 @@ public class CreateNewConceptFromNoneConcept extends AbstractInstantiateConcept<
 			ObjectLookupResult lookup = getFocusedObject().getVirtualModelInstance().lookup(shape.getParent());
 			if (lookup != null) {
 				FlexoConcept containerConceptGR = lookup.flexoConceptInstance.getFlexoConcept();
-				FlexoProperty<?> p = containerConceptGR.getAccessibleProperty(FMEFreeModel.CONCEPT_ROLE_NAME);
+				FlexoProperty<?> p = FMEFreeModel.conceptRole(containerConceptGR);
 				FlexoConcept containerConcept = null;
 				if (p instanceof FlexoConceptInstanceRole) {
 					FlexoConceptInstanceRole fciRole = (FlexoConceptInstanceRole) p;

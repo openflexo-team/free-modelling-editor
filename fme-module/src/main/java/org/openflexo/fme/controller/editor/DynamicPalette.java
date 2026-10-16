@@ -57,7 +57,6 @@ import org.openflexo.diana.PaletteElementSpecification;
 import org.openflexo.diana.ShapeGraphicalRepresentation;
 import org.openflexo.diana.control.PaletteElement;
 import org.openflexo.diana.geom.DianaPoint;
-import org.openflexo.diana.shapes.ShapeSpecification.ShapeType;
 import org.openflexo.fme.model.action.DropShape;
 import org.openflexo.foundation.FlexoObject;
 import org.openflexo.foundation.fml.FlexoConcept;
@@ -74,8 +73,8 @@ public class DynamicPalette extends DiagramEditorPaletteModel implements Propert
 
 	private static final Logger logger = FlexoLogger.getLogger(DynamicPalette.class.getPackage().getName());
 
-	private static final int GRID_WIDTH = 50;
-	private static final int GRID_HEIGHT = 40;
+	/** Height of every element of a palette: only the height is normalized, the width follows the ratio of the shape */
+	public static final int ELEMENT_HEIGHT = 30;
 	public static final Font DEFAULT_TEXT_FONT = new Font("SansSerif", Font.PLAIN, 7);
 	public static final Font LABEL_FONT = new Font("SansSerif", Font.PLAIN, 11);
 
@@ -112,7 +111,9 @@ public class DynamicPalette extends DiagramEditorPaletteModel implements Propert
 				ShapeGraphicalRepresentation.MINIMAL_HEIGHT, ShapeGraphicalRepresentation.MAXIMAL_HEIGHT,
 				ShapeGraphicalRepresentation.MAXIMAL_WIDTH, ShapeGraphicalRepresentation.MINIMAL_HEIGHT,
 				ShapeGraphicalRepresentation.ALLOW_TO_LEAVE_BOUNDS, ShapeGraphicalRepresentation.SELECTED_BACKGROUND,
-				ShapeGraphicalRepresentation.FOCUSED_FOREGROUND };
+				ShapeGraphicalRepresentation.FOCUSED_FOREGROUND,
+				// The anchor of a floating label follows the shape when it is resized
+				GraphicalRepresentation.ABSOLUTE_TEXT_X, GraphicalRepresentation.ABSOLUTE_TEXT_Y };
 
 		public static <T> T valueForParameter(GraphicalRepresentation gr, GRProperty<T> parameter) {
 			if (gr.hasKey(parameter.getName())) {
@@ -299,33 +300,37 @@ public class DynamicPalette extends DiagramEditorPaletteModel implements Propert
 			}
 
 			for (PaletteElement e : getElements()) {
-				int px, py;
-				int index = getElements().indexOf(e);
-
-				px = index % 3;
-				py = index / 3;
-
-				if (e.getGraphicalRepresentation() != null) {
-					if (e.getGraphicalRepresentation().getShapeSpecification() != null
-							&& (e.getGraphicalRepresentation().getShapeSpecification().getShapeType() == ShapeType.SQUARE
-									|| e.getGraphicalRepresentation().getShapeSpecification().getShapeType() == ShapeType.CIRCLE)) {
-						e.getGraphicalRepresentation().setX(px * GRID_WIDTH + 15);
-						e.getGraphicalRepresentation().setY(py * GRID_HEIGHT + 10);
-						e.getGraphicalRepresentation().setWidth(30);
-						e.getGraphicalRepresentation().setHeight(30);
-					}
-					else {
-						e.getGraphicalRepresentation().setX(px * GRID_WIDTH + 10);
-						e.getGraphicalRepresentation().setY(py * GRID_HEIGHT + 10);
-						e.getGraphicalRepresentation().setWidth(40);
-						e.getGraphicalRepresentation().setHeight(30);
-					}
-				}
+				// Positions are left to the wrap-flow layout of the palette
+				normalizeElement(e.getGraphicalRepresentation());
 			}
 		} finally {
 			isUpdating = false;
 		}
 
+	}
+
+	/**
+	 * Prepare the graphical representation of a palette element: no label, and a normalized height (the width follows, so that the ratio of
+	 * the shape is kept). A shape whose dimensions are constrained (a square, a circle) stays square.
+	 */
+	public static void normalizeElement(ShapeGraphicalRepresentation gr) {
+		if (gr == null) {
+			return;
+		}
+		if (gr.getText() != null) {
+			gr.setText(null);
+		}
+		double width = ELEMENT_HEIGHT;
+		if (gr.getWidth() > 0 && gr.getHeight() > 0
+				&& !(gr.getShapeSpecification() != null && gr.getShapeSpecification().areDimensionConstrained())) {
+			width = gr.getWidth() * ELEMENT_HEIGHT / gr.getHeight();
+		}
+		if (gr.getWidth() != width) {
+			gr.setWidth(width);
+		}
+		if (gr.getHeight() != ELEMENT_HEIGHT) {
+			gr.setHeight(ELEMENT_HEIGHT);
+		}
 	}
 
 	@Override

@@ -127,7 +127,8 @@ public class DeclareInstanceOfExistingConceptFromDiagramElement
 				// System.out.println("lookup: " + lookup.flexoConceptInstance + " pty=" + lookup.property);
 				// FlexoConcept containerConceptGR = lookup.flexoConceptInstance.getFlexoConcept();
 				containerGRInstance = lookup.flexoConceptInstance;
-				container = containerGRInstance.getFlexoPropertyValue(FMEFreeModel.CONCEPT_ROLE_NAME);
+				container = containerGRInstance
+						.getFlexoPropertyValue(FMEFreeModel.conceptRoleName(containerGRInstance.getFlexoConcept()));
 			}
 		}
 
@@ -277,7 +278,7 @@ public class DeclareInstanceOfExistingConceptFromDiagramElement
 
 		// We will here bypass the classical DropScheme
 		flexoConceptInstance.setFlexoConcept(grConcept);
-		flexoConceptInstance.setFlexoPropertyValue(FMEFreeModel.CONCEPT_ROLE_NAME, conceptInstance);
+		flexoConceptInstance.setFlexoPropertyValue(FMEFreeModel.conceptRoleName(grConcept), conceptInstance);
 
 		// In case of GRStrategy is to redefine concept shape, we now need to set GR of all instances
 		if (grConceptWasExisting) {

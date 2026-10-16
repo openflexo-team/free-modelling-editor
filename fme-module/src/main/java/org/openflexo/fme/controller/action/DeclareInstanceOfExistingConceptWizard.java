@@ -125,6 +125,12 @@ public class DeclareInstanceOfExistingConceptWizard extends FlexoActionWizard<De
 				return false;
 			}
 
+			if (getConcept().getCreationSchemes().isEmpty()) {
+				// A concept created by generalizing others: never instantiated by itself
+				setIssueMessage(getAction().getLocales().localizedForKey("that_concept_cannot_be_instantiated"), IssueMessageType.ERROR);
+				return false;
+			}
+
 			if (getConcept().getContainerFlexoConcept() != null) {
 				if (getContainer() == null) {
 					setIssueMessage(getAction().getLocales().localizedForKey("please_select_a_container_for_new_concept_instance"),

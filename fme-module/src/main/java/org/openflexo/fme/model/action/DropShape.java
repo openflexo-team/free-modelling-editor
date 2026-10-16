@@ -221,7 +221,7 @@ public class DropShape extends FMEAction<DropShape, DiagramContainerElement<?>, 
 
 	public FlexoConcept getConcept() {
 		if (getGRConcept() != null) {
-			FlexoProperty<?> p = getGRConcept().getAccessibleProperty(FMEFreeModel.CONCEPT_ROLE_NAME);
+			FlexoProperty<?> p = FMEFreeModel.conceptRole(getGRConcept());
 			if (p instanceof FlexoConceptInstanceRole) {
 				FlexoConceptInstanceRole fciRole = (FlexoConceptInstanceRole) p;
 				return fciRole.getFlexoConceptType();

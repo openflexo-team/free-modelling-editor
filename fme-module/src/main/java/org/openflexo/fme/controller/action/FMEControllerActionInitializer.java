@@ -83,6 +83,7 @@ public class FMEControllerActionInitializer extends ControllerActionInitializer 
 		new CreateNewRelationalConceptInitializer(this);
 		new CreateNewConceptFromNoneInitializer(this);
 		new DeclareInstanceOfExistingConceptInitializer(this);
+		new DisconnectInstanceFromConceptInitializer(this);
 		// new CreateFreeModelDiagramInitializer(this);
 		// new CreateFreeModelDiagramFromPPTInitializer(this);
 
@@ -98,6 +99,9 @@ public class FMEControllerActionInitializer extends ControllerActionInitializer 
 
 		new CreateNewFMEPropertyInitializer(this);
 		new InstantiateNewFMEPropertyInitializer(this);
+
+		new RenameFMEConceptInitializer(this);
+		new GeneralizeConceptsInitializer(this);
 	}
 
 }

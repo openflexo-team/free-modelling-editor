@@ -125,7 +125,7 @@ public class CreateNewFMEPropertyWizard extends FlexoActionWizard<CreateNewFMEPr
 				return false;
 			}
 
-			if (getAction().getConcept().getAccessibleProperty(getPropertyName()) != null) {
+			if (getAction().getConcept().getAccessibleProperty(getAction().getCreatedPropertyName()) != null) {
 				setIssueMessage(getAction().getLocales().localizedForKey("a_property_with_that_name_already_exists"),
 						IssueMessageType.ERROR);
 				return false;
@@ -173,6 +173,8 @@ public class CreateNewFMEPropertyWizard extends FlexoActionWizard<CreateNewFMEPr
 				FMEType oldValue = getFMEType();
 				getAction().setFMEType(fmeType);
 				getPropertyChangeSupport().firePropertyChange("FMEType", oldValue, fmeType);
+				// the name the bindings of the .fib listen to (data.fMEType)
+				getPropertyChangeSupport().firePropertyChange("fMEType", oldValue, fmeType);
 				checkValidity();
 			}
 		}

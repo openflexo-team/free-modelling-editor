@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Panel layout="border" darkLevel="0" opaque="false" border="empty"
+	controllerClassName="org.openflexo.view.controller.FlexoFIBController"
+	dataClassName="org.openflexo.fme.controller.action.GeneralizeConceptsWizard$ChooseFactoredProperties">
+	<Table name="propertiesTable" constraints="border(location=center)"
+		iteratorClassName="org.openflexo.fme.model.action.GeneralizeConcepts$FactoredProperty"
+		data="data.action.proposedProperties" visibleRowCount="6" rowHeight="20"
+		autoSelectFirstRow="false" createNewRowOnClick="false"
+		boundToSelectionManager="false" showFooter="false"
+		selectionMode="SingleSelection" localize="true"
+		manageDynamicModel="true" font="SansSerif.plain,0,11">
+		<CheckBoxColumn data="iterator.factored" title="factored"
+			displayTitle="true" columnWidth="60" resizable="false" name="factored" />
+		<LabelColumn data="iterator.name" title="property"
+			displayTitle="true" columnWidth="150" resizable="true" name="property" />
+		<LabelColumn data="iterator.typeAsString" title="type" displayTitle="true"
+			columnWidth="100" resizable="true" name="type" />
+	</Table>
+	<Panel layout="twocols" darkLevel="0" border="empty" borderTop="5"
+		borderBottom="5" borderLeft="5" borderRight="5" name="EndsPanel"
+		constraints="border(location=north)" visible="data.endsVisible">
+		<Label label="relationship_ends" align="right" localize="true"
+			constraints="twocols(expandHorizontally=false;expandVertically=false;location=left)"
+			name="EndsLabel" />
+		<Label data="data.endsSummary"
+			constraints="twocols(expandHorizontally=true;expandVertically=false;location=right)"
+			name="EndsSummary" />
+		<Label label="generalize_ends" align="right" localize="true" visible="data.endsPossible"
+			constraints="twocols(expandHorizontally=false;expandVertically=false;location=left)"
+			name="GeneralizeEndsLabel" />
+		<CheckBox data="data.generalizeEnds" localize="true" visible="data.endsPossible"
+			constraints="twocols(expandHorizontally=true;expandVertically=false;location=right)"
+			name="GeneralizeEndsCheckBox" />
+	</Panel>
+	<Panel layout="twocols" darkLevel="0" border="empty" borderTop="5"
+		borderBottom="5" borderLeft="5" borderRight="5" name="NotFactoredPanel"
+		constraints="border(location=south)" visible="(data.notFactoredSummary != null)">
+		<Label label="not_factored" align="right" localize="true"
+			constraints="twocols(expandHorizontally=false;expandVertically=false;location=left)"
+			name="NotFactoredLabel" />
+		<Label data="data.notFactoredSummary"
+			constraints="twocols(expandHorizontally=true;expandVertically=false;location=right)"
+			name="NotFactoredSummary" />
+	</Panel>
+	<LocalizedDictionary />
+</Panel>

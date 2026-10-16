@@ -44,8 +44,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -182,6 +185,21 @@ public class TestCreateFreeModel extends OpenflexoProjectAtRunTimeTestCase {
 		System.out.println("Project dir = " + project.getProjectDirectory());
 
 		assertEquals(1, nature.getFreeModels().size());
+
+		// A browser labels the free model before anything loads its virtual model: the name must be there already, without loading
+		// it, and notified when it gets loaded - a browser cell only computes its label again when notified
+		FMEFreeModel reloaded = nature.getFreeModels().get(0);
+		assertFalse(reloaded.getAccessedVirtualModelResource().isLoaded());
+		assertEquals("FreeModel", reloaded.getName());
+		assertFalse(reloaded.getAccessedVirtualModelResource().isLoaded());
+		List<String> notified = new ArrayList<>();
+		PropertyChangeListener nameListener = evt -> notified.add(evt.getPropertyName());
+		reloaded.getPropertyChangeSupport().addPropertyChangeListener(nameListener);
+		assertNotNull(reloaded.getAccessedVirtualModel());
+		reloaded.getPropertyChangeSupport().removePropertyChangeListener(nameListener);
+		assertTrue("Loading the virtual model did not notify 'name': " + notified, notified.contains("name"));
+		assertEquals("FreeModel", reloaded.getName());
+
 		freeModel = (FMEDiagramFreeModel) nature.getFreeModel("FreeModel");
 		assertSame(nature.getFreeModels().get(0), freeModel);
 

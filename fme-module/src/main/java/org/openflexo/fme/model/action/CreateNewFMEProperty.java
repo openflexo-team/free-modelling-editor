@@ -40,12 +40,13 @@ package org.openflexo.fme.model.action;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.logging.Logger;
 
 import org.openflexo.connie.DataBinding;
 import org.openflexo.fme.model.FMEFreeModel;
+import org.openflexo.fme.model.FMENames;
+import org.openflexo.fme.model.FMEInspectorGenerator;
 import org.openflexo.fme.model.FMEType;
 import org.openflexo.foundation.FlexoEditor;
 import org.openflexo.foundation.FlexoException;
@@ -59,7 +60,6 @@ import org.openflexo.foundation.fml.FlexoProperty;
 import org.openflexo.foundation.fml.action.CreateFlexoConceptInstanceRole;
 import org.openflexo.foundation.fml.action.CreateFlexoEnum;
 import org.openflexo.foundation.fml.action.CreateFlexoEnumValue;
-import org.openflexo.foundation.fml.action.CreateInspectorEntry;
 import org.openflexo.foundation.fml.action.CreatePrimitiveRole;
 import org.openflexo.toolbox.StringUtils;
 
@@ -88,7 +88,7 @@ public class CreateNewFMEProperty extends FMEAction<CreateNewFMEProperty, FlexoC
 
 		@Override
 		public boolean isVisibleForSelection(FlexoConcept object, Vector<FlexoObject> globalSelection) {
-			return object.getAccessibleProperty(FMEFreeModel.CONCEPT_ROLE_NAME) != null;
+			return FMEFreeModel.conceptRole(object) != null;
 		}
 
 		@Override
@@ -126,7 +126,7 @@ public class CreateNewFMEProperty extends FMEAction<CreateNewFMEProperty, FlexoC
 		if (getConcept() != null && getFMEType() != null) {
 			if (getFMEType().getPrimitiveType() != null) {
 				CreatePrimitiveRole createPropertyAction = CreatePrimitiveRole.actionType.makeNewEmbeddedAction(getConcept(), null, this);
-				createPropertyAction.setRoleName(getPropertyName());
+				createPropertyAction.setRoleName(getCreatedPropertyName());
 				createPropertyAction.setPrimitiveType(getFMEType().getPrimitiveType());
 				createPropertyAction.setDescription(getDescription());
 				createPropertyAction.doAction();
@@ -135,14 +135,12 @@ public class CreateNewFMEProperty extends FMEAction<CreateNewFMEProperty, FlexoC
 
 				CreateFlexoEnum createEnumAction = CreateFlexoEnum.actionType
 						.makeNewEmbeddedAction(getConcept().getDeclaringCompilationUnit().getVirtualModel(), null, this);
-				createEnumAction.setNewFlexoEnumName(getPropertyName().substring(0, 1).toUpperCase() + getPropertyName().substring(1));
+				createEnumAction.setNewFlexoEnumName(FMENames.conceptName(getCreatedPropertyName()));
 				createEnumAction.setNewFlexoEnumDescription(getDescription());
 				createEnumAction.doAction();
 				newEnum = createEnumAction.getNewFlexoConcept();
 
-				StringTokenizer st = new StringTokenizer(getEnumValues(), ",");
-				while (st.hasMoreTokens()) {
-					String next = st.nextToken();
+				for (String next : FMENames.enumValues(getEnumValues())) {
 					CreateFlexoEnumValue createEnumValue = CreateFlexoEnumValue.actionType.makeNewEmbeddedAction(newEnum, null, this);
 					createEnumValue.setValueName(next);
 					createEnumValue.doAction();
@@ -150,7 +148,7 @@ public class CreateNewFMEProperty extends FMEAction<CreateNewFMEProperty, FlexoC
 
 				CreateFlexoConceptInstanceRole createPropertyAction = CreateFlexoConceptInstanceRole.actionType
 						.makeNewEmbeddedAction(getConcept(), null, this);
-				createPropertyAction.setRoleName(getPropertyName());
+				createPropertyAction.setRoleName(getCreatedPropertyName());
 				createPropertyAction.setFlexoConceptInstanceType(newEnum);
 				createPropertyAction.setVirtualModelInstance(new DataBinding<>("container"));
 				createPropertyAction.setDescription(getDescription());
@@ -159,7 +157,7 @@ public class CreateNewFMEProperty extends FMEAction<CreateNewFMEProperty, FlexoC
 			else if (getFMEType() == FMEType.Reference) {
 				CreateFlexoConceptInstanceRole createPropertyAction = CreateFlexoConceptInstanceRole.actionType
 						.makeNewEmbeddedAction(getConcept(), null, this);
-				createPropertyAction.setRoleName(getPropertyName());
+				createPropertyAction.setRoleName(getCreatedPropertyName());
 				createPropertyAction.setFlexoConceptInstanceType(getReferenceType());
 				createPropertyAction.setVirtualModelInstance(new DataBinding<>("container"));
 				createPropertyAction.setDescription(getDescription());
@@ -167,13 +165,10 @@ public class CreateNewFMEProperty extends FMEAction<CreateNewFMEProperty, FlexoC
 			}
 
 			if (getGRConcept() != null) {
-				CreateInspectorEntry createInspectorEntry = CreateInspectorEntry.actionType
-						.makeNewEmbeddedAction(getGRConcept().getInspector(), null, this);
-				createInspectorEntry.setEntryName(getPropertyName());
-				createInspectorEntry.setEntryType(getFMEType().getType());
-				createInspectorEntry.setData(new DataBinding<>(FMEFreeModel.CONCEPT_ROLE_NAME + "." + propertyName));
-				createInspectorEntry.setIndex(getGRConcept().getInspector().getEntries().size() - 1);
-				createInspectorEntry.doAction();
+				// The graphical representation's inspector derives entirely to the conceptual concept's own
+				// (@Inspector(derived=...)); completing THAT one is what makes the new property show - completing, not
+				// regenerating: its author may have edited it since
+				FMEInspectorGenerator.addPropertyToConceptualInspector(getConcept(), getConcept().getAccessibleProperty(getCreatedPropertyName()));
 			}
 
 		}
@@ -196,7 +191,7 @@ public class CreateNewFMEProperty extends FMEAction<CreateNewFMEProperty, FlexoC
 	 */
 	public FlexoConcept getConcept() {
 		if (getGRConcept() != null) {
-			FlexoProperty<?> p = getGRConcept().getAccessibleProperty(FMEFreeModel.CONCEPT_ROLE_NAME);
+			FlexoProperty<?> p = FMEFreeModel.conceptRole(getGRConcept());
 			if (p instanceof FlexoConceptInstanceRole) {
 				FlexoConceptInstanceRole fciRole = (FlexoConceptInstanceRole) p;
 				return fciRole.getFlexoConceptType();
@@ -217,6 +212,13 @@ public class CreateNewFMEProperty extends FMEAction<CreateNewFMEProperty, FlexoC
 		}
 	}
 
+	/**
+	 * The name the property is created with: {@link #getPropertyName()}, as typed, normalized into a name FML accepts
+	 */
+	public String getCreatedPropertyName() {
+		return FMENames.propertyName(getPropertyName());
+	}
+
 	public FMEType getFMEType() {
 		return fmeType;
 	}
@@ -224,6 +226,7 @@ public class CreateNewFMEProperty extends FMEAction<CreateNewFMEProperty, FlexoC
 	public void setFMEType(FMEType fmeType) {
 		this.fmeType = fmeType;
 		getPropertyChangeSupport().firePropertyChange("FMEType", null, fmeType);
+		getPropertyChangeSupport().firePropertyChange("fMEType", null, fmeType);
 	}
 
 	public String getDescription() {
@@ -263,10 +266,8 @@ public class CreateNewFMEProperty extends FMEAction<CreateNewFMEProperty, FlexoC
 
 	private void computeEnumValues() {
 		enumValuesAsList.clear();
-		StringTokenizer st = new StringTokenizer(getEnumValues(), ",");
-		while (st.hasMoreTokens()) {
-			enumValuesAsList.add(st.nextToken());
-		}
+		// The values the enum is created with, which is what an instance is then given one of
+		enumValuesAsList.addAll(FMENames.enumValues(getEnumValues()));
 
 	}
 
@@ -289,7 +290,7 @@ public class CreateNewFMEProperty extends FMEAction<CreateNewFMEProperty, FlexoC
 	@Override
 	public boolean isValid() {
 
-		if (StringUtils.isEmpty(getPropertyName())) {
+		if (getCreatedPropertyName() == null) {
 			return false;
 		}
 
@@ -297,7 +298,7 @@ public class CreateNewFMEProperty extends FMEAction<CreateNewFMEProperty, FlexoC
 			return false;
 		}
 
-		if (getFMEType() == FMEType.Enumeration && StringUtils.isEmpty(getEnumValues())) {
+		if (getFMEType() == FMEType.Enumeration && FMENames.enumValues(getEnumValues()).isEmpty()) {
 			return false;
 		}
 

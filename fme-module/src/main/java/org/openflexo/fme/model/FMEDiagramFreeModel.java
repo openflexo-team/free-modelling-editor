@@ -40,8 +40,10 @@ package org.openflexo.fme.model;
 
 import java.awt.Font;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.openflexo.connie.DataBinding;
@@ -67,8 +69,8 @@ import org.openflexo.foundation.fml.binding.CreationSchemePathElement;
 import org.openflexo.foundation.fml.editionaction.AssignationAction;
 import org.openflexo.foundation.fml.editionaction.DeleteAction;
 import org.openflexo.foundation.fml.editionaction.ExpressionAction;
-import org.openflexo.foundation.fml.rt.editionaction.AddFlexoConceptInstance;
-import org.openflexo.foundation.fml.rt.editionaction.AddFlexoConceptInstanceParameter;
+import org.openflexo.foundation.fml.expr.FMLPrettyPrinter;
+import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.foundation.resource.ResourceLoadingCancelledException;
 import org.openflexo.logging.FlexoLogger;
 import org.openflexo.pamela.annotations.ImplementationClass;
@@ -194,6 +196,12 @@ public interface FMEDiagramFreeModel extends FMEFreeModel {
 		}
 
 		@Override
+		public void conceptRenamed(FlexoConcept grConcept, FlexoConcept concept, String oldConceptName) {
+			super.conceptRenamed(grConcept, concept, oldConceptName);
+			FMEDiagramConceptRenamer.rename(getTypedDiagramModelSlot(), grConcept, concept, oldConceptName);
+		}
+
+		@Override
 		public DiagramPalette getConceptsPalette() throws FlexoException {
 			if (getDiagramSpecification().getPalette(PALETTE_NAME) == null) {
 				// Should not happen, but...
@@ -237,7 +245,6 @@ public interface FMEDiagramFreeModel extends FMEFreeModel {
 				paletteElementGR.setWidth(40);
 				paletteElementGR.setHeight(30);
 			}
-			paletteElementGR.setText(concept.getName());
 			action.setNewElementName(concept.getName());
 
 			action.setGraphicalRepresentation(paletteElementGR);
@@ -276,10 +283,10 @@ public interface FMEDiagramFreeModel extends FMEFreeModel {
 			createShapeRole.doAction();
 			ShapeRole role = (ShapeRole) createShapeRole.getNewFlexoRole();
 
-			// Bind shapes's label to name property
+			// Bind shapes label to the rendering of the represented concept
 			if (concept != null) {
-				// If we are bound to a concept instance, use that name
-				role.setLabel(new DataBinding<>(CONCEPT_ROLE_NAME + ".name"));
+				// If we are bound to a concept instance, use its rendering
+				role.setLabel(new DataBinding<>(FMEFreeModel.conceptRoleName(returned) + ".stringRepresentation"));
 			}
 			else {
 				// Otherwise, this is the NoneGR, use primitive name
@@ -344,7 +351,7 @@ public interface FMEDiagramFreeModel extends FMEFreeModel {
 				}
 				createAddFlexoConceptInstance.setModelSlot(getSampleDataModelSlot());
 				createAddFlexoConceptInstance.setEditionActionClass(ExpressionAction.class);
-				createAddFlexoConceptInstance.setAssignation(new DataBinding<>(CONCEPT_ROLE_NAME));
+				createAddFlexoConceptInstance.setAssignation(new DataBinding<>(FMEFreeModel.conceptRoleName(returned)));
 				createAddFlexoConceptInstance.doAction();
 
 				ExpressionAction newFCIAction = (ExpressionAction) createAddFlexoConceptInstance.getBaseEditionAction();
@@ -358,8 +365,7 @@ public interface FMEDiagramFreeModel extends FMEFreeModel {
 
 				try {
 					if (containerConceptGR != null) {
-						bindingPath = BindingPath.parse(DropScheme.TARGET_KEY + "." + FMEFreeModel.CONCEPT_ROLE_NAME, newFCIAction);
-						bindingPath.addBindingPathElement(pathElement);
+						bindingPath = BindingPath.parse(DropScheme.TARGET_KEY + "." + FMEFreeModel.conceptRoleName(containerConceptGR), newFCIAction);
 					}
 					else {
 						bindingPath = BindingPath.parse(SAMPLE_DATA_MODEL_SLOT_NAME, newFCIAction);
@@ -367,14 +373,14 @@ public interface FMEDiagramFreeModel extends FMEFreeModel {
 						// FMLPrettyPrinter.getInstance());
 					}
 				} catch (ParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.log(Level.SEVERE, "Cannot build binding for the creation of concept " + concept.getName(), e);
 				}
 
-				bindingPath.addBindingPathElement(pathElement);
-
-				expression.setExpression(bindingPath);
-				newFCIAction.setExpression(expression);
+				if (bindingPath != null) {
+					bindingPath.addBindingPathElement(pathElement);
+					expression.setExpression(bindingPath);
+					newFCIAction.setExpression(expression);
+				}
 
 				// Code replacing
 				/*AddFlexoConceptInstance<?> addFCI = (AddFlexoConceptInstance<?>) createAddFlexoConceptInstance.getBaseEditionAction();
@@ -390,7 +396,7 @@ public interface FMEDiagramFreeModel extends FMEFreeModel {
 					addFCI.setContainer(new DataBinding<>(SAMPLE_DATA_MODEL_SLOT_NAME));
 				}
 				else {
-					addFCI.setContainer(new DataBinding<>(DropScheme.TARGET_KEY + "." + FMEFreeModel.CONCEPT_ROLE_NAME));
+					addFCI.setContainer(new DataBinding<>(DropScheme.TARGET_KEY + "." + FMEFreeModel.conceptRoleName(containerConceptGR)));
 				}*/
 			}
 			else {
@@ -475,7 +481,7 @@ public interface FMEDiagramFreeModel extends FMEFreeModel {
 
 			// Bind shapes's label to renderer
 			// role.setReadOnlyLabel(true);
-			role.setLabel(new DataBinding<>(CONCEPT_ROLE_NAME + ".render"));
+			role.setLabel(new DataBinding<>(FMEFreeModel.conceptRoleName(returned) + ".stringRepresentation"));
 
 			// Sets connector
 			ShapeRole fromShapeRole = (ShapeRole) fromConceptGR.getAccessibleProperty(SHAPE_ROLE_NAME);
@@ -511,16 +517,37 @@ public interface FMEDiagramFreeModel extends FMEFreeModel {
 				createAddFlexoConceptInstance = CreateEditionAction.actionType.makeNewAction(linkScheme.getControlGraph(), null, editor);
 			}
 			createAddFlexoConceptInstance.setModelSlot(getSampleDataModelSlot());
-			createAddFlexoConceptInstance.setEditionActionClass(AddFlexoConceptInstance.class);
-			createAddFlexoConceptInstance.setAssignation(new DataBinding<>(CONCEPT_ROLE_NAME));
+			createAddFlexoConceptInstance.setEditionActionClass(ExpressionAction.class);
+			createAddFlexoConceptInstance.setAssignation(new DataBinding<>(FMEFreeModel.conceptRoleName(returned)));
 			createAddFlexoConceptInstance.doAction();
-			AddFlexoConceptInstance<?> addFCI = (AddFlexoConceptInstance<?>) createAddFlexoConceptInstance.getBaseEditionAction();
-			addFCI.setCreationScheme(concept.getCreationSchemes().get(0));
+			ExpressionAction<FlexoConceptInstance> addFCI = (ExpressionAction<FlexoConceptInstance>) createAddFlexoConceptInstance
+					.getBaseEditionAction();
+
+			// The concept lives in the sample data model: the instance must be created as sampleData.new Concept(...)
+			BindingPath bv;
+			try {
+				bv = BindingPath.parse(SAMPLE_DATA_MODEL_SLOT_NAME, addFCI);
+			} catch (ParseException e) {
+				logger.log(Level.SEVERE, "Cannot build binding to " + SAMPLE_DATA_MODEL_SLOT_NAME, e);
+				bv = new BindingPath(addFCI, FMLPrettyPrinter.getInstance());
+			}
+			List<DataBinding<?>> args = new ArrayList<>();
+			args.add(new DataBinding<>(LinkScheme.FROM_TARGET_KEY + "." + FMEFreeModel.conceptRoleName(fromConceptGR)));
+			args.add(new DataBinding<>(LinkScheme.TO_TARGET_KEY + "." + FMEFreeModel.conceptRoleName(toConceptGR)));
+			CreationSchemePathElement creationSchemePathElement = getAccessedVirtualModel().getFMLModelFactory()
+					.newCreationSchemePathElement(null, concept.getCreationSchemes().get(0), args, addFCI);
+			bv.addBindingPathElement(creationSchemePathElement);
+			DataBinding<FlexoConceptInstance> newExpression = new DataBinding<FlexoConceptInstance>(addFCI, FlexoConceptInstance.class,
+					BindingDefinitionType.GET);
+			newExpression.setExpression(bv);
+			addFCI.setExpression(newExpression);
+
+			/*addFCI.setCreationScheme(concept.getCreationSchemes().get(0));
 			AddFlexoConceptInstanceParameter addFCISourceConceptParam = addFCI.getParameter(FMEConceptualModel.FROM_CONCEPT_ROLE_NAME);
 			addFCISourceConceptParam.setValue(new DataBinding<>(LinkScheme.FROM_TARGET_KEY + "." + FMEFreeModel.CONCEPT_ROLE_NAME));
 			AddFlexoConceptInstanceParameter addFCIDestinationConceptParam = addFCI.getParameter(FMEConceptualModel.TO_CONCEPT_ROLE_NAME);
 			addFCIDestinationConceptParam.setValue(new DataBinding<>(LinkScheme.TO_TARGET_KEY + "." + FMEFreeModel.CONCEPT_ROLE_NAME));
-			addFCI.setReceiver(new DataBinding<>(SAMPLE_DATA_MODEL_SLOT_NAME));
+			addFCI.setReceiver(new DataBinding<>(SAMPLE_DATA_MODEL_SLOT_NAME));*/
 
 			CreateEditionAction createAddConnector = null;
 			if (ownerAction != null) {

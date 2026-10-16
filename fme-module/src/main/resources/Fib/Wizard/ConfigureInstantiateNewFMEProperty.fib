@@ -63,44 +63,44 @@
 			value="data.action.createPropertyAction.concept.owner"
 			mandatory="true" />
 	</Custom>
-	<Label id="18" label="value" align="left" localize="true"
+	<Label id="18" label="value_for_this_instance" align="left" localize="true"
 		constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=10;insetsTop=0;location=left)"
 		name="Label4" />
 	<TextField id="19" columns="7" data="data.stringValue"
 		constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=20;insetsTop=0;location=right)"
-		visible="(data.action.createPropertyAction.fMEType.name == &quot;String&quot;)"
+		visible="(data.fMEType.name == &quot;String&quot;)"
 		name="TextField2" />
 	<Number id="20" minValue="0" numberType="IntegerType"
 		maxValue="65535" columns="3" increment="1" data="data.integerValue"
 		constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=20;insetsTop=0;location=right)"
-		visible="(data.action.createPropertyAction.fMEType.name == &quot;Integer&quot;)"
+		visible="(data.fMEType.name == &quot;Integer&quot;)"
 		name="Integer" />
 	<Number id="21" minValue="0" numberType="DoubleType"
 		maxValue="65535" columns="3" increment="1.0" data="data.floatValue"
 		constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=20;insetsTop=0;location=right)"
-		visible="(data.action.createPropertyAction.fMEType.name == &quot;Float&quot;)"
+		visible="(data.fMEType.name == &quot;Float&quot;)"
 		name="Float" />
 	<Date id="22" data="data.dateValue"
 		constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=20;insetsTop=0;location=right)"
-		visible="(data.action.createPropertyAction.fMEType.name == &quot;Date&quot;)"
+		visible="(data.fMEType.name == &quot;Date&quot;)"
 		name="DateSelector" />
 	<CheckBox id="23" selected="true" data="data.booleanValue"
 		constraints="twocols(expandHorizontally=false;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=20;insetsTop=0;location=right)"
-		visible="(data.action.createPropertyAction.fMEType.name == &quot;Boolean&quot;)"
+		visible="(data.fMEType.name == &quot;Boolean&quot;)"
 		name="checkbox" />
 	<DropDown id="24" autoSelectFirstRow="true"
 		iteratorClassName="java.lang.String" showText="true"
 		list="data.action.createPropertyAction.enumValuesAsList"
 		showIcon="false" data="data.enumerationValue"
 		constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=20;insetsTop=0;location=right)"
-		visible="(data.action.createPropertyAction.fMEType.name == &quot;Enumeration&quot;)"
+		visible="(data.fMEType.name == &quot;Enumeration&quot;)"
 		name="dropdown" />
 	<Custom id="25"
 		componentClassName="org.openflexo.fml.rt.controller.widget.FIBFlexoConceptInstanceSelector"
 		dataClassForComponent="org.openflexo.foundation.fml.rt.FlexoConceptInstance"
 		manageDynamicModel="true" data="data.referenceValue"
 		constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=20;insetsTop=0;location=right)"
-		visible="(data.action.createPropertyAction.fMEType.name == &quot;Reference&quot;)"
+		visible="(data.fMEType.name == &quot;Reference&quot;)"
 		name="CustomSelector2">
 		<Assignment id="26" variable="component.expectedType"
 			mandatory="true" />
@@ -118,6 +118,63 @@
 			variable="component.expectedFlexoConceptType"
 			value="data.referenceType" mandatory="true" />
 		<Assignment id="32"
+			variable="component.selectableCondition" mandatory="true" />
+	</Custom>
+	<Label id="101" label="default_value" align="left" localize="true"
+		constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=10;insetsTop=0;location=left)"
+		name="DefaultLabel4" />
+	<TextField id="102" columns="7" data="data.defaultStringValue"
+		constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=20;insetsTop=0;location=right)"
+		visible="(data.fMEType.name == &quot;String&quot;)"
+		name="DefaultTextField2" />
+	<Number id="103" minValue="0" numberType="IntegerType"
+		maxValue="65535" columns="3" increment="1" data="data.defaultIntegerValue"
+		constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=20;insetsTop=0;location=right)"
+		visible="(data.fMEType.name == &quot;Integer&quot;)"
+		name="DefaultInteger" />
+	<Number id="104" minValue="0" numberType="DoubleType"
+		maxValue="65535" columns="3" increment="1.0" data="data.defaultFloatValue"
+		constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=20;insetsTop=0;location=right)"
+		visible="(data.fMEType.name == &quot;Float&quot;)"
+		name="DefaultFloat" />
+	<Date id="105" data="data.defaultDateValue"
+		constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=20;insetsTop=0;location=right)"
+		visible="(data.fMEType.name == &quot;Date&quot;)"
+		name="DefaultDateSelector" />
+	<CheckBox id="106" selected="true" data="data.defaultBooleanValue"
+		constraints="twocols(expandHorizontally=false;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=20;insetsTop=0;location=right)"
+		visible="(data.fMEType.name == &quot;Boolean&quot;)"
+		name="Defaultcheckbox" />
+	<DropDown id="107" autoSelectFirstRow="true"
+		iteratorClassName="java.lang.String" showText="true"
+		list="data.action.createPropertyAction.enumValuesAsList"
+		showIcon="false" data="data.defaultEnumerationValue"
+		constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=20;insetsTop=0;location=right)"
+		visible="(data.fMEType.name == &quot;Enumeration&quot;)"
+		name="Defaultdropdown" />
+	<Custom id="108"
+		componentClassName="org.openflexo.fml.rt.controller.widget.FIBFlexoConceptInstanceSelector"
+		dataClassForComponent="org.openflexo.foundation.fml.rt.FlexoConceptInstance"
+		manageDynamicModel="true" data="data.defaultReferenceValue"
+		constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=20;insetsTop=0;location=right)"
+		visible="(data.fMEType.name == &quot;Reference&quot;)"
+		name="DefaultCustomSelector2">
+		<Assignment id="109" variable="component.expectedType"
+			mandatory="true" />
+		<Assignment id="110"
+			variable="component.expectedFlexoConceptTypeURI" mandatory="true" />
+		<Assignment id="111" variable="component.project"
+			mandatory="true" />
+		<Assignment id="112" variable="component.flexoController"
+			mandatory="true" />
+		<Assignment id="113"
+			variable="component.virtualModelInstance"
+			value="data.action.conceptInstance.virtualModelInstance"
+			mandatory="true" />
+		<Assignment id="114"
+			variable="component.expectedFlexoConceptType"
+			value="data.referenceType" mandatory="true" />
+		<Assignment id="115"
 			variable="component.selectableCondition" mandatory="true" />
 	</Custom>
 	<Label id="33" label="description" align="right" localize="true"
@@ -157,6 +214,18 @@
 			key="description" />
 		<Localized id="50" lang="French" value="Description"
 			key="description" />
+		<Localized id="90" lang="English" value="Value for this instance"
+			key="value_for_this_instance" />
+		<Localized id="91" lang="Dutch" value="Value for this instance"
+			key="value_for_this_instance" />
+		<Localized id="92" lang="French" value="Valeur pour cette instance"
+			key="value_for_this_instance" />
+		<Localized id="93" lang="English" value="Default value (other instances)"
+			key="default_value" />
+		<Localized id="94" lang="Dutch" value="Default value (other instances)"
+			key="default_value" />
+		<Localized id="95" lang="French" value="Valeur par d&#233;faut (autres instances)"
+			key="default_value" />
 	</LocalizedDictionary>
 	<FIBVariable id="51"
 		type="org.openflexo.fme.controller.action.InstantiateNewFMEPropertyWizard$ConfigureInstantiateNewFMEProperty"

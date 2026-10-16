@@ -39,9 +39,12 @@
 package org.openflexo.fme.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.type.PrimitiveType;
@@ -52,22 +55,24 @@ import org.openflexo.foundation.fml.CreationScheme;
 import org.openflexo.foundation.fml.DeletionScheme;
 import org.openflexo.foundation.fml.FlexoBehaviourParameter.WidgetType;
 import org.openflexo.foundation.fml.FlexoConcept;
+import org.openflexo.foundation.fml.FlexoConceptInstanceRole;
+import org.openflexo.foundation.fml.FlexoProperty;
 import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.action.CreateEditionAction;
 import org.openflexo.foundation.fml.action.CreateFlexoBehaviour;
 import org.openflexo.foundation.fml.action.CreateFlexoConcept;
 import org.openflexo.foundation.fml.action.CreateFlexoConceptInstanceRole;
 import org.openflexo.foundation.fml.action.CreateGenericBehaviourParameter;
-import org.openflexo.foundation.fml.action.CreateInspectorEntry;
 import org.openflexo.foundation.fml.action.CreatePrimitiveRole;
+import org.openflexo.foundation.fml.action.PropertyEntry;
 import org.openflexo.foundation.fml.editionaction.AssignationAction;
 import org.openflexo.foundation.fml.editionaction.ExpressionAction;
-import org.openflexo.foundation.fml.inspector.InspectorEntry;
 import org.openflexo.foundation.fml.rm.CompilationUnitResourceFactory;
 import org.openflexo.foundation.fml.rt.VirtualModelInstance;
 import org.openflexo.foundation.nature.NatureObject;
 import org.openflexo.foundation.nature.VirtualModelBasedNatureObject;
 import org.openflexo.logging.FlexoLogger;
+import org.apache.commons.lang3.StringUtils;
 import org.openflexo.pamela.annotations.Getter;
 import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
@@ -130,6 +135,137 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 	public FlexoConcept getRelationalFlexoConcept(String conceptName, FlexoConcept fromConcept, FlexoConcept toConcept, FlexoEditor editor,
 			FlexoAction<?, ?, ?> ownerAction) throws FlexoException;
 
+	/**
+	 * Same as {@link #getFlexoConcept(String, FlexoConcept, FlexoEditor, FlexoAction)}, with the structure of the created concept given
+	 * instead of the default <code>name</code> and <code>description</code> properties.
+	 * 
+	 * @param conceptName
+	 *            name of concept beeing created
+	 * @param description
+	 *            description of the concept (stored as its <code>@Description</code>), or null
+	 * @param properties
+	 *            the properties to create, all of them primitive ones as far as this editor is concerned
+	 * @param labelPropertyName
+	 *            name of the String property giving the label of the instances (their renderer, and the label of their shape), and
+	 *            receiving the parameter of the creation scheme
+	 * @param containerConcept
+	 *            container of created concept, or null
+	 * @param editor
+	 * @param ownerAction
+	 *            the action creating the concept: it must not be null, since properties are created by embedded actions
+	 * @return
+	 * @throws FlexoException
+	 */
+	public FlexoConcept getFlexoConcept(String conceptName, String description, List<PropertyEntry<?>> properties,
+			String labelPropertyName, FlexoConcept containerConcept, FlexoEditor editor, FlexoAction<?, ?, ?> ownerAction)
+			throws FlexoException;
+
+	/**
+	 * Makes supplied conceptual concept instantiable: gives it a creation scheme (the parameter of which is the label of the instance, which
+	 * it stores in the property named <code>labelPropertyName</code>), a deletion scheme and the renderer of its instances
+	 * (<code>instance.<i>label property</i></code>)
+	 * 
+	 * @param concept
+	 *            a concept declaring the String property named <code>labelPropertyName</code> (or inheriting it)
+	 * @param ownerAction
+	 *            the action making the concept instantiable: it must not be null, since behaviours are created by embedded actions
+	 */
+	public void makeInstantiable(FlexoConcept concept, String labelPropertyName, FlexoEditor editor, FlexoAction<?, ?, ?> ownerAction)
+			throws FlexoException;
+
+	/** The renderer of a conceptual concept created by this editor: <code>instance.<i>label property</i></code> */
+	static final Pattern LABEL_RENDERER = Pattern.compile("instance\\.([\\p{L}\\p{Nd}$_]+)");
+
+	/**
+	 * Name of the property giving the label of the instances of supplied conceptual concept, or null when it has none.<br>
+	 * That property is the one its renderer reads (<code>instance.title</code>), which is what the editor writes when it creates the
+	 * concept. Otherwise <code>name</code> when the concept has it, then its first String property.
+	 */
+	public static String labelPropertyName(FlexoConcept concept) {
+		if (concept == null) {
+			return null;
+		}
+		// Own renderer, or the one inherited from a super concept
+		if (concept.getApplicableRenderer() != null && concept.getApplicableRenderer().isSet()) {
+			Matcher matcher = LABEL_RENDERER.matcher(String.valueOf(concept.getApplicableRenderer()));
+			if (matcher.matches() && concept.getAccessibleProperty(matcher.group(1)) != null) {
+				return matcher.group(1);
+			}
+		}
+		if (concept.getAccessibleProperty(NAME_ROLE_NAME) != null) {
+			return NAME_ROLE_NAME;
+		}
+		for (FlexoProperty<?> property : concept.getAccessibleProperties()) {
+			if (String.class.equals(property.getResultingType())) {
+				return property.getName();
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Same as {@link #getRelationalFlexoConcept(String, FlexoConcept, FlexoConcept, FlexoEditor, FlexoAction)}, with a description and
+	 * properties for the created concept (besides its source and destination concepts).
+	 * 
+	 * @param description
+	 *            description of the concept (stored as its <code>@Description</code>), or null
+	 * @param properties
+	 *            the properties to create, or null. A non-empty list needs an owner action, since properties are created by embedded actions
+	 */
+	public FlexoConcept getRelationalFlexoConcept(String conceptName, String description, List<PropertyEntry<?>> properties,
+			String fromRoleName, String toRoleName, FlexoConcept fromConcept, FlexoConcept toConcept, FlexoEditor editor,
+			FlexoAction<?, ?, ?> ownerAction) throws FlexoException;
+
+	/**
+	 * The two roles of supplied relational concept pointing to the concepts it relates: the source one, then the destination one. They are
+	 * the roles reading their instance in the container (<code>container</code>), whatever their names, which are chosen when the
+	 * relational concept is created ({@link #FROM_CONCEPT_ROLE_NAME} and {@link #TO_CONCEPT_ROLE_NAME} by default).
+	 * 
+	 * @return null when supplied concept is not a relational one
+	 */
+	public static List<FlexoConceptInstanceRole> relationEnds(FlexoConcept concept) {
+		if (concept == null) {
+			return null;
+		}
+		List<FlexoConceptInstanceRole> returned = new ArrayList<>();
+		for (FlexoProperty<?> property : concept.getDeclaredProperties()) {
+			if (property instanceof FlexoConceptInstanceRole) {
+				FlexoConceptInstanceRole role = (FlexoConceptInstanceRole) property;
+				if (role.getVirtualModelInstance() != null && role.getVirtualModelInstance().isSet()
+						&& "container".equals(role.getVirtualModelInstance().toString())) {
+					returned.add(role);
+				}
+			}
+		}
+		if (returned.size() < 2) {
+			// Concepts created before the names were configurable
+			FlexoProperty<?> from = concept.getAccessibleProperty(FROM_CONCEPT_ROLE_NAME);
+			FlexoProperty<?> to = concept.getAccessibleProperty(TO_CONCEPT_ROLE_NAME);
+			if (from instanceof FlexoConceptInstanceRole && to instanceof FlexoConceptInstanceRole) {
+				return Arrays.asList((FlexoConceptInstanceRole) from, (FlexoConceptInstanceRole) to);
+			}
+			return null;
+		}
+		return returned.subList(0, 2);
+	}
+
+	/** Whether supplied concept is a relational one: it relates two concepts */
+	public static boolean isRelationship(FlexoConcept concept) {
+		return relationEnds(concept) != null;
+	}
+
+	/** Name of the source role of supplied relational concept */
+	public static String fromRoleName(FlexoConcept concept) {
+		List<FlexoConceptInstanceRole> ends = relationEnds(concept);
+		return ends != null ? ends.get(0).getName() : FROM_CONCEPT_ROLE_NAME;
+	}
+
+	/** Name of the destination role of supplied relational concept */
+	public static String toRoleName(FlexoConcept concept) {
+		List<FlexoConceptInstanceRole> ends = relationEnds(concept);
+		return ends != null ? ends.get(1).getName() : TO_CONCEPT_ROLE_NAME;
+	}
+
 	public String getName();
 
 	@Getter(value = OWNER_KEY)
@@ -149,10 +285,9 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 
 		@Override
 		public String getName() {
-			if (getAccessedVirtualModel() != null) {
-				return getAccessedVirtualModel().getName() + CompilationUnitResourceFactory.FML_SUFFIX;
-			}
-			return null;
+			// Never loads the virtual model: a browser label is computed from here
+			String name = getLoadedOrResourceName();
+			return name != null ? name + CompilationUnitResourceFactory.FML_SUFFIX : null;
 		}
 
 		/**
@@ -172,6 +307,85 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 		public FlexoConcept getFlexoConcept(String conceptName, FlexoConcept containerConcept, FlexoEditor editor,
 				FlexoAction<?, ?, ?> ownerAction) throws FlexoException {
 
+			return getFlexoConcept(conceptName, null, null, NAME_ROLE_NAME, containerConcept, editor, ownerAction);
+		}
+
+		@Override
+		public void makeInstantiable(FlexoConcept concept, String labelPropertyName, FlexoEditor editor, FlexoAction<?, ?, ?> ownerAction)
+				throws FlexoException {
+
+			FlexoConcept returned = concept;
+
+			// Create new CreationScheme
+			CreateFlexoBehaviour createCreationScheme = null;
+			if (ownerAction != null) {
+				createCreationScheme = CreateFlexoBehaviour.actionType.makeNewEmbeddedAction(returned, null, ownerAction);
+			}
+			else {
+				createCreationScheme = CreateFlexoBehaviour.actionType.makeNewAction(returned, null, editor);
+			}
+			createCreationScheme.setAnonymous(true);
+			// createCreationScheme.setFlexoBehaviourName("create");
+			createCreationScheme.setFlexoBehaviourClass(CreationScheme.class);
+			createCreationScheme.doAction();
+			CreationScheme creationScheme = (CreationScheme) createCreationScheme.getNewFlexoBehaviour();
+			creationScheme.setSkipConfirmationPanel(true);
+
+			// Create new CreationScheme parameter
+			CreateGenericBehaviourParameter createNameParameter = null;
+			if (ownerAction != null) {
+				createNameParameter = CreateGenericBehaviourParameter.actionType.makeNewEmbeddedAction(creationScheme, null,
+						ownerAction);
+			}
+			else {
+				createNameParameter = CreateGenericBehaviourParameter.actionType.makeNewAction(creationScheme, null, editor);
+			}
+			createNameParameter.setParameterName(CONCEPT_NAME_PARAMETER);
+			createNameParameter.setParameterType(String.class);
+			createNameParameter.setWidgetType(WidgetType.TEXT_FIELD);
+			createNameParameter.doAction();
+
+			CreateEditionAction givesNameAction = null;
+			if (ownerAction != null) {
+				givesNameAction = CreateEditionAction.actionType.makeNewEmbeddedAction(creationScheme.getControlGraph(), null,
+						ownerAction);
+			}
+			else {
+				givesNameAction = CreateEditionAction.actionType.makeNewAction(creationScheme.getControlGraph(), null, editor);
+			}
+			// givesNameAction.actionChoice = CreateEditionActionChoice.BuiltInAction;
+			givesNameAction.setEditionActionClass(ExpressionAction.class);
+			givesNameAction.setAssignation(new DataBinding<>(labelPropertyName));
+			givesNameAction.doAction();
+
+			AssignationAction<?> nameAssignation = (AssignationAction<?>) givesNameAction.getNewEditionAction();
+			((ExpressionAction<?>) nameAssignation.getAssignableAction()).setExpression(new DataBinding<>("parameters.conceptName"));
+
+			// Create new DeletionScheme
+			CreateFlexoBehaviour createDeletionScheme = null;
+			if (ownerAction != null) {
+				createDeletionScheme = CreateFlexoBehaviour.actionType.makeNewEmbeddedAction(returned, null, ownerAction);
+			}
+			else {
+				createDeletionScheme = CreateFlexoBehaviour.actionType.makeNewAction(returned, null, editor);
+			}
+			createDeletionScheme.setAnonymous(true);
+			// createDeletionScheme.setFlexoBehaviourName("delete");
+			createDeletionScheme.setFlexoBehaviourClass(DeletionScheme.class);
+			createDeletionScheme.doAction();
+			DeletionScheme deletionScheme = (DeletionScheme) createDeletionScheme.getNewFlexoBehaviour();
+			deletionScheme.setSkipConfirmationPanel(true);
+
+			returned.setRenderer(new DataBinding<String>("instance." + labelPropertyName));
+		}
+
+		@Override
+		public FlexoConcept getFlexoConcept(String conceptName, String description, List<PropertyEntry<?>> properties,
+				String labelPropertyName, FlexoConcept containerConcept, FlexoEditor editor, FlexoAction<?, ?, ?> ownerAction)
+				throws FlexoException {
+
+			// As typed by the user: FML would not parse it back if it were written as is
+			conceptName = FMENames.conceptName(conceptName);
 			FlexoConcept returned = getAccessedVirtualModel().getFlexoConcept(conceptName);
 
 			if (returned == null) {
@@ -189,121 +403,45 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 				action.doAction();
 				returned = action.getNewFlexoConcept();
 
-				// Create new PrimitiveRole (String type) to store the name of this instance
-				CreatePrimitiveRole createNameRole = null;
-				if (ownerAction != null) {
-					createNameRole = CreatePrimitiveRole.actionType.makeNewEmbeddedAction(returned, null, ownerAction);
+				if (StringUtils.isNotEmpty(description)) {
+					returned.setDescription(description);
+				}
+
+				if (properties == null) {
+					// The default structure: the name and the description of the instance
+					// Create new PrimitiveRole (String type) to store the name of this instance
+					CreatePrimitiveRole createNameRole = null;
+					if (ownerAction != null) {
+						createNameRole = CreatePrimitiveRole.actionType.makeNewEmbeddedAction(returned, null, ownerAction);
+					}
+					else {
+						createNameRole = CreatePrimitiveRole.actionType.makeNewAction(returned, null, editor);
+					}
+					createNameRole.setRoleName(NAME_ROLE_NAME);
+					createNameRole.setPrimitiveType(PrimitiveType.String);
+					createNameRole.doAction();
+
+					// Create new PrimitiveRole (String type) to store the description of this instance
+					CreatePrimitiveRole createDescRole = null;
+					if (ownerAction != null) {
+						createDescRole = CreatePrimitiveRole.actionType.makeNewEmbeddedAction(returned, null, ownerAction);
+					}
+					else {
+						createDescRole = CreatePrimitiveRole.actionType.makeNewAction(returned, null, editor);
+					}
+					createDescRole.setRoleName(DESCRIPTION_ROLE_NAME);
+					createDescRole.setPrimitiveType(PrimitiveType.String);
+					createDescRole.doAction();
 				}
 				else {
-					createNameRole = CreatePrimitiveRole.actionType.makeNewAction(returned, null, editor);
+					for (PropertyEntry<?> entry : properties) {
+						entry.performCreateProperty(returned, ownerAction);
+					}
 				}
-				createNameRole.setRoleName(NAME_ROLE_NAME);
-				createNameRole.setPrimitiveType(PrimitiveType.String);
-				createNameRole.doAction();
 
-				// Create new PrimitiveRole (String type) to store the description of this instance
-				CreatePrimitiveRole createDescRole = null;
-				if (ownerAction != null) {
-					createDescRole = CreatePrimitiveRole.actionType.makeNewEmbeddedAction(returned, null, ownerAction);
-				}
-				else {
-					createDescRole = CreatePrimitiveRole.actionType.makeNewAction(returned, null, editor);
-				}
-				createDescRole.setRoleName(DESCRIPTION_ROLE_NAME);
-				createDescRole.setPrimitiveType(PrimitiveType.String);
-				createDescRole.doAction();
+				makeInstantiable(returned, labelPropertyName, editor, ownerAction);
 
-				// Create new CreationScheme
-				CreateFlexoBehaviour createCreationScheme = null;
-				if (ownerAction != null) {
-					createCreationScheme = CreateFlexoBehaviour.actionType.makeNewEmbeddedAction(returned, null, ownerAction);
-				}
-				else {
-					createCreationScheme = CreateFlexoBehaviour.actionType.makeNewAction(returned, null, editor);
-				}
-				createCreationScheme.setFlexoBehaviourName("create");
-				createCreationScheme.setFlexoBehaviourClass(CreationScheme.class);
-				createCreationScheme.doAction();
-				CreationScheme creationScheme = (CreationScheme) createCreationScheme.getNewFlexoBehaviour();
-				creationScheme.setSkipConfirmationPanel(true);
-
-				// Create new CreationScheme parameter
-				CreateGenericBehaviourParameter createNameParameter = null;
-				if (ownerAction != null) {
-					createNameParameter = CreateGenericBehaviourParameter.actionType.makeNewEmbeddedAction(creationScheme, null,
-							ownerAction);
-				}
-				else {
-					createNameParameter = CreateGenericBehaviourParameter.actionType.makeNewAction(creationScheme, null, editor);
-				}
-				createNameParameter.setParameterName(CONCEPT_NAME_PARAMETER);
-				createNameParameter.setParameterType(String.class);
-				createNameParameter.setWidgetType(WidgetType.TEXT_FIELD);
-				createNameParameter.doAction();
-
-				CreateEditionAction givesNameAction = null;
-				if (ownerAction != null) {
-					givesNameAction = CreateEditionAction.actionType.makeNewEmbeddedAction(creationScheme.getControlGraph(), null,
-							ownerAction);
-				}
-				else {
-					givesNameAction = CreateEditionAction.actionType.makeNewAction(creationScheme.getControlGraph(), null, editor);
-				}
-				// givesNameAction.actionChoice = CreateEditionActionChoice.BuiltInAction;
-				givesNameAction.setEditionActionClass(ExpressionAction.class);
-				givesNameAction.setAssignation(new DataBinding<>(NAME_ROLE_NAME));
-				givesNameAction.doAction();
-
-				AssignationAction<?> nameAssignation = (AssignationAction<?>) givesNameAction.getNewEditionAction();
-				((ExpressionAction<?>) nameAssignation.getAssignableAction()).setExpression(new DataBinding<>("parameters.conceptName"));
-
-				// Create new DeletionScheme
-				CreateFlexoBehaviour createDeletionScheme = null;
-				if (ownerAction != null) {
-					createDeletionScheme = CreateFlexoBehaviour.actionType.makeNewEmbeddedAction(returned, null, ownerAction);
-				}
-				else {
-					createDeletionScheme = CreateFlexoBehaviour.actionType.makeNewAction(returned, null, editor);
-				}
-				createDeletionScheme.setFlexoBehaviourName("delete");
-				createDeletionScheme.setFlexoBehaviourClass(DeletionScheme.class);
-				createDeletionScheme.doAction();
-				DeletionScheme deletionScheme = (DeletionScheme) createDeletionScheme.getNewFlexoBehaviour();
-				deletionScheme.setSkipConfirmationPanel(true);
-
-				// Create inspector name entry
-				CreateInspectorEntry createNameEntry = null;
-				if (ownerAction != null) {
-					createNameEntry = CreateInspectorEntry.actionType.makeNewEmbeddedAction(returned.getInspector(), null, ownerAction);
-				}
-				else {
-					createNameEntry = CreateInspectorEntry.actionType.makeNewAction(returned.getInspector(), null, editor);
-				}
-				createNameEntry.setEntryName(NAME_ROLE_NAME);
-				createNameEntry.setEntryType(String.class);
-				createNameEntry.setWidgetType(WidgetType.TEXT_FIELD);
-				createNameEntry.setData(new DataBinding<String>("name"));
-
-				createNameEntry.doAction();
-				// Unused InspectorEntry nameEntry = createNameEntry.getNewEntry();
-
-				// Create inspector description entry
-				CreateInspectorEntry createDescriptionEntry = null;
-				if (ownerAction != null) {
-					createDescriptionEntry = CreateInspectorEntry.actionType.makeNewEmbeddedAction(returned.getInspector(), null,
-							ownerAction);
-				}
-				else {
-					createDescriptionEntry = CreateInspectorEntry.actionType.makeNewAction(returned.getInspector(), null, editor);
-				}
-				createDescriptionEntry.setEntryName(DESCRIPTION_ROLE_NAME);
-				createDescriptionEntry.setEntryType(String.class);
-				createDescriptionEntry.setWidgetType(WidgetType.TEXT_AREA);
-				createDescriptionEntry.setData(new DataBinding<String>("description"));
-				createDescriptionEntry.doAction();
-				InspectorEntry descriptionEntry = createDescriptionEntry.getNewEntry();
-
-				returned.getInspector().setRenderer(new DataBinding<String>("instance.name"));
+				FMEInspectorGenerator.updateConceptualInspector(returned);
 			}
 			return returned;
 		}
@@ -324,7 +462,16 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 		@Override
 		public FlexoConcept getRelationalFlexoConcept(String conceptName, FlexoConcept fromConcept, FlexoConcept toConcept,
 				FlexoEditor editor, FlexoAction<?, ?, ?> ownerAction) throws FlexoException {
+			return getRelationalFlexoConcept(conceptName, null, null, FROM_CONCEPT_ROLE_NAME, TO_CONCEPT_ROLE_NAME, fromConcept, toConcept,
+					editor, ownerAction);
+		}
 
+		@Override
+		public FlexoConcept getRelationalFlexoConcept(String conceptName, String description, List<PropertyEntry<?>> properties,
+				String fromRoleName, String toRoleName, FlexoConcept fromConcept, FlexoConcept toConcept, FlexoEditor editor,
+				FlexoAction<?, ?, ?> ownerAction) throws FlexoException {
+
+			conceptName = FMENames.conceptName(conceptName);
 			FlexoConcept returned = getAccessedVirtualModel().getFlexoConcept(conceptName);
 
 			if (returned == null) {
@@ -341,6 +488,18 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 				action.doAction();
 				returned = action.getNewFlexoConcept();
 
+				if (StringUtils.isNotEmpty(description)) {
+					returned.setDescription(description);
+				}
+				if (properties != null && !properties.isEmpty()) {
+					if (ownerAction == null) {
+						throw new IllegalArgumentException("Properties are created by embedded actions: an owner action is required");
+					}
+					for (PropertyEntry<?> entry : properties) {
+						entry.performCreateProperty(returned, ownerAction);
+					}
+				}
+
 				// Create new CreationScheme
 				CreateFlexoBehaviour createCreationScheme = null;
 				if (ownerAction != null) {
@@ -349,7 +508,8 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 				else {
 					createCreationScheme = CreateFlexoBehaviour.actionType.makeNewAction(returned, null, editor);
 				}
-				createCreationScheme.setFlexoBehaviourName("create");
+				createCreationScheme.setAnonymous(true);
+				// createCreationScheme.setFlexoBehaviourName("create");
 				createCreationScheme.setFlexoBehaviourClass(CreationScheme.class);
 				createCreationScheme.doAction();
 				CreationScheme creationScheme = (CreationScheme) createCreationScheme.getNewFlexoBehaviour();
@@ -363,7 +523,8 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 				else {
 					createDeletionScheme = CreateFlexoBehaviour.actionType.makeNewAction(returned, null, editor);
 				}
-				createDeletionScheme.setFlexoBehaviourName("delete");
+				createDeletionScheme.setAnonymous(true);
+				// createDeletionScheme.setFlexoBehaviourName("delete");
 				createDeletionScheme.setFlexoBehaviourClass(DeletionScheme.class);
 				createDeletionScheme.doAction();
 				DeletionScheme deletionScheme = (DeletionScheme) createDeletionScheme.getNewFlexoBehaviour();
@@ -377,7 +538,7 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 				else {
 					fromConceptRoleAction = CreateFlexoConceptInstanceRole.actionType.makeNewAction(returned, null, editor);
 				}
-				fromConceptRoleAction.setRoleName(FROM_CONCEPT_ROLE_NAME);
+				fromConceptRoleAction.setRoleName(fromRoleName);
 				fromConceptRoleAction.setFlexoConceptInstanceType(fromConcept);
 				fromConceptRoleAction.setVirtualModelInstance(new DataBinding<VirtualModelInstance<?, ?>>("container"));
 				fromConceptRoleAction.doAction();
@@ -390,7 +551,7 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 				else {
 					toConceptRoleAction = CreateFlexoConceptInstanceRole.actionType.makeNewAction(returned, null, editor);
 				}
-				toConceptRoleAction.setRoleName(TO_CONCEPT_ROLE_NAME);
+				toConceptRoleAction.setRoleName(toRoleName);
 				toConceptRoleAction.setFlexoConceptInstanceType(toConcept);
 				toConceptRoleAction.setVirtualModelInstance(new DataBinding<VirtualModelInstance<?, ?>>("container"));
 				toConceptRoleAction.doAction();
@@ -404,7 +565,7 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 				else {
 					createSourceConceptParameter = CreateGenericBehaviourParameter.actionType.makeNewAction(creationScheme, null, editor);
 				}
-				createSourceConceptParameter.setParameterName(FROM_CONCEPT_ROLE_NAME);
+				createSourceConceptParameter.setParameterName(fromRoleName);
 				createSourceConceptParameter.setParameterType(fromConcept.getInstanceType());
 				createSourceConceptParameter.setWidgetType(WidgetType.CUSTOM_WIDGET);
 				createSourceConceptParameter.doAction();
@@ -418,12 +579,12 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 					setsFromConceptAction = CreateEditionAction.actionType.makeNewAction(creationScheme.getControlGraph(), null, editor);
 				}
 				setsFromConceptAction.setEditionActionClass(ExpressionAction.class);
-				setsFromConceptAction.setAssignation(new DataBinding<>(FROM_CONCEPT_ROLE_NAME));
+				setsFromConceptAction.setAssignation(new DataBinding<>(fromRoleName));
 				setsFromConceptAction.doAction();
 
 				AssignationAction<?> sourceConceptAssignation = (AssignationAction<?>) setsFromConceptAction.getNewEditionAction();
 				((ExpressionAction<?>) sourceConceptAssignation.getAssignableAction())
-						.setExpression(new DataBinding<>("parameters." + FROM_CONCEPT_ROLE_NAME));
+						.setExpression(new DataBinding<>("parameters." + fromRoleName));
 
 				// Create and set destination concept parameter for CreationScheme
 				CreateGenericBehaviourParameter createDestinationConceptParameter = null;
@@ -435,7 +596,7 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 					createDestinationConceptParameter = CreateGenericBehaviourParameter.actionType.makeNewAction(creationScheme, null,
 							editor);
 				}
-				createDestinationConceptParameter.setParameterName(TO_CONCEPT_ROLE_NAME);
+				createDestinationConceptParameter.setParameterName(toRoleName);
 				createDestinationConceptParameter.setParameterType(toConcept.getInstanceType());
 				createDestinationConceptParameter.setWidgetType(WidgetType.CUSTOM_WIDGET);
 				createDestinationConceptParameter.doAction();
@@ -450,42 +611,14 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 				}
 				// givesNameAction.actionChoice = CreateEditionActionChoice.BuiltInAction;
 				setsToConceptAction.setEditionActionClass(ExpressionAction.class);
-				setsToConceptAction.setAssignation(new DataBinding<>(TO_CONCEPT_ROLE_NAME));
+				setsToConceptAction.setAssignation(new DataBinding<>(toRoleName));
 				setsToConceptAction.doAction();
 
 				AssignationAction<?> destinationConceptAssignation = (AssignationAction<?>) setsToConceptAction.getNewEditionAction();
 				((ExpressionAction<?>) destinationConceptAssignation.getAssignableAction())
-						.setExpression(new DataBinding<>("parameters." + TO_CONCEPT_ROLE_NAME));
+						.setExpression(new DataBinding<>("parameters." + toRoleName));
 
-				// Create inspector source entry
-				CreateInspectorEntry createSourceEntry = null;
-				if (ownerAction != null) {
-					createSourceEntry = CreateInspectorEntry.actionType.makeNewEmbeddedAction(returned.getInspector(), null, ownerAction);
-				}
-				else {
-					createSourceEntry = CreateInspectorEntry.actionType.makeNewAction(returned.getInspector(), null, editor);
-				}
-				createSourceEntry.setEntryName(FROM_CONCEPT_ROLE_NAME);
-				createSourceEntry.setEntryType(fromConcept.getInstanceType());
-				createSourceEntry.setWidgetType(WidgetType.CUSTOM_WIDGET);
-				createSourceEntry.setData(new DataBinding<String>(FROM_CONCEPT_ROLE_NAME));
-				createSourceEntry.doAction();
-
-				// Create inspector destination entry
-				CreateInspectorEntry createDestinationEntry = null;
-				if (ownerAction != null) {
-					createDestinationEntry = CreateInspectorEntry.actionType.makeNewEmbeddedAction(returned.getInspector(), null,
-							ownerAction);
-				}
-				else {
-					createDestinationEntry = CreateInspectorEntry.actionType.makeNewAction(returned.getInspector(), null, editor);
-				}
-				createDestinationEntry.setEntryName(TO_CONCEPT_ROLE_NAME);
-				createDestinationEntry.setEntryType(toConcept.getInstanceType());
-				createDestinationEntry.setWidgetType(WidgetType.CUSTOM_WIDGET);
-				createDestinationEntry.setData(new DataBinding<String>(TO_CONCEPT_ROLE_NAME));
-				createDestinationEntry.doAction();
-
+				FMEInspectorGenerator.updateConceptualInspector(returned);
 			}
 			return returned;
 		}

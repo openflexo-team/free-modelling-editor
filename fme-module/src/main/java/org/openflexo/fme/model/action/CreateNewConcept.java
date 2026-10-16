@@ -42,6 +42,7 @@ import java.util.Vector;
 import java.util.logging.Logger;
 
 import org.openflexo.fme.model.FMEFreeModel;
+import org.openflexo.fme.model.FMENames;
 import org.openflexo.fme.model.FreeModellingProjectNature;
 import org.openflexo.foundation.FlexoEditor;
 import org.openflexo.foundation.FlexoException;
@@ -99,8 +100,31 @@ public class CreateNewConcept extends FMEAction<CreateNewConcept, FMEFreeModel, 
 
 	// private FlexoConceptInstance newFlexoConceptInstance;
 
+	private NewConceptStructure structure;
+
 	private CreateNewConcept(FMEFreeModel focusedObject, Vector<FlexoObject> globalSelection, FlexoEditor editor) {
 		super(actionType, focusedObject, globalSelection, editor);
+	}
+
+	public void setStructure(NewConceptStructure structure) {
+		this.structure = structure;
+	}
+
+	/**
+	 * The properties of the concept to create, and the one labelling its instances: <code>name</code> and <code>description</code> unless
+	 * configured
+	 */
+	public NewConceptStructure getStructure() {
+		if (structure == null) {
+			structure = new NewConceptStructure();
+			structure.setContextIssue(() -> getFocusedObject().getAccessedVirtualModel()
+					.getAccessibleProperty(structure.getConceptRoleName()) != null ? "concept_role_name_already_used" : null);
+			structure.getPropertyChangeSupport().addPropertyChangeListener(evt -> {
+				boolean wasValid = isValid();
+				getPropertyChangeSupport().firePropertyChange("isValid", wasValid, isValid());
+			});
+		}
+		return structure;
 	}
 
 	@Override
@@ -112,11 +136,12 @@ public class CreateNewConcept extends FMEAction<CreateNewConcept, FMEFreeModel, 
 	protected void doAction(Object context) throws FlexoException {
 
 		// Now we create the new concept
-		newFlexoConcept = getFocusedObject().getConceptualModel().getFlexoConcept(getNewConceptName(), getContainerConcept(), getEditor(),
-				this);
+		newFlexoConcept = getFocusedObject().getConceptualModel().getFlexoConcept(getNewConceptName(), getNewConceptDescription(),
+				getStructure().getPropertiesEntries(), getStructure().getLabelPropertyName(), getContainerConcept(), getEditor(), this);
 
 		// Now we create the new concept GR
-		newGRFlexoConcept = getFocusedObject().getGRFlexoConcept(newFlexoConcept, getContainerGRConcept(), getEditor(), this, true);
+		newGRFlexoConcept = getFocusedObject().getGRFlexoConcept(newFlexoConcept, getContainerGRConcept(), getStructure().getConceptRoleName(),
+				getEditor(), this, true);
 	}
 
 	public String getNewConceptName() {
@@ -177,16 +202,16 @@ public class CreateNewConcept extends FMEAction<CreateNewConcept, FMEFreeModel, 
 	@Override
 	public boolean isValid() {
 
-		if (StringUtils.isEmpty(newConceptName)) {
+		if (StringUtils.isEmpty(newConceptName) || !FMENames.isValidConceptName(newConceptName)) {
 			return false;
 		}
 
-		if (getFocusedObject().getAccessedVirtualModel().getFlexoConcept(newConceptName) != null) {
+		if (getFocusedObject().isConceptNameUsed(newConceptName)) {
 			// a_concept_with_that_name_already_exists
 			return false;
 		}
 
-		return true;
+		return getStructure().isValid();
 	}
 
 }

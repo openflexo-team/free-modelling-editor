@@ -2,6 +2,7 @@ dependencies {
   // openflexo dep
   implementation flexoFoundation()
   implementation flexoUi()
+  implementation fmlTechnologyAdapterUi()
   implementation fmlRtTechnologyAdapterUi()
   implementation diagramConnector()
   implementation diagramConnectorUi()

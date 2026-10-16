@@ -123,7 +123,8 @@ public class InstantiateNewFMEPropertyWizard extends FlexoActionWizard<Instantia
 				return false;
 			}
 
-			if (getAction().getCreatePropertyAction().getConcept().getAccessibleProperty(getPropertyName()) != null) {
+			if (getAction().getCreatePropertyAction().getConcept()
+					.getAccessibleProperty(getAction().getCreatePropertyAction().getCreatedPropertyName()) != null) {
 				setIssueMessage(getAction().getLocales().localizedForKey("a_property_with_that_name_already_exists"),
 						IssueMessageType.ERROR);
 				return false;
@@ -171,6 +172,8 @@ public class InstantiateNewFMEPropertyWizard extends FlexoActionWizard<Instantia
 				FMEType oldValue = getFMEType();
 				getAction().getCreatePropertyAction().setFMEType(fmeType);
 				getPropertyChangeSupport().firePropertyChange("FMEType", oldValue, fmeType);
+				// the name the bindings of the .fib listen to (data.fMEType)
+				getPropertyChangeSupport().firePropertyChange("fMEType", oldValue, fmeType);
 				checkValidity();
 			}
 		}
@@ -240,13 +243,13 @@ public class InstantiateNewFMEPropertyWizard extends FlexoActionWizard<Instantia
 			}
 		}
 
-		public Long getIntegerValue() {
+		public Integer getIntegerValue() {
 			return getAction().getIntegerValue();
 		}
 
-		public void setIntegerValue(Long integerValue) {
+		public void setIntegerValue(Integer integerValue) {
 			if ((integerValue == null && getIntegerValue() != null) || (integerValue != null && !integerValue.equals(getIntegerValue()))) {
-				Long oldValue = getIntegerValue();
+				Integer oldValue = getIntegerValue();
 				getAction().setIntegerValue(integerValue);
 				getPropertyChangeSupport().firePropertyChange("integerValue", oldValue, integerValue);
 				checkValidity();
@@ -303,6 +306,97 @@ public class InstantiateNewFMEPropertyWizard extends FlexoActionWizard<Instantia
 				FlexoConceptInstance oldValue = getReferenceValue();
 				getAction().setReferenceValue(referenceValue);
 				getPropertyChangeSupport().firePropertyChange("referenceValue", oldValue, referenceValue);
+				checkValidity();
+			}
+		}
+
+		public String getDefaultStringValue() {
+			return getAction().getDefaultStringValue();
+		}
+
+		public void setDefaultStringValue(String defaultStringValue) {
+			if ((defaultStringValue == null && getDefaultStringValue() != null) || (defaultStringValue != null && !defaultStringValue.equals(getDefaultStringValue()))) {
+				String oldValue = getDefaultStringValue();
+				getAction().setDefaultStringValue(defaultStringValue);
+				getPropertyChangeSupport().firePropertyChange("defaultStringValue", oldValue, defaultStringValue);
+				checkValidity();
+			}
+		}
+
+		public Boolean getDefaultBooleanValue() {
+			return getAction().getDefaultBooleanValue();
+		}
+
+		public void setDefaultBooleanValue(Boolean defaultBooleanValue) {
+			if ((defaultBooleanValue == null && getDefaultBooleanValue() != null) || (defaultBooleanValue != null && !defaultBooleanValue.equals(getDefaultBooleanValue()))) {
+				Boolean oldValue = getDefaultBooleanValue();
+				getAction().setDefaultBooleanValue(defaultBooleanValue);
+				getPropertyChangeSupport().firePropertyChange("defaultBooleanValue", oldValue, defaultBooleanValue);
+				checkValidity();
+			}
+		}
+
+		public Integer getDefaultIntegerValue() {
+			return getAction().getDefaultIntegerValue();
+		}
+
+		public void setDefaultIntegerValue(Integer defaultIntegerValue) {
+			if ((defaultIntegerValue == null && getDefaultIntegerValue() != null) || (defaultIntegerValue != null && !defaultIntegerValue.equals(getDefaultIntegerValue()))) {
+				Integer oldValue = getDefaultIntegerValue();
+				getAction().setDefaultIntegerValue(defaultIntegerValue);
+				getPropertyChangeSupport().firePropertyChange("defaultIntegerValue", oldValue, defaultIntegerValue);
+				checkValidity();
+			}
+		}
+
+		public Double getDefaultFloatValue() {
+			return getAction().getDefaultFloatValue();
+		}
+
+		public void setDefaultFloatValue(Double defaultFloatValue) {
+			if ((defaultFloatValue == null && getDefaultFloatValue() != null) || (defaultFloatValue != null && !defaultFloatValue.equals(getDefaultFloatValue()))) {
+				Double oldValue = getDefaultFloatValue();
+				getAction().setDefaultFloatValue(defaultFloatValue);
+				getPropertyChangeSupport().firePropertyChange("defaultFloatValue", oldValue, defaultFloatValue);
+				checkValidity();
+			}
+		}
+
+		public Date getDefaultDateValue() {
+			return getAction().getDefaultDateValue();
+		}
+
+		public void setDefaultDateValue(Date defaultDateValue) {
+			if ((defaultDateValue == null && getDefaultDateValue() != null) || (defaultDateValue != null && !defaultDateValue.equals(getDefaultDateValue()))) {
+				Date oldValue = getDefaultDateValue();
+				getAction().setDefaultDateValue(defaultDateValue);
+				getPropertyChangeSupport().firePropertyChange("defaultDateValue", oldValue, defaultDateValue);
+				checkValidity();
+			}
+		}
+
+		public String getDefaultEnumerationValue() {
+			return getAction().getDefaultEnumerationValue();
+		}
+
+		public void setDefaultEnumerationValue(String defaultEnumerationValue) {
+			if ((defaultEnumerationValue == null && getDefaultEnumerationValue() != null) || (defaultEnumerationValue != null && !defaultEnumerationValue.equals(getDefaultEnumerationValue()))) {
+				String oldValue = getDefaultEnumerationValue();
+				getAction().setDefaultEnumerationValue(defaultEnumerationValue);
+				getPropertyChangeSupport().firePropertyChange("defaultEnumerationValue", oldValue, defaultEnumerationValue);
+				checkValidity();
+			}
+		}
+
+		public FlexoConceptInstance getDefaultReferenceValue() {
+			return getAction().getDefaultReferenceValue();
+		}
+
+		public void setDefaultReferenceValue(FlexoConceptInstance defaultReferenceValue) {
+			if ((defaultReferenceValue == null && getDefaultReferenceValue() != null) || (defaultReferenceValue != null && !defaultReferenceValue.equals(getDefaultReferenceValue()))) {
+				FlexoConceptInstance oldValue = getDefaultReferenceValue();
+				getAction().setDefaultReferenceValue(defaultReferenceValue);
+				getPropertyChangeSupport().firePropertyChange("defaultReferenceValue", oldValue, defaultReferenceValue);
 				checkValidity();
 			}
 		}
