@@ -38,9 +38,13 @@
 
 package org.openflexo.fme.model.action;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 import java.util.logging.Logger;
 
+import org.openflexo.fme.FMETechnologyExtension;
+import org.openflexo.fme.FMETechnologyExtensions;
 import org.openflexo.fme.model.FMEFreeModel;
 import org.openflexo.fme.model.FMEFreeModelInstance;
 import org.openflexo.fme.model.FreeModellingProjectNature;
@@ -96,7 +100,7 @@ public abstract class InstantiateFMEFreeModel<A extends InstantiateFMEFreeModel<
 		if (getFocusedObject() instanceof FMEFreeModel) {
 			return FreeModelChoice.SelectExistingFreeModel;
 		}
-		if (getNature().getFreeModels().size() == 0) {
+		if (getAvailableFreeModels().isEmpty()) {
 			return FreeModelChoice.CreateNewFreeModel;
 		}
 
@@ -120,6 +124,28 @@ public abstract class InstantiateFMEFreeModel<A extends InstantiateFMEFreeModel<
 			return getFocusedObject().getNature();
 		}
 		return null;
+	}
+
+	/**
+	 * The free models of the nature this action may instantiate: those of the technology of this action
+	 */
+	@SuppressWarnings("unchecked")
+	public List<FM> getAvailableFreeModels() {
+		List<FM> returned = new ArrayList<>();
+		FMETechnologyExtension extension = null;
+		for (FMETechnologyExtension candidate : FMETechnologyExtensions.getExtensions()) {
+			if (candidate.getInstantiateFreeModelActionType() == getActionFactory()) {
+				extension = candidate;
+			}
+		}
+		if (getNature() != null) {
+			for (FMEFreeModel freeModel : getNature().getFreeModels()) {
+				if (extension == null || extension.handles(freeModel)) {
+					returned.add((FM) freeModel);
+				}
+			}
+		}
+		return returned;
 	}
 
 	public FM getExistingFreeModel() {

@@ -51,7 +51,8 @@ import org.openflexo.technologyadapter.powerpoint.rm.PowerpointSlideshowResource
 import org.openflexo.view.controller.FlexoController;
 
 /**
- * Wizard instantiating a PowerPoint free model (or a new one) on a slideshow of a resource center, which is annotated where it is
+ * Wizard annotating a slideshow of a resource center, where it is: the user only chooses the slideshow (and may rename the annotation).
+ * The PowerPoint free model of the project is implicit.
  */
 public class InstantiateFMEPowerpointFreeModelWizard
 		extends AbstractInstantiateFMEFreeModelWizard<InstantiateFMEPowerpointFreeModel, FMEPowerpointFreeModel> {
@@ -68,6 +69,14 @@ public class InstantiateFMEPowerpointFreeModelWizard
 	@Override
 	public Image getDefaultPageImage() {
 		return IconFactory.getImageIcon(PowerpointIconLibrary.POWERPOINT_TECHNOLOGY_BIG_ICON, IconLibrary.BIG_NEW_MARKER).getImage();
+	}
+
+	/**
+	 * The PowerPoint free model is implicit: one per project, created with the first annotation
+	 */
+	@Override
+	protected boolean showsChooseFreeModel() {
+		return false;
 	}
 
 	@Override
@@ -96,16 +105,18 @@ public class InstantiateFMEPowerpointFreeModelWizard
 		@Override
 		public boolean isValid() {
 
-			if (!super.isValid()) {
-				return false;
-			}
-
 			if (getSlideshowResource() == null) {
 				setIssueMessage(getAction().getLocales().localizedForKey("please_choose_a_slideshow"), IssueMessageType.ERROR);
 				return false;
 			}
 
-			return true;
+			if (getAction().getExistingAnnotation() != null) {
+				// A slideshow is annotated once in a project: its annotation is opened
+				setIssueMessage(getAction().getLocales().localizedForKey("that_slideshow_is_already_annotated"), IssueMessageType.WARNING);
+				return true;
+			}
+
+			return super.isValid();
 		}
 
 		public List<PowerpointSlideshowResource> getAvailableSlideshows() {
@@ -121,6 +132,8 @@ public class InstantiateFMEPowerpointFreeModelWizard
 				PowerpointSlideshowResource oldValue = getSlideshowResource();
 				getAction().setSlideshowResource(slideshowResource);
 				getPropertyChangeSupport().firePropertyChange("slideshowResource", oldValue, slideshowResource);
+				// The name of the instance follows the slideshow, unless it was typed
+				getPropertyChangeSupport().firePropertyChange("freeModelInstanceName", null, getFreeModelInstanceName());
 				checkValidity();
 			}
 		}

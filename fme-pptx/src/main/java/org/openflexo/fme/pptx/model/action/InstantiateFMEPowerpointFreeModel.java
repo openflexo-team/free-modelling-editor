@@ -64,8 +64,9 @@ import org.openflexo.technologyadapter.powerpoint.model.PowerpointSlideshow;
 import org.openflexo.technologyadapter.powerpoint.rm.PowerpointSlideshowResource;
 
 /**
- * Instantiates a {@link FMEPowerpointFreeModel} on a slideshow: the new free model instance annotates the slideshow where it is, in its
- * resource center. The slideshow is neither copied nor modified.
+ * Annotates a slideshow: a new instance of the PowerPoint free model of the project (created the first time) annotates the slideshow
+ * where it is, in its resource center. The slideshow is neither copied nor modified. A slideshow is annotated once in a project: when it
+ * already is, its annotation is opened instead ({@link #getExistingAnnotation()}).
  * 
  * @author sylvain
  * 
@@ -104,10 +105,87 @@ public class InstantiateFMEPowerpointFreeModel extends InstantiateFMEFreeModel<I
 	private static final Logger logger = Logger.getLogger(InstantiateFMEPowerpointFreeModel.class.getPackage().getName());
 
 	private PowerpointSlideshowResource slideshowResource;
+	private String freeModelInstanceName;
 
 	private InstantiateFMEPowerpointFreeModel(NatureObject<FreeModellingProjectNature> focusedObject, Vector<FlexoObject> globalSelection,
 			FlexoEditor editor) {
 		super(actionType, focusedObject, globalSelection, editor);
+	}
+
+	/**
+	 * The free model of the project when a slideshow was already annotated, a new one otherwise: the user does not choose it
+	 */
+	@Override
+	public FreeModelChoice getFreeModelChoice() {
+		if (getFocusedObject() instanceof FMEPowerpointFreeModel || getExistingFreeModel() != null) {
+			return FreeModelChoice.SelectExistingFreeModel;
+		}
+		return FreeModelChoice.CreateNewFreeModel;
+	}
+
+	@Override
+	public FMEPowerpointFreeModel getExistingFreeModel() {
+		if (getFocusedObject() instanceof FMEPowerpointFreeModel) {
+			return (FMEPowerpointFreeModel) getFocusedObject();
+		}
+		return FMEPowerpointFreeModel.getFreeModel(getNature());
+	}
+
+	/**
+	 * The free model instance already annotating the chosen slideshow, which this action opens instead of creating another one, or null
+	 */
+	public FMEPowerpointFreeModelInstance getExistingAnnotation() {
+		FMEPowerpointFreeModel freeModel = getExistingFreeModel();
+		if (freeModel == null || getSlideshowResource() == null) {
+			return null;
+		}
+		for (FMEFreeModelInstance freeModelInstance : freeModel.getFreeModelInstances()) {
+			if (freeModelInstance instanceof FMEPowerpointFreeModelInstance
+					&& ((FMEPowerpointFreeModelInstance) freeModelInstance).getSlideshow() != null
+					&& ((FMEPowerpointFreeModelInstance) freeModelInstance).getSlideshow().getResource() == getSlideshowResource()) {
+				return (FMEPowerpointFreeModelInstance) freeModelInstance;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * The name of the new free model instance: the name of the slideshow, unless set
+	 */
+	@Override
+	public String getFreeModelInstanceName() {
+		if (freeModelInstanceName != null) {
+			return freeModelInstanceName;
+		}
+		if (getSlideshowResource() != null) {
+			return defaultNameFor(getSlideshowResource());
+		}
+		return super.getFreeModelInstanceName();
+	}
+
+	@Override
+	public void setFreeModelInstanceName(String freeModelInstanceName) {
+		this.freeModelInstanceName = freeModelInstanceName;
+		super.setFreeModelInstanceName(freeModelInstanceName);
+	}
+
+	/**
+	 * The name of the slideshow, without its extension and reduced to letters, digits, '-' and '_', made unique among the instances of the
+	 * free model
+	 */
+	private String defaultNameFor(PowerpointSlideshowResource resource) {
+		String baseName = resource.getName();
+		if (baseName.toLowerCase().endsWith(".pptx")) {
+			baseName = baseName.substring(0, baseName.length() - ".pptx".length());
+		}
+		baseName = baseName.replaceAll("[^A-Za-z0-9_-]", "_");
+		FMEPowerpointFreeModel freeModel = getExistingFreeModel();
+		String returned = baseName;
+		int index = 2;
+		while (freeModel != null && freeModel.getFreeModelInstance(returned) != null) {
+			returned = baseName + index++;
+		}
+		return returned;
 	}
 
 	@Override
@@ -133,6 +211,8 @@ public class InstantiateFMEPowerpointFreeModel extends InstantiateFMEFreeModel<I
 			PowerpointSlideshowResource oldValue = this.slideshowResource;
 			this.slideshowResource = slideshowResource;
 			getPropertyChangeSupport().firePropertyChange("slideshowResource", oldValue, slideshowResource);
+			getPropertyChangeSupport().firePropertyChange("freeModelInstanceName", null, getFreeModelInstanceName());
+			getPropertyChangeSupport().firePropertyChange("existingAnnotation", null, getExistingAnnotation());
 			getPropertyChangeSupport().firePropertyChange("isValid", wasValid, isValid());
 		}
 	}
@@ -154,13 +234,27 @@ public class InstantiateFMEPowerpointFreeModel extends InstantiateFMEFreeModel<I
 		return returned;
 	}
 
+	/**
+	 * A slideshow is chosen: either it is annotated already (its annotation is opened), or a new free model instance is created
+	 */
 	@Override
 	public boolean isValid() {
-		return super.isValid() && getSlideshowResource() != null;
+		if (getSlideshowResource() == null) {
+			return false;
+		}
+		return getExistingAnnotation() != null || super.isValid();
 	}
 
+	/**
+	 * A slideshow is annotated once in a project: when it already is, its annotation is returned instead of a new one
+	 */
 	@Override
 	protected FMEFreeModelInstance instantiateFreeModel(String freeModelInstanceName) {
+
+		FMEPowerpointFreeModelInstance existing = getExistingAnnotation();
+		if (existing != null) {
+			return existing;
+		}
 
 		PowerpointSlideshow slideshow;
 		try {

@@ -38,6 +38,7 @@
 package org.openflexo.fme.pptx.model;
 
 import org.openflexo.fme.model.FMEFreeModel;
+import org.openflexo.fme.model.FreeModellingProjectNature;
 import org.openflexo.foundation.FlexoEditor;
 import org.openflexo.foundation.action.FlexoAction;
 import org.openflexo.foundation.fml.FlexoConcept;
@@ -55,7 +56,9 @@ import org.openflexo.technologyadapter.powerpoint.fml.PowerpointShapeRole;
  * 
  * The base of a {@link FMEPowerpointFreeModel} is a {@link VirtualModel} federating the conceptual model, the sample data and a
  * slideshow ({@link #SLIDESHOW_MODEL_SLOT_NAME}). Each GR concept points to the shape standing for an instance of its concept
- * ({@link #SHAPE_ROLE_NAME}): there is no NoneGR, a shape which is not annotated has no instance.
+ * ({@link #SHAPE_ROLE_NAME}): there is no NoneGR, a shape which is not annotated has no instance.<br>
+ * A project has one PowerPoint free model at most ({@link #getFreeModel(FreeModellingProjectNature)}), created when a first slideshow is
+ * annotated: it is not offered to the user as a model to create or choose.
  * 
  * @author sylvain
  * 
@@ -67,6 +70,24 @@ public interface FMEPowerpointFreeModel extends FMEFreeModel {
 
 	public static final String SLIDESHOW_MODEL_SLOT_NAME = "slideshow";
 	public static final String SHAPE_ROLE_NAME = "shape";
+
+	/** The name of the free model created the first time a slideshow is annotated in a project */
+	public static final String DEFAULT_NAME = "PowerPoint";
+
+	/**
+	 * The PowerPoint free model of supplied nature, or null when no slideshow was annotated yet: there is one per project, the
+	 * vocabulary being shared by all the slideshows of the project
+	 */
+	public static FMEPowerpointFreeModel getFreeModel(FreeModellingProjectNature nature) {
+		if (nature != null) {
+			for (FMEFreeModel freeModel : nature.getFreeModels()) {
+				if (freeModel instanceof FMEPowerpointFreeModel) {
+					return (FMEPowerpointFreeModel) freeModel;
+				}
+			}
+		}
+		return null;
+	}
 
 	/**
 	 * The model slot of the slideshow the free model instances annotate

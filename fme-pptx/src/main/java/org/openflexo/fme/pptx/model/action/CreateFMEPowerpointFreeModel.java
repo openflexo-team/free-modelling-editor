@@ -60,8 +60,9 @@ import org.openflexo.technologyadapter.powerpoint.PowerpointTechnologyAdapter;
 import org.openflexo.technologyadapter.powerpoint.model.PowerpointSlideshow;
 
 /**
- * Creates a new {@link FMEPowerpointFreeModel} in a {@link FreeModellingProjectNature}: its virtual model gets a model slot for the
- * slideshow, connected by its creation scheme to the slideshow given as parameter
+ * Creates the {@link FMEPowerpointFreeModel} of a {@link FreeModellingProjectNature} (there is one per project, named
+ * {@link FMEPowerpointFreeModel#DEFAULT_NAME} by default): its virtual model gets a model slot for the slideshow, connected by its
+ * creation scheme to the slideshow given as parameter
  * 
  * @author sylvain
  * 
@@ -85,9 +86,12 @@ public class CreateFMEPowerpointFreeModel extends CreateFMEFreeModel<CreateFMEPo
 			return true;
 		}
 
+		/**
+		 * One PowerPoint free model per project
+		 */
 		@Override
 		public boolean isEnabledForSelection(FreeModellingProjectNature object, Vector<FlexoObject> globalSelection) {
-			return true;
+			return FMEPowerpointFreeModel.getFreeModel(object) == null;
 		}
 
 	};
@@ -99,6 +103,7 @@ public class CreateFMEPowerpointFreeModel extends CreateFMEFreeModel<CreateFMEPo
 	private CreateFMEPowerpointFreeModel(FreeModellingProjectNature focusedObject, Vector<FlexoObject> globalSelection,
 			FlexoEditor editor) {
 		super(actionType, focusedObject, globalSelection, editor);
+		setFreeModelName(FMEPowerpointFreeModel.DEFAULT_NAME);
 	}
 
 	@Override

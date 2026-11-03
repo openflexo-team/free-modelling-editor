@@ -20,6 +20,7 @@
 
 package org.openflexo.fme.view;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.ImageIcon;
@@ -75,7 +76,14 @@ public class FMEProjectNatureModuleView extends FIBModuleView<FreeModellingProje
 		 * Creates a new free model, of the technology the user chooses when several are available
 		 */
 		public void createNewFreeModel(FreeModellingProjectNature projectNature) {
-			FMETechnologyExtension extension = chooseExtension();
+			// A technology whose free model is implicit (one per project) offers no creation once it exists
+			List<FMETechnologyExtension> extensions = new ArrayList<>();
+			for (FMETechnologyExtension candidate : FMETechnologyExtensions.getExtensions()) {
+				if (candidate.getCreateFreeModelActionType().isEnabled(projectNature, null)) {
+					extensions.add(candidate);
+				}
+			}
+			FMETechnologyExtension extension = chooseExtension(extensions);
 			if (extension != null) {
 				extension.getCreateFreeModelActionType().makeNewAction(projectNature, null, getEditor()).doAction();
 			}
@@ -119,10 +127,10 @@ public class FMEProjectNatureModuleView extends FIBModuleView<FreeModellingProje
 		}
 
 		/**
-		 * The technology extension to use: the only one when there is only one, the one the user chooses otherwise (null if cancelled)
+		 * The technology extension to use among supplied ones: the only one when there is only one, the one the user chooses otherwise (null
+		 * if cancelled or none)
 		 */
-		private FMETechnologyExtension chooseExtension() {
-			List<FMETechnologyExtension> extensions = FMETechnologyExtensions.getExtensions();
+		private FMETechnologyExtension chooseExtension(List<FMETechnologyExtension> extensions) {
 			if (extensions.size() <= 1) {
 				return extensions.isEmpty() ? null : extensions.get(0);
 			}

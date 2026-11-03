@@ -56,6 +56,10 @@ existing concepts of the conceptual model, without modifying the `.pptx`.
 **Decisions.**
 - One free model instance federates a whole slideshow, referenced in place in its resource center (no copy); the `.pptx` is
   never modified nor saved.
+- The two levels stay in the model (FML needs a virtual model for the instances, and the vocabulary is shared by all the
+  decks of a project), but the PowerPoint free model is implicit: one per project, created with the first annotation, never
+  offered to create or choose. "Annotate a PowerPoint slideshow" only asks for the slideshow; the annotation is named after
+  it. A slideshow is annotated once in a project: annotating it again opens its annotation (decided 2026-11-03).
 - A shape that is not annotated stays a plain PowerPoint shape (no NoneGR): a GR instance is created at annotation time, from
   the selected `PowerpointShape`. A shape carries one annotation at most.
 - Actions on a shape: new concept, instance of an existing concept (a new instance, or one that already exists in the sample
@@ -95,6 +99,14 @@ module: done. Lot 3: the actions on glued connectors.
   existing instance, overlay and inspected object, disconnection with and without orphan, save and reload (the annotations
   point to the same shapes, the slideshow resource is never modified; the bytes of the deck are compared only when it is a
   file, not inside a jar), plus the extension and the wizard component.
+
+**Done (implicit free model, 2026-11-03).** `FMEPowerpointFreeModel.getFreeModel(nature)`; the creation action is disabled once
+the project has one (the "+" of the free models no longer offers PowerPoint then); the instantiation action selects it or
+creates it, names the annotation after the slideshow and returns the existing annotation of an already annotated slideshow;
+its wizard has no "choose the free model" step (`AbstractInstantiateFMEFreeModelWizard.showsChooseFreeModel()`). In the
+core, the step "choose the free model" now only lists the free models of the technology of the action
+(`InstantiateFMEFreeModel.getAvailableFreeModels()`): it listed every free model of the nature, a Diagram wizard offering a
+PowerPoint free model. Checked by `TestPowerpointFreeModel`.
 
 **Not tried in the running application.** The contextual menu on a shape, the wizards, the overlay, the columns.
 

@@ -64,7 +64,7 @@ public abstract class AbstractInstantiateFMEFreeModelWizard<A extends Instantiat
 
 	public AbstractInstantiateFMEFreeModelWizard(A action, FlexoController controller) {
 		super(action, controller);
-		if (!(action.getFocusedObject() instanceof FMEFreeModel)) {
+		if (!(action.getFocusedObject() instanceof FMEFreeModel) && showsChooseFreeModel()) {
 			addStep(chooseFreeModel = makeChooseFreeModel());
 		}
 		addStep(describeFreeModelInstance = makeDescribeFreeModelInstance());
@@ -73,6 +73,14 @@ public abstract class AbstractInstantiateFMEFreeModelWizard<A extends Instantiat
 	@Override
 	public Dimension getPreferredSize() {
 		return DIMENSIONS;
+	}
+
+	/**
+	 * Whether the user chooses the free model to instantiate, or creates a new one: true by default. A technology whose free model is
+	 * implicit (one per project) skips that step.
+	 */
+	protected boolean showsChooseFreeModel() {
+		return true;
 	}
 
 	public abstract ChooseFreeModel makeChooseFreeModel();

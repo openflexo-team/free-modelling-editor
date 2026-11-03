@@ -125,15 +125,10 @@ public class TestPowerpointFreeModel extends OpenflexoProjectAtRunTimeTestCase {
 		project = (FlexoProject<File>) editor.getProject();
 		nature = project.getNature(FreeModellingProjectNature.class);
 
-		CreateFMEPowerpointFreeModel createFreeModel = CreateFMEPowerpointFreeModel.actionType.makeNewAction(nature, null, editor);
-		createFreeModel.setFreeModelName("Slides");
-		createFreeModel.doAction();
-		assertTrue(createFreeModel.hasActionExecutionSucceeded());
-		freeModel = createFreeModel.getNewFreeModel();
-		assertNotNull(freeModel.getPowerpointModelSlot());
-
-		InstantiateFMEPowerpointFreeModel instantiate = InstantiateFMEPowerpointFreeModel.actionType.makeNewAction(freeModel, null, editor);
-		instantiate.setFreeModelInstanceName("CycloCityAnnotations");
+		// Annotating a first slideshow creates the PowerPoint free model of the project: the user does not create it
+		assertNull(FMEPowerpointFreeModel.getFreeModel(nature));
+		assertTrue(CreateFMEPowerpointFreeModel.actionType.isEnabled(nature, null));
+		InstantiateFMEPowerpointFreeModel instantiate = InstantiateFMEPowerpointFreeModel.actionType.makeNewAction(nature, null, editor);
 		assertFalse(instantiate.isValid());
 		for (PowerpointSlideshowResource resource : instantiate.getAvailableSlideshows()) {
 			if (resource.getName().startsWith(DECK)) {
@@ -144,10 +139,20 @@ public class TestPowerpointFreeModel extends OpenflexoProjectAtRunTimeTestCase {
 		deckDigest = digest(deckResource);
 		instantiate.setSlideshowResource(deckResource);
 		assertTrue(instantiate.isValid());
+		// The annotation is named after the slideshow
+		assertEquals(DECK, instantiate.getFreeModelInstanceName());
 		instantiate.doAction();
 		assertTrue(instantiate.hasActionExecutionSucceeded());
 		freeModelInstance = instantiate.getNewFreeModelInstance();
 		assertNotNull(freeModelInstance);
+		assertEquals(DECK, freeModelInstance.getName());
+		freeModel = freeModelInstance.getFreeModel();
+		assertSame(freeModel, FMEPowerpointFreeModel.getFreeModel(nature));
+		assertEquals(FMEPowerpointFreeModel.DEFAULT_NAME, freeModel.getName());
+		assertNotNull(freeModel.getPowerpointModelSlot());
+
+		// One PowerPoint free model per project
+		assertFalse(CreateFMEPowerpointFreeModel.actionType.isEnabled(nature, null));
 
 		// The instance annotates the deck where it is
 		PowerpointSlideshow slideshow = freeModelInstance.getSlideshow();
@@ -174,9 +179,24 @@ public class TestPowerpointFreeModel extends OpenflexoProjectAtRunTimeTestCase {
 		}
 	}
 
-	/** A new concept emerges from a shape: the instance is named after its text */
+	/** A slideshow is annotated once: annotating it again opens its annotation */
 	@Test
 	@TestOrder(2)
+	public void testAnnotateSameSlideshowAgain() throws Exception {
+		InstantiateFMEPowerpointFreeModel again = InstantiateFMEPowerpointFreeModel.actionType.makeNewAction(nature, null, editor);
+		again.setSlideshowResource(deckResource);
+		assertSame(freeModelInstance, again.getExistingAnnotation());
+		assertTrue(again.isValid());
+		again.doAction();
+		assertTrue(again.hasActionExecutionSucceeded());
+		assertSame(freeModelInstance, again.getNewFreeModelInstance());
+		assertEquals(1, freeModel.getFreeModelInstances().size());
+		assertEquals(1, nature.getFreeModels().size());
+	}
+
+	/** A new concept emerges from a shape: the instance is named after its text */
+	@Test
+	@TestOrder(3)
 	public void testCreateNewConceptFromShape() throws Exception {
 
 		assertTrue(CreateNewConceptFromShape.actionType.isEnabled(first, null));
@@ -206,7 +226,7 @@ public class TestPowerpointFreeModel extends OpenflexoProjectAtRunTimeTestCase {
 
 	/** Shapes declared as a new instance of the concept, and as the instance another shape already stands for */
 	@Test
-	@TestOrder(3)
+	@TestOrder(4)
 	public void testDeclareShapes() throws Exception {
 
 		DeclareShapeAsInstanceOfExistingConcept declare = DeclareShapeAsInstanceOfExistingConcept.actionType.makeNewAction(second, null,
@@ -234,7 +254,7 @@ public class TestPowerpointFreeModel extends OpenflexoProjectAtRunTimeTestCase {
 
 	/** The overlay marks the annotated shapes with the color and the name of their concept; the inspector shows their instance */
 	@Test
-	@TestOrder(4)
+	@TestOrder(5)
 	public void testOverlayAndInspectedObject() throws Exception {
 
 		ConceptDecorationProvider decorations = new ConceptDecorationProvider(freeModelInstance);
@@ -261,7 +281,7 @@ public class TestPowerpointFreeModel extends OpenflexoProjectAtRunTimeTestCase {
 
 	/** The annotation goes, the shape stays; the conceptual instance goes with its last representation */
 	@Test
-	@TestOrder(5)
+	@TestOrder(6)
 	public void testDisconnectShapes() throws Exception {
 
 		FlexoConceptInstance firstInstance = FMEFreeModel.representedInstance(freeModelInstance.getGRInstance(first));
@@ -297,7 +317,7 @@ public class TestPowerpointFreeModel extends OpenflexoProjectAtRunTimeTestCase {
 
 	/** Saved and reloaded: the annotations point to the same shapes, and the deck was never modified */
 	@Test
-	@TestOrder(6)
+	@TestOrder(7)
 	public void testSaveAndReload() throws Exception {
 
 		String firstURI = first.getUri();
@@ -315,9 +335,9 @@ public class TestPowerpointFreeModel extends OpenflexoProjectAtRunTimeTestCase {
 		editor = loadProject(project.getProjectDirectory());
 		project = (FlexoProject<File>) editor.getProject();
 		nature = project.getNature(FreeModellingProjectNature.class);
-		freeModel = (FMEPowerpointFreeModel) nature.getFreeModel("Slides");
+		freeModel = (FMEPowerpointFreeModel) FMEPowerpointFreeModel.getFreeModel(nature);
 		assertNotNull(freeModel);
-		freeModelInstance = (FMEPowerpointFreeModelInstance) freeModel.getFreeModelInstance("CycloCityAnnotations");
+		freeModelInstance = (FMEPowerpointFreeModelInstance) freeModel.getFreeModelInstance(DECK);
 		assertNotNull(freeModelInstance);
 		assertNotNull(freeModelInstance.getSlideshow());
 
