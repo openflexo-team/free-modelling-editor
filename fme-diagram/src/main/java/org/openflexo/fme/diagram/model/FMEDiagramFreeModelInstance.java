@@ -41,13 +41,16 @@ package org.openflexo.fme.diagram.model;
 import java.util.logging.Logger;
 
 import org.openflexo.fme.model.FMEFreeModelInstance;
+import org.openflexo.foundation.fml.FlexoRole;
 import org.openflexo.foundation.fml.rt.FMLRTVirtualModelInstance;
+import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.logging.FlexoLogger;
 import org.openflexo.pamela.annotations.ImplementationClass;
 import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.pamela.annotations.XMLElement;
 import org.openflexo.technologyadapter.diagram.fml.FMLControlledDiagramVirtualModelInstanceNature;
 import org.openflexo.technologyadapter.diagram.model.Diagram;
+import org.openflexo.technologyadapter.diagram.model.DiagramElement;
 
 /**
  * Represents a {@link FMEDiagramFreeModelInstance} in the FreeModellingEditor<br>
@@ -84,6 +87,31 @@ public interface FMEDiagramFreeModelInstance extends FMEFreeModelInstance {
 		@Override
 		public FMEDiagramFreeModel getFreeModel() {
 			return (FMEDiagramFreeModel) performSuperGetter(FREE_MODEL);
+		}
+
+		/**
+		 * The elements of the diagram of this instance
+		 */
+		@Override
+		public boolean contains(Object element) {
+			return element instanceof DiagramElement && getDiagram() != null && ((DiagramElement<?>) element).getDiagram() == getDiagram();
+		}
+
+		/**
+		 * The shape or the connector supplied instance stands for
+		 */
+		@Override
+		public Object getRepresentationElement(FlexoConceptInstance grInstance) {
+			if (grInstance == null || grInstance.getFlexoConcept() == null) {
+				return null;
+			}
+			for (FlexoRole<?> role : grInstance.getFlexoConcept().getAccessibleProperties(FlexoRole.class)) {
+				Object actor = grInstance.getFlexoActor(role);
+				if (actor instanceof DiagramElement) {
+					return actor;
+				}
+			}
+			return null;
 		}
 	}
 

@@ -46,11 +46,6 @@ import org.openflexo.rm.ResourceLocator;
 public class TestFMEDiagramWizardFibs extends GenericFIBTestCase {
 
 	@Test
-	public void testConfigureNewConceptFromNoneConcept() {
-		validateFIB("Fib/Wizard/ConfigureNewConceptFromNoneConcept.fib");
-	}
-
-	@Test
 	public void testChooseDiagramFreeModel() {
 		validateFIB("Fib/Wizard/ChooseDiagramFreeModel.fib");
 	}
@@ -66,18 +61,8 @@ public class TestFMEDiagramWizardFibs extends GenericFIBTestCase {
 	}
 
 	@Test
-	public void testConfigureNewInstanceOfExistingConceptFromDiagramElement() {
-		validateFIB("Fib/Wizard/ConfigureNewInstanceOfExistingConceptFromDiagramElement.fib");
-	}
-
-	@Test
-	public void testConfigureNewInstanceOfExistingConcept() {
-		validateFIB("Fib/Wizard/ConfigureNewInstanceOfExistingConcept.fib");
-	}
-
-	@Test
-	public void testConfigureNewFMEPropertyFromDiagramConnector() {
-		validateFIB("Fib/Wizard/ConfigureNewFMEPropertyFromDiagramConnector.fib");
+	public void testShapeRepresentationOptions() {
+		validateFIB("Fib/Wizard/ShapeRepresentationOptions.fib");
 	}
 
 }

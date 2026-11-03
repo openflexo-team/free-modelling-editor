@@ -39,10 +39,7 @@
 package org.openflexo.fme.diagram.model.action;
 
 import java.util.Vector;
-import java.util.logging.Logger;
 
-import org.openflexo.diana.ShapeGraphicalRepresentation;
-import org.openflexo.fme.diagram.controller.editor.DynamicPalette.GraphicalRepresentationSet;
 import org.openflexo.fme.diagram.model.FMEDiagramFreeModel;
 import org.openflexo.fme.diagram.model.FMEDiagramFreeModelInstance;
 import org.openflexo.fme.model.FMEFreeModel;
@@ -54,16 +51,10 @@ import org.openflexo.foundation.FlexoObject.FlexoObjectImpl;
 import org.openflexo.foundation.action.FlexoActionFactory;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
-import org.openflexo.technologyadapter.diagram.TypedDiagramModelSlot;
-import org.openflexo.technologyadapter.diagram.fml.FMLDiagramPaletteElementBinding;
-import org.openflexo.technologyadapter.diagram.fml.ShapeRole;
-import org.openflexo.technologyadapter.diagram.metamodel.DiagramPaletteElement;
-import org.openflexo.technologyadapter.diagram.model.DiagramElement;
-import org.openflexo.technologyadapter.diagram.model.DiagramShape;
 
 /**
  * This action is used to declare a concept to be an instance of an existing concept (move to None to Something)<br>
- * The Diagram part: the shape of the instance and the one of its GR concept, following a {@link GRStrategy}, and the palette
+ * The Diagram part is the one of {@link ShapeRepresentation}: the shape of the instance and the one of its GR concept, and the palette
  *
  * Focused object is here a {@link FlexoConceptInstance} of the NoneGR
  * 
@@ -71,13 +62,8 @@ import org.openflexo.technologyadapter.diagram.model.DiagramShape;
  * 
  */
 public class DeclareInstanceOfExistingConcept
-		extends AbstractDeclareInstanceOfExistingConcept<DeclareInstanceOfExistingConcept, FMEDiagramFreeModel, FMEDiagramFreeModelInstance> {
-
-	private static final Logger logger = Logger.getLogger(DeclareInstanceOfExistingConcept.class.getPackage().getName());
-
-	public static enum GRStrategy {
-		GetConceptShape, RedefineShapeOfConcept, KeepShape
-	}
+		extends AbstractDeclareInstanceOfExistingConcept<DeclareInstanceOfExistingConcept, FlexoConceptInstance, FMEDiagramFreeModel, FMEDiagramFreeModelInstance>
+		implements ShapeRepresentation.Owner {
 
 	public static FlexoActionFactory<DeclareInstanceOfExistingConcept, FlexoConceptInstance, FlexoObject> actionType = new FlexoActionFactory<DeclareInstanceOfExistingConcept, FlexoConceptInstance, FlexoObject>(
 			"declare_instance_of_existing_concept", FlexoActionFactory.defaultGroup, FlexoActionFactory.ADD_ACTION_TYPE) {
@@ -107,121 +93,66 @@ public class DeclareInstanceOfExistingConcept
 		FlexoObjectImpl.addActionForClass(DeclareInstanceOfExistingConcept.actionType, FlexoConceptInstance.class);
 	}
 
-	private GRStrategy grStrategy = null; // GRStrategy.GetConceptShape;
-
-	// The shape of the focused instance, set when the representation is prepared
-	private DiagramShape shapeElement;
+	private final ShapeRepresentation shapeRepresentation = new ShapeRepresentation(this);
 
 	private DeclareInstanceOfExistingConcept(FlexoConceptInstance focusedObject, Vector<FlexoObject> globalSelection, FlexoEditor editor) {
 		super(actionType, focusedObject, globalSelection, editor);
 	}
 
 	@Override
+	public ShapeRepresentation getShapeRepresentation() {
+		return shapeRepresentation;
+	}
+
+	@Override
 	protected void conceptChanged() {
-		getPropertyChangeSupport().firePropertyChange("grStrategy", null, getConcept());
+		shapeRepresentation.conceptChanged();
 	}
 
-	public GRStrategy getGrStrategy() {
-		if (grStrategy == null) {
-			if (getFMEFreeModelInstance().getInstances(getGRConcept(false)).size() > 0) {
-				return GRStrategy.GetConceptShape;
-			}
-			return GRStrategy.RedefineShapeOfConcept;
-		}
-		return grStrategy;
+	public ShapeRepresentation.GRStrategy getGrStrategy() {
+		return shapeRepresentation.getGrStrategy();
 	}
 
-	public void setGrStrategy(GRStrategy grStrategy) {
-		boolean wasValid = isValid();
-		this.grStrategy = grStrategy;
-		getPropertyChangeSupport().firePropertyChange("grStrategy", null, grStrategy);
-		getPropertyChangeSupport().firePropertyChange("isValid", wasValid, isValid());
+	public void setGrStrategy(ShapeRepresentation.GRStrategy grStrategy) {
+		shapeRepresentation.setGrStrategy(grStrategy);
+	}
+
+	/**
+	 * The name carried by the instance of the NoneGR
+	 */
+	@Override
+	protected String getDefaultInstanceName() {
+		return getFocusedObject().getFlexoPropertyValue(FMEFreeModel.NAME_ROLE_NAME);
 	}
 
 	@Override
-	protected void prepareRepresentation(FlexoConceptInstance flexoConceptInstance, FlexoConcept grConcept, boolean grConceptWasExisting)
+	protected FlexoConceptInstance getContainerGRInstance() {
+		return DiagramRepresentations.containerGRInstanceOf(getFMEFreeModelInstance(), DiagramRepresentations.shapeOf(getFocusedObject()));
+	}
+
+	/**
+	 * The instance of the NoneGR itself
+	 */
+	@Override
+	protected FlexoConceptInstance retrieveRepresentationInstance(FlexoConcept grConcept) {
+		return getFocusedObject();
+	}
+
+	@Override
+	protected void prepareRepresentation(FlexoConceptInstance grInstance, FlexoConcept grConcept, boolean grConceptWasExisting)
 			throws FlexoException {
-
-		// Retrieve shape property of this FC
-		ShapeRole currentShapeRole = (ShapeRole) flexoConceptInstance.getFlexoConcept()
-				.getAccessibleProperty(FMEDiagramFreeModel.SHAPE_ROLE_NAME);
-
-		// Retrieve actual shape element
-		shapeElement = flexoConceptInstance.getFlexoActor(currentShapeRole);
-
-		ShapeRole newShapeRole = (ShapeRole) grConcept.getAccessibleProperty(FMEDiagramFreeModel.SHAPE_ROLE_NAME);
-
-		if (grConceptWasExisting) {
-
-			switch (getGrStrategy()) {
-				case RedefineShapeOfConcept:
-					// Sets concept GR with actual shape GR
-					newShapeRole.getGraphicalRepresentation().setsWith(shapeElement.getGraphicalRepresentation(),
-							ShapeGraphicalRepresentation.X, ShapeGraphicalRepresentation.Y);
-					// Look at the palette element
-					// DiagramPalette palette = freeModel.getMetaModel().getConceptsPalette();
-					break;
-				case GetConceptShape:
-					// Sets actual shape GR with concept GR
-					shapeElement.getGraphicalRepresentation().setsWith(newShapeRole.getGraphicalRepresentation(),
-							ShapeGraphicalRepresentation.X, ShapeGraphicalRepresentation.Y);
-					break;
-				case KeepShape:
-					// Nothing to do
-					break;
-			}
-		}
+		shapeRepresentation.prepare(grInstance, grConcept, grConceptWasExisting);
 	}
 
 	@Override
-	protected void completeRepresentation(FlexoConceptInstance flexoConceptInstance, FlexoConcept grConcept, boolean grConceptWasExisting)
+	protected void completeRepresentation(FlexoConceptInstance grInstance, FlexoConcept grConcept, boolean grConceptWasExisting)
 			throws FlexoException {
-
-		FMEDiagramFreeModelInstance freeModelInstance = getFMEFreeModelInstance();
-		ShapeRole newShapeRole = (ShapeRole) grConcept.getAccessibleProperty(FMEDiagramFreeModel.SHAPE_ROLE_NAME);
-
-		// In case of GRStrategy is to redefine concept shape, we now need to set GR of all instances
-		if (grConceptWasExisting) {
-			if (getGrStrategy() == GRStrategy.RedefineShapeOfConcept) {
-				for (FlexoConceptInstance fci : freeModelInstance.getInstances(grConcept)) {
-					DiagramShape fciShapeElement = fci.getFlexoActor(newShapeRole);
-					fciShapeElement.getGraphicalRepresentation().setsWith(newShapeRole.getGraphicalRepresentation(),
-							GraphicalRepresentationSet.IGNORED_PROPERTIES);
-					fciShapeElement.getParent().getPropertyChangeSupport().firePropertyChange(DiagramElement.INVALIDATE, null,
-							fciShapeElement.getParent());
-				}
-			}
-		}
-
-		if (freeModelInstance.getInstances(getConcept()).size() == 1) {
-			// This was the first time such an instance of this concept is used
-			// This might be a good idea to add a palette element (when non existant)
-
-			// Unused DiagramPalette palette =
-			freeModelInstance.getFreeModel().getConceptsPalette();
-			DiagramPaletteElement existingElement = null;
-			TypedDiagramModelSlot ms = freeModelInstance.getFreeModel().getTypedDiagramModelSlot();
-			for (FMLDiagramPaletteElementBinding b : ms.getPaletteElementBindings()) {
-				if (b.getBoundFlexoConcept() == getConcept()) {
-					existingElement = b.getPaletteElement();
-				}
-			}
-			if (existingElement == null) {
-				// No palette element matching related concept was found
-				freeModelInstance.getFreeModel().createPaletteElementForConcept(grConcept, getConcept(),
-						shapeElement.getGraphicalRepresentation(), this);
-			}
-		}
+		shapeRepresentation.complete(grInstance, grConcept, grConceptWasExisting);
 	}
 
 	@Override
-	protected void refreshRepresentation(FlexoConceptInstance flexoConceptInstance) {
-		// The new shape has well be added to the diagram, and the drawing (which listen to the diagram) has well received the event
-		// The drawing is now up-to-date... but there is something wrong if we are in FML-controlled mode.
-		// Since the shape has been added BEFORE the FlexoConceptInstance has been set, the drawing only knows about the DiagamShape,
-		// and not about an FMLControlledDiagramShape. That's why we need to notify again the new diagram element's parent, to be
-		// sure that the Drawing can discover that the new shape is FML-controlled
-		shapeElement.getParent().getPropertyChangeSupport().firePropertyChange(DiagramElement.INVALIDATE, null, shapeElement.getParent());
+	protected void refreshRepresentation(FlexoConceptInstance grInstance) {
+		shapeRepresentation.refresh();
 	}
 
 }

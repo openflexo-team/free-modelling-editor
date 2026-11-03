@@ -36,7 +36,7 @@
  * 
  */
 
-package org.openflexo.fme.diagram.controller.action;
+package org.openflexo.fme.controller.action;
 
 import java.awt.Dimension;
 import java.awt.Image;
@@ -45,7 +45,7 @@ import java.util.logging.Logger;
 import org.openflexo.ApplicationContext;
 import org.openflexo.components.wizard.FlexoActionWizard;
 import org.openflexo.components.wizard.WizardStep;
-import org.openflexo.fme.diagram.model.action.CreateNewFMEPropertyFromDiagramConnector;
+import org.openflexo.fme.model.action.AbstractCreateNewFMEPropertyFromLink;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.rt.FMLRTVirtualModelInstance;
@@ -56,18 +56,18 @@ import org.openflexo.icon.IconLibrary;
 import org.openflexo.toolbox.StringUtils;
 import org.openflexo.view.controller.FlexoController;
 
-public class CreateNewFMEPropertyFromDiagramConnectorWizard extends FlexoActionWizard<CreateNewFMEPropertyFromDiagramConnector> {
+public class CreateNewFMEPropertyFromLinkWizard extends FlexoActionWizard<AbstractCreateNewFMEPropertyFromLink<?, ?, ?, ?>> {
 
 	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(CreateNewFMEPropertyFromDiagramConnectorWizard.class.getPackage().getName());
+	private static final Logger logger = Logger.getLogger(CreateNewFMEPropertyFromLinkWizard.class.getPackage().getName());
 
 	private static final Dimension DIMENSIONS = new Dimension(600, 400);
 
-	private final ConfigureNewFMEPropertyFromDiagramConnector configureNewFMEProperty;
+	private final ConfigureNewFMEPropertyFromLink configureNewFMEProperty;
 
-	public CreateNewFMEPropertyFromDiagramConnectorWizard(CreateNewFMEPropertyFromDiagramConnector action, FlexoController controller) {
+	public CreateNewFMEPropertyFromLinkWizard(AbstractCreateNewFMEPropertyFromLink<?, ?, ?, ?> action, FlexoController controller) {
 		super(action, controller);
-		addStep(configureNewFMEProperty = new ConfigureNewFMEPropertyFromDiagramConnector());
+		addStep(configureNewFMEProperty = new ConfigureNewFMEPropertyFromLink());
 	}
 
 	@Override
@@ -85,7 +85,7 @@ public class CreateNewFMEPropertyFromDiagramConnectorWizard extends FlexoActionW
 		return IconFactory.getImageIcon(FMLIconLibrary.FLEXO_ROLE_BIG_ICON, IconLibrary.BIG_NEW_MARKER).getImage();
 	}
 
-	public ConfigureNewFMEPropertyFromDiagramConnector getConfigureNewPrimitiveProperty() {
+	public ConfigureNewFMEPropertyFromLink getConfigureNewPrimitiveProperty() {
 		return configureNewFMEProperty;
 	}
 
@@ -95,15 +95,15 @@ public class CreateNewFMEPropertyFromDiagramConnectorWizard extends FlexoActionW
 	 * @author sylvain
 	 *
 	 */
-	@FIBPanel("Fib/Wizard/ConfigureNewFMEPropertyFromDiagramConnector.fib")
-	public class ConfigureNewFMEPropertyFromDiagramConnector extends WizardStep {
+	@FIBPanel("Fib/Wizard/ConfigureNewFMEPropertyFromLink.fib")
+	public class ConfigureNewFMEPropertyFromLink extends WizardStep {
 
 		public ApplicationContext getServiceManager() {
 			return getController().getApplicationContext();
 		}
 
-		public CreateNewFMEPropertyFromDiagramConnector getAction() {
-			return CreateNewFMEPropertyFromDiagramConnectorWizard.this.getAction();
+		public AbstractCreateNewFMEPropertyFromLink<?, ?, ?, ?> getAction() {
+			return CreateNewFMEPropertyFromLinkWizard.this.getAction();
 		}
 
 		@Override

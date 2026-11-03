@@ -1,6 +1,6 @@
 /**
  * 
- * Copyright (c) 2014, Openflexo
+ * Copyright (c) 2026, Openflexo
  * 
  * This file is part of Freemodellingeditor, a component of the software infrastructure 
  * developed at Openflexo.
@@ -35,42 +35,51 @@
  * or visit www.openflexo.org if you need additional information.
  * 
  */
+package org.openflexo.fme.controller.action;
 
-package org.openflexo.fme.diagram.controller.action;
-
-import javax.swing.Icon;
-
-import org.openflexo.fme.FMEIconLibrary;
-import org.openflexo.fme.controller.action.FMEControllerActionInitializer;
-import org.openflexo.fme.diagram.model.action.CreateNewConceptFromDiagramElement;
+import org.openflexo.fme.model.action.AbstractDisconnectInstanceFromConcept;
 import org.openflexo.foundation.FlexoObject;
 import org.openflexo.foundation.action.FlexoActionFactory;
 import org.openflexo.foundation.action.FlexoActionRunnable;
-import org.openflexo.technologyadapter.diagram.model.DiagramElement;
 import org.openflexo.view.controller.ActionInitializer;
+import org.openflexo.view.controller.ControllerActionInitializer;
+import org.openflexo.view.controller.FlexoController;
 
-public class CreateNewConceptFromDiagramElementInitializer
-		extends ActionInitializer<CreateNewConceptFromDiagramElement, DiagramElement<?>, FlexoObject> {
-	public CreateNewConceptFromDiagramElementInitializer(FMEControllerActionInitializer actionInitializer) {
-		super(CreateNewConceptFromDiagramElement.actionType, actionInitializer);
+/**
+ * Initializer of an action disconnecting an element from its concept, whatever the technology: when the conceptual instance is deleted
+ * with values of its properties, the user confirms first
+ * 
+ * @param <A>
+ *            type of the action
+ * @param <T>
+ *            type of the focused object
+ */
+public class DisconnectInstanceFromConceptInitializer<A extends AbstractDisconnectInstanceFromConcept<A, T, ?, ?>, T extends FlexoObject>
+		extends ActionInitializer<A, T, FlexoObject> {
+
+	public DisconnectInstanceFromConceptInitializer(FlexoActionFactory<A, T, FlexoObject> actionType,
+			ControllerActionInitializer actionInitializer) {
+		super(actionType, actionInitializer);
 	}
 
 	@Override
-	protected FMEControllerActionInitializer getControllerActionInitializer() {
-		return (FMEControllerActionInitializer) super.getControllerActionInitializer();
+	protected FlexoActionRunnable<A, T, FlexoObject> getDefaultInitializer() {
+		return (e, action) -> {
+			// The values of the properties of the instance are lost: nobody should discover that afterwards
+			if (action.getLostPropertyNames().isEmpty()) {
+				return true;
+			}
+			return FlexoController.confirm(getModuleLocales(action).localizedForKeyWithParams(
+					"would_you_really_like_to_disconnect_this_instance_(the_values_of_($0)_will_be_lost)_?",
+					String.join(", ", action.getLostPropertyNames())));
+		};
 	}
 
 	@Override
-	protected FlexoActionRunnable<CreateNewConceptFromDiagramElement, DiagramElement<?>, FlexoObject> getDefaultFinalizer() {
+	protected FlexoActionRunnable<A, T, FlexoObject> getDefaultFinalizer() {
 		return (e, action) -> {
 			getController().selectAndFocusObject(action.getFocusedObject());
 			return true;
 		};
 	}
-
-	@Override
-	protected Icon getEnabledIcon(FlexoActionFactory<CreateNewConceptFromDiagramElement, DiagramElement<?>, FlexoObject> actionType) {
-		return FMEIconLibrary.FME_SMALL_ICON;
-	}
-
 }

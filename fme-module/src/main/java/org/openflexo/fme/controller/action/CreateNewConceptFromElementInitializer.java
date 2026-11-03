@@ -1,6 +1,6 @@
 /**
  * 
- * Copyright (c) 2014, Openflexo
+ * Copyright (c) 2026, Openflexo
  * 
  * This file is part of Freemodellingeditor, a component of the software infrastructure 
  * developed at Openflexo.
@@ -35,29 +35,37 @@
  * or visit www.openflexo.org if you need additional information.
  * 
  */
-
-package org.openflexo.fme.diagram.controller.action;
+package org.openflexo.fme.controller.action;
 
 import org.openflexo.components.wizard.Wizard;
 import org.openflexo.components.wizard.WizardDialog;
-import org.openflexo.fme.diagram.model.action.DeclareInstanceOfExistingConcept;
+import org.openflexo.fme.model.action.AbstractCreateNewConceptFromElement;
 import org.openflexo.foundation.FlexoObject;
+import org.openflexo.foundation.action.FlexoActionFactory;
 import org.openflexo.foundation.action.FlexoActionRunnable;
-import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.gina.controller.FIBController.Status;
 import org.openflexo.view.controller.ActionInitializer;
 import org.openflexo.view.controller.ControllerActionInitializer;
 
-public class DeclareInstanceOfExistingConceptInitializer
-		extends ActionInitializer<DeclareInstanceOfExistingConcept, FlexoConceptInstance, FlexoObject> {
-	public DeclareInstanceOfExistingConceptInitializer(ControllerActionInitializer actionInitializer) {
-		super(DeclareInstanceOfExistingConcept.actionType, actionInitializer);
+/**
+ * Initializer of an action making a new concept emerge from an element, whatever the technology: it opens a {@link CreateNewConceptFromElementWizard}
+ * 
+ * @param <A>
+ *            type of the action
+ * @param <T>
+ *            type of the focused object
+ */
+public class CreateNewConceptFromElementInitializer<A extends AbstractCreateNewConceptFromElement<A, T, ?, ?>, T extends FlexoObject>
+		extends ActionInitializer<A, T, FlexoObject> {
+
+	public CreateNewConceptFromElementInitializer(FlexoActionFactory<A, T, FlexoObject> actionType, ControllerActionInitializer actionInitializer) {
+		super(actionType, actionInitializer);
 	}
 
 	@Override
-	protected FlexoActionRunnable<DeclareInstanceOfExistingConcept, FlexoConceptInstance, FlexoObject> getDefaultInitializer() {
+	protected FlexoActionRunnable<A, T, FlexoObject> getDefaultInitializer() {
 		return (e, action) -> {
-			Wizard wizard = new DeclareInstanceOfExistingConceptWizard(action, getController());
+			Wizard wizard = new CreateNewConceptFromElementWizard(action, getController());
 			WizardDialog dialog = new WizardDialog(wizard, getController());
 			dialog.showDialog();
 			if (dialog.getStatus() != Status.VALIDATED) {
@@ -69,7 +77,7 @@ public class DeclareInstanceOfExistingConceptInitializer
 	}
 
 	@Override
-	protected FlexoActionRunnable<DeclareInstanceOfExistingConcept, FlexoConceptInstance, FlexoObject> getDefaultFinalizer() {
+	protected FlexoActionRunnable<A, T, FlexoObject> getDefaultFinalizer() {
 		return (e, action) -> {
 			getController().selectAndFocusObject(action.getFocusedObject());
 			return true;

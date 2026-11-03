@@ -46,23 +46,34 @@ directly. Adding another technology meant editing all of them.
 - The nature panel still shows the labels "New diagram", "Import ppt slide" (disabled) and "Import excel" (no action):
   to revisit with the screens of FME-F-2.
 
-### FME-F-2 — PowerPoint extension (`fme-pptx`)  ·  `TODO`
+### FME-F-2 — PowerPoint extension (`fme-pptx`)  ·  `IN PROGRESS`
 
 **Problem.** Annotate an existing PowerPoint deck: select shapes in its slides and declare them as instances of new or
 existing concepts of the conceptual model, without modifying the `.pptx`.
 
-**Decisions so far.**
-- One free model instance federates a whole slideshow.
-- A shape that is not annotated stays a plain PowerPoint shape (no NoneGR): actions are focused on `PowerpointShape`,
-  and a GR instance is created at annotation time.
-- Glued connectors give instances of relational concepts; groups and nesting give containment.
-- The view reuses the slideshow view of pptx-ta-ui (thumbnails, slide, selection) with an FME overlay.
+**Decisions.**
+- One free model instance federates a whole slideshow, referenced in place in its resource center (no copy); the `.pptx` is
+  never modified nor saved.
+- A shape that is not annotated stays a plain PowerPoint shape (no NoneGR): a GR instance is created at annotation time, from
+  the selected `PowerpointShape`. A shape carries one annotation at most.
+- Actions on a shape: new concept, instance of an existing concept (a new instance, or one that already exists in the sample
+  data, possibly represented in a diagram), disconnect. The name proposed for a new instance is the text of the shape (first
+  line), or its PowerPoint name.
+- Actions on a connector glued to two annotated shapes: new relational concept, new property. Disabled otherwise. Groups and
+  nesting giving containment come later.
+- Screens: the left column is the one of the Diagram extension; the center is the slideshow view of pptx-ta-ui (slide,
+  thumbnails on its right) with an overlay marking annotated shapes (border colored by concept, badge with the concept
+  name); the right column shows the browser of the shown slide on top, the inspector of the represented concept below (no
+  PowerPoint inspector).
 - A concept instance can be represented both in a diagram and in a deck (the sample data is shared).
 
-**Prerequisites in openflexo-pptx.** Shape identity that survives a reload (PPTX-F-5), the type of `PowerpointShapeRole`
-(PPTX-D-4), and a contextual menu and decoration hooks in the slideshow view (PPTX-F-6).
+**Plan.** Lot 1, the generic actions in the core and Diagram rebuilt on them (FME-F-3 step 2): done. Lot 2: the `fme-pptx`
+module (free model, instance, actions on a shape, view). Lot 3: the actions on glued connectors.
 
-**Next.** The screens are to be specified with the user before the plan.
+**Prerequisites in openflexo-pptx.** Shape identity that survives a reload (PPTX-F-5), the type of `PowerpointShapeRole`
+(PPTX-D-4), and a contextual menu and decoration hooks in the slideshow view (PPTX-F-6): done. Still to do there: a
+`PowerpointShapeRole` whose actor is never deleted with its instance, and a slideshow view letting the embedding module place
+the browser of the slide.
 
 ### FME-F-3 — A generic layer of free-modelling actions  ·  `IN PROGRESS`
 
@@ -99,10 +110,28 @@ moves between an element and its concept (the `GRStrategy` of the Diagram action
   the `GRStrategy`, the propagation of a redefined shape to the other instances, the palette element of a first
   instance, the invalidation of the drawing.
 
+**Done (step 2, every act but containment, 2026-11-03).**
+- The actions are focused either on the instance of a GR concept standing for an element (the NoneGR of a diagram), or on
+  the element itself (a diagram shape, a PowerPoint shape): `AbstractFreeModelInstanceAction<A, T, FM, FMI>` finds the
+  free model instance of either. A free model instance says whether an element belongs to its artefact (`contains`), the
+  instance standing for an element (`getGRInstance`) and the element of an instance (`getRepresentationElement`); the nature
+  finds the free model instance of an element, and every representation of a conceptual instance across free model
+  instances (`getRepresentations`).
+- Templates in `org.openflexo.fme.model.action`, each with its generic wizard and initializer in the core:
+  `AbstractDeclareInstanceOfExistingConcept` (the element may stand for a new instance, named after it, or for an instance
+  already in the sample data), `AbstractCreateNewConceptFromElement`, `AbstractDisconnectInstanceFromConcept` (the
+  conceptual instance is deleted only when nothing else represents it), `AbstractCreateNewConceptFromLink` and
+  `AbstractCreateNewFMEPropertyFromLink` over `AbstractLinkAction`. A technology gives the instance standing for the
+  element, the default name, the element containing it, and what happens to its representation; the declare wizard shows
+  the extra options of the technology (the shape strategy for Diagram) from a component it gives.
+- Every Diagram action is rebuilt on them; the "from diagram element" variants share `ShapeRepresentation` and
+  `DiagramRepresentations` with the NoneGR ones. `FME-D-2` and `FME-D-3` fixed. Checked by `TestFreeModellingActions`.
+- Behaviour changes for Diagram: declaring a NoneGR instance whose concept has no GR concept yet now gives the new GR
+  concept the shape of the element, and takes the container of the enclosing shape, as the "from diagram element" variant
+  did; "new concept" from a plain shape opens the wizard (it ran without a name before); a connector gives a relational
+  concept through the wizard of `CreateNewRelationalConcept`. Not tried in the running application.
+
 **Next candidates.**
-- `DeclareInstanceOfExistingConceptFromDiagramElement` duplicates most of the declare routine, starting from a diagram
-  element instead of a NoneGR instance: the "from a plain element" variant is the one PowerPoint needs (FME-F-2), so
-  the template should also accept an element without GR instance yet. Doing so would also fix `FME-D-2` (see
-  `KNOWN_DEFECTS.md`; `FME-D-1`, the duplicated `GRStrategy` enum, is already fixed).
-- `CreateNewConceptFromNoneConcept` / `CreateNewConceptFromDiagramElement`, then `DisconnectInstanceFromConcept`, on
-  the same pattern.
+- Containment from the nesting of elements, when PowerPoint groups need it.
+- Deleting a GR instance (the anonymous deletion scheme of the GR concepts) still deletes the conceptual instance, even
+  when another free model instance represents it.

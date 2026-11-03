@@ -36,7 +36,7 @@
  * 
  */
 
-package org.openflexo.fme.diagram.controller.action;
+package org.openflexo.fme.controller.action;
 
 import java.awt.Dimension;
 import java.awt.Image;
@@ -45,13 +45,12 @@ import java.util.logging.Logger;
 import org.openflexo.ApplicationContext;
 import org.openflexo.components.wizard.FlexoActionWizard;
 import org.openflexo.components.wizard.WizardStep;
-import org.openflexo.fme.controller.action.ConfigureNewConceptStructureStep;
-import org.openflexo.fme.diagram.model.action.CreateNewConceptFromNoneConcept;
+import org.openflexo.fme.model.FMEFreeModel;
 import org.openflexo.fme.model.FMENames;
+import org.openflexo.fme.model.action.AbstractCreateNewConceptFromElement;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.rt.FMLRTVirtualModelInstance;
-import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.gina.annotation.FIBPanel;
 import org.openflexo.icon.FMLIconLibrary;
 import org.openflexo.icon.IconFactory;
@@ -59,16 +58,16 @@ import org.openflexo.icon.IconLibrary;
 import org.openflexo.toolbox.StringUtils;
 import org.openflexo.view.controller.FlexoController;
 
-public class CreateNewConceptFromNoneConceptWizard extends FlexoActionWizard<CreateNewConceptFromNoneConcept> {
+public class CreateNewConceptFromElementWizard extends FlexoActionWizard<AbstractCreateNewConceptFromElement<?, ?, ?, ?>> {
 
 	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(CreateNewConceptFromNoneConceptWizard.class.getPackage().getName());
+	private static final Logger logger = Logger.getLogger(CreateNewConceptFromElementWizard.class.getPackage().getName());
 
-	private final ConfigureNewConceptFromNoneConcept configureNewConceptFromNoneConcept;
+	private final ConfigureNewConceptFromElement configureNewConceptFromElement;
 
-	public CreateNewConceptFromNoneConceptWizard(CreateNewConceptFromNoneConcept action, FlexoController controller) {
+	public CreateNewConceptFromElementWizard(AbstractCreateNewConceptFromElement<?, ?, ?, ?> action, FlexoController controller) {
 		super(action, controller);
-		addStep(configureNewConceptFromNoneConcept = new ConfigureNewConceptFromNoneConcept());
+		addStep(configureNewConceptFromElement = new ConfigureNewConceptFromElement());
 		addStep(new ConfigureNewConceptStructureStep(action.getStructure(), action.getLocales(), controller.getApplicationContext()));
 	}
 
@@ -88,8 +87,8 @@ public class CreateNewConceptFromNoneConceptWizard extends FlexoActionWizard<Cre
 		return IconFactory.getImageIcon(FMLIconLibrary.FLEXO_CONCEPT_BIG_ICON, IconLibrary.BIG_NEW_MARKER).getImage();
 	}
 
-	public ConfigureNewConceptFromNoneConcept getConfigureNewConceptFromNoneConcept() {
-		return configureNewConceptFromNoneConcept;
+	public ConfigureNewConceptFromElement getConfigureNewConceptFromElement() {
+		return configureNewConceptFromElement;
 	}
 
 	/**
@@ -98,19 +97,19 @@ public class CreateNewConceptFromNoneConceptWizard extends FlexoActionWizard<Cre
 	 * @author sylvain
 	 *
 	 */
-	@FIBPanel("Fib/Wizard/ConfigureNewConceptFromNoneConcept.fib")
-	public class ConfigureNewConceptFromNoneConcept extends WizardStep {
+	@FIBPanel("Fib/Wizard/ConfigureNewConceptFromElement.fib")
+	public class ConfigureNewConceptFromElement extends WizardStep {
 
 		public ApplicationContext getServiceManager() {
 			return getController().getApplicationContext();
 		}
 
-		public CreateNewConceptFromNoneConcept getAction() {
-			return CreateNewConceptFromNoneConceptWizard.this.getAction();
+		public AbstractCreateNewConceptFromElement<?, ?, ?, ?> getAction() {
+			return CreateNewConceptFromElementWizard.this.getAction();
 		}
 
-		public FlexoConceptInstance getFlexoConceptInstance() {
-			return getAction().getFocusedObject();
+		public FMEFreeModel getFreeModel() {
+			return getAction().getFMEFreeModel();
 		}
 
 		@Override

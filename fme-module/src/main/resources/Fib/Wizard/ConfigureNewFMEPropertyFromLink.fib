@@ -115,6 +115,6 @@
 			key="destination_concept" />
 	</LocalizedDictionary>
 	<FIBVariable id="45"
-		type="org.openflexo.fme.diagram.controller.action.CreateNewFMEPropertyFromDiagramConnectorWizard$ConfigureNewFMEPropertyFromDiagramConnector"
+		type="org.openflexo.fme.controller.action.CreateNewFMEPropertyFromLinkWizard$ConfigureNewFMEPropertyFromLink"
 		name="data" />
 </Panel>

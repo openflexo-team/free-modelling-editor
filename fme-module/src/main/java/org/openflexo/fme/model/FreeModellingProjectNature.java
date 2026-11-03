@@ -38,6 +38,7 @@
 
 package org.openflexo.fme.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -47,6 +48,7 @@ import org.openflexo.foundation.fml.FlexoRole;
 import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.rm.CompilationUnitResourceFactory;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
+import org.openflexo.foundation.fml.rt.VirtualModelInstance;
 import org.openflexo.foundation.nature.NatureObject;
 import org.openflexo.foundation.nature.ProjectNature;
 import org.openflexo.localization.LocalizedDelegate;
@@ -116,6 +118,21 @@ public interface FreeModellingProjectNature extends ProjectNature<FreeModellingP
 
 	public String getInstanceName(FlexoConceptInstance flexoConceptInstance);
 
+	/**
+	 * The free model instance accessing supplied {@link VirtualModelInstance}, or null
+	 */
+	public FMEFreeModelInstance getFreeModelInstance(VirtualModelInstance<?, ?> virtualModelInstance);
+
+	/**
+	 * The free model instance whose artefact contains supplied element (see {@link FMEFreeModelInstance#contains(Object)}), or null
+	 */
+	public FMEFreeModelInstance getFreeModelInstanceContaining(Object element);
+
+	/**
+	 * The instances of GR concepts, in all the free model instances of this nature, standing for supplied instance of the sample data
+	 */
+	public List<FlexoConceptInstance> getRepresentations(FlexoConceptInstance conceptInstance);
+
 	public void setInstanceName(FlexoConceptInstance flexoConceptInstance, String value);
 
 	/**
@@ -174,6 +191,60 @@ public interface FreeModellingProjectNature extends ProjectNature<FreeModellingP
 		 * 
 		 * @return
 		 */
+		@Override
+		public FMEFreeModelInstance getFreeModelInstance(VirtualModelInstance<?, ?> virtualModelInstance) {
+			if (virtualModelInstance == null) {
+				return null;
+			}
+			for (FMEFreeModel freeModel : getFreeModels()) {
+				for (FMEFreeModelInstance freeModelInstance : freeModel.getFreeModelInstances()) {
+					if (freeModelInstance.getAccessedVirtualModelInstance() == virtualModelInstance) {
+						return freeModelInstance;
+					}
+				}
+			}
+			return null;
+		}
+
+		@Override
+		public FMEFreeModelInstance getFreeModelInstanceContaining(Object element) {
+			for (FMEFreeModel freeModel : getFreeModels()) {
+				for (FMEFreeModelInstance freeModelInstance : freeModel.getFreeModelInstances()) {
+					if (freeModelInstance.contains(element)) {
+						return freeModelInstance;
+					}
+				}
+			}
+			return null;
+		}
+
+		@Override
+		public List<FlexoConceptInstance> getRepresentations(FlexoConceptInstance conceptInstance) {
+			List<FlexoConceptInstance> returned = new ArrayList<>();
+			if (conceptInstance == null) {
+				return returned;
+			}
+			for (FMEFreeModel freeModel : getFreeModels()) {
+				for (FMEFreeModelInstance freeModelInstance : freeModel.getFreeModelInstances()) {
+					if (freeModelInstance.getAccessedVirtualModelInstance() != null) {
+						collectRepresentations(freeModelInstance.getAccessedVirtualModelInstance().getFlexoConceptInstances(), conceptInstance,
+								returned);
+					}
+				}
+			}
+			return returned;
+		}
+
+		private static void collectRepresentations(List<FlexoConceptInstance> instances, FlexoConceptInstance conceptInstance,
+				List<FlexoConceptInstance> returned) {
+			for (FlexoConceptInstance instance : instances) {
+				if (FMEFreeModel.representedInstance(instance) == conceptInstance) {
+					returned.add(instance);
+				}
+				collectRepresentations(instance.getEmbeddedFlexoConceptInstances(), conceptInstance, returned);
+			}
+		}
+
 		@Override
 		public FMEFreeModel getFreeModel(VirtualModel virtualModel) {
 			for (FMEFreeModel freeModel : getFreeModels()) {

@@ -49,7 +49,7 @@ import org.openflexo.fme.model.FMEFreeModel;
 import org.openflexo.fme.model.FMEFreeModelInstance;
 import org.openflexo.fme.model.FMEInspectorGenerator;
 import org.openflexo.fme.model.FMENames;
-import org.openflexo.fme.model.action.FMEAction;
+import org.openflexo.fme.model.action.AbstractCreateNewFMEPropertyFromLink;
 import org.openflexo.foundation.FlexoEditor;
 import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.FlexoObject;
@@ -84,11 +84,8 @@ import org.openflexo.toolbox.StringUtils;
  * @author sylvain
  * 
  */
-public class CreateNewFMEPropertyFromDiagramConnector
-		extends FMEAction<CreateNewFMEPropertyFromDiagramConnector, DiagramConnector, FlexoObject> {
-
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(CreateNewFMEPropertyFromDiagramConnector.class.getPackage().getName());
+public class CreateNewFMEPropertyFromDiagramConnector extends
+		AbstractCreateNewFMEPropertyFromLink<CreateNewFMEPropertyFromDiagramConnector, DiagramConnector, FMEDiagramFreeModel, FMEDiagramFreeModelInstance> {
 
 	public static FlexoActionFactory<CreateNewFMEPropertyFromDiagramConnector, DiagramConnector, FlexoObject> actionType = new FlexoActionFactory<CreateNewFMEPropertyFromDiagramConnector, DiagramConnector, FlexoObject>(
 			"create_new_property", FlexoActionFactory.defaultGroup, FlexoActionFactory.ADD_ACTION_TYPE) {
@@ -104,7 +101,6 @@ public class CreateNewFMEPropertyFromDiagramConnector
 
 		@Override
 		public boolean isVisibleForSelection(DiagramConnector object, Vector<FlexoObject> globalSelection) {
-			// return object.getAccessibleProperty(FMEFreeModel.CONCEPT_ROLE_NAME) != null;
 			return true;
 		}
 
@@ -119,203 +115,27 @@ public class CreateNewFMEPropertyFromDiagramConnector
 		FlexoObjectImpl.addActionForClass(CreateNewFMEPropertyFromDiagramConnector.actionType, DiagramConnector.class);
 	}
 
-	private String propertyName;
-	private String description;
-
-	private FlexoConcept fromFlexoConcept;
-	private FlexoConcept toFlexoConcept;
-
-	private FlexoConcept fromFlexoConceptGR;
-	private FlexoConcept toFlexoConceptGR;
-
-	private FlexoConceptInstance fromGRFlexoConceptInstance;
-	private FlexoConceptInstance toGRFlexoConceptInstance;
-
-	private FlexoConceptInstance fromFlexoConceptInstance;
-	private FlexoConceptInstance toFlexoConceptInstance;
-
 	private CreateNewFMEPropertyFromDiagramConnector(DiagramConnector focusedObject, Vector<FlexoObject> globalSelection,
 			FlexoEditor editor) {
 		super(actionType, focusedObject, globalSelection, editor);
-
-		ObjectLookupResult startConceptLookup = getFreeModelInstance().getAccessedVirtualModelInstance()
-				.lookup(getFocusedObject().getStartShape());
-		if (startConceptLookup != null) {
-			fromGRFlexoConceptInstance = startConceptLookup.flexoConceptInstance;
-			fromFlexoConceptGR = fromGRFlexoConceptInstance.getFlexoConcept();
-			// System.out.println("START lookup: " + startConceptLookup.flexoConceptInstance + " of=" + fromFlexoConceptGR);
-			FlexoProperty<?> p = FMEFreeModel.conceptRole(fromFlexoConceptGR);
-			if (p instanceof FlexoConceptInstanceRole) {
-				FlexoConceptInstanceRole fciRole = (FlexoConceptInstanceRole) p;
-				fromFlexoConcept = fciRole.getFlexoConceptType();
-			}
-			fromFlexoConceptInstance = fromGRFlexoConceptInstance.getFlexoPropertyValue(FMEFreeModel.conceptRoleName(fromFlexoConceptGR));
-		}
-
-		ObjectLookupResult endConceptLookup = getFreeModelInstance().getAccessedVirtualModelInstance()
-				.lookup(getFocusedObject().getEndShape());
-		if (endConceptLookup != null) {
-			toGRFlexoConceptInstance = endConceptLookup.flexoConceptInstance;
-			toFlexoConceptGR = toGRFlexoConceptInstance.getFlexoConcept();
-			// System.out.println("END lookup: " + endConceptLookup.flexoConceptInstance + " of=" + toFlexoConceptGR);
-			FlexoProperty<?> p = FMEFreeModel.conceptRole(toFlexoConceptGR);
-			if (p instanceof FlexoConceptInstanceRole) {
-				FlexoConceptInstanceRole fciRole = (FlexoConceptInstanceRole) p;
-				toFlexoConcept = fciRole.getFlexoConceptType();
-			}
-			toFlexoConceptInstance = toGRFlexoConceptInstance.getFlexoPropertyValue(FMEFreeModel.conceptRoleName(toFlexoConceptGR));
-		}
-
-	}
-
-	/**
-	 * Return {@link FMEFreeModelInstance} which has diagram containing focused {@link DiagramElement}
-	 * 
-	 * @return
-	 */
-	public FMEDiagramFreeModelInstance getFreeModelInstance() {
-		for (FMEFreeModel freeModel : getFreeModellingProjectNature().getFreeModels()) {
-			for (FMEFreeModelInstance freeModelInstance : freeModel.getFreeModelInstances()) {
-				if (freeModelInstance instanceof FMEDiagramFreeModelInstance
-						&& ((FMEDiagramFreeModelInstance) freeModelInstance).getDiagram().equals(getFocusedObject().getDiagram())) {
-					return (FMEDiagramFreeModelInstance) freeModelInstance;
-				}
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Return {@link FMEFreeModelInstance} which has diagram containing focused {@link DiagramElement}
-	 * 
-	 * @return
-	 */
-	public FMEDiagramFreeModel getFreeModel() {
-		if (getFreeModelInstance() != null) {
-			return getFreeModelInstance().getFreeModel();
-		}
-		return null;
 	}
 
 	@Override
-	protected void doAction(Object context) throws FlexoException {
-
-		CreateFlexoConceptInstanceRole createPropertyAction = CreateFlexoConceptInstanceRole.actionType
-				.makeNewEmbeddedAction(getFromFlexoConcept(), null, this);
-		createPropertyAction.setRoleName(getCreatedPropertyName());
-		createPropertyAction.setFlexoConceptInstanceType(getToFlexoConcept());
-		createPropertyAction.setVirtualModelInstance(new DataBinding<>("container"));
-		createPropertyAction.setDescription(getDescription());
-		createPropertyAction.doAction();
-
-		if (fromFlexoConceptGR != null) {
-			// The source's inspector derives entirely to the conceptual concept's own (@Inspector(derived=...));
-			// completing THAT one - not regenerating it: its author may have edited it - is what makes the new property show
-			FMEInspectorGenerator.addPropertyToConceptualInspector(getFromFlexoConcept(),
-					getFromFlexoConcept().getAccessibleProperty(getCreatedPropertyName()));
-		}
-
-		FlexoConcept connectorGR = buildConnectorGRFlexoConcept();
-
-		fromFlexoConceptInstance.setFlexoPropertyValue(getCreatedPropertyName(), toFlexoConceptInstance);
-
-	}
-
-	/**
-	 * Return graphical representation concept
-	 * 
-	 * @return
-	 */
-	/*public FlexoConcept getGRConcept() {
-		// return getFocusedObject();
-		return null;
-	}*/
-
-	/**
-	 * Return concept (conceptual model level) where to create the property<br>
-	 * 
-	 * @return
-	 */
-	/*public FlexoConcept getConcept() {
-		if (getGRConcept() != null) {
-			FlexoProperty<?> p = getGRConcept().getAccessibleProperty(FMEFreeModel.CONCEPT_ROLE_NAME);
-			if (p instanceof FlexoConceptInstanceRole) {
-				FlexoConceptInstanceRole fciRole = (FlexoConceptInstanceRole) p;
-				return fciRole.getFlexoConceptType();
-			}
-		}
-		return null;
-	}*/
-
-	/**
-	 * The name the property is created with: {@link #getPropertyName()}, as typed, normalized into a name FML accepts
-	 */
-	public String getCreatedPropertyName() {
-		return FMENames.propertyName(getPropertyName());
-	}
-
-	public String getPropertyName() {
-		return propertyName;
-	}
-
-	public void setPropertyName(String propertyName) {
-		if ((propertyName == null && getPropertyName() != null) || (propertyName != null && !propertyName.equals(getPropertyName()))) {
-			String oldValue = getPropertyName();
-			this.propertyName = propertyName;
-			getPropertyChangeSupport().firePropertyChange("propertyName", oldValue, propertyName);
-		}
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		if ((description == null && this.description != null) || (description != null && !description.equals(this.description))) {
-			String oldValue = this.description;
-			this.description = description;
-			getPropertyChangeSupport().firePropertyChange("description", oldValue, description);
-		}
-	}
-
-	public FlexoConcept getFromFlexoConcept() {
-		return fromFlexoConcept;
-	}
-
-	public void setFromFlexoConcept(FlexoConcept fromFlexoConcept) {
-		if ((fromFlexoConcept == null && this.fromFlexoConcept != null)
-				|| (fromFlexoConcept != null && !fromFlexoConcept.equals(this.fromFlexoConcept))) {
-			FlexoConcept oldValue = this.fromFlexoConcept;
-			this.fromFlexoConcept = fromFlexoConcept;
-			getPropertyChangeSupport().firePropertyChange("fromFlexoConcept", oldValue, fromFlexoConcept);
-		}
-	}
-
-	public FlexoConcept getToFlexoConcept() {
-		return toFlexoConcept;
-	}
-
-	public void setToFlexoConcept(FlexoConcept toFlexoConcept) {
-		if ((toFlexoConcept == null && this.toFlexoConcept != null)
-				|| (toFlexoConcept != null && !toFlexoConcept.equals(this.toFlexoConcept))) {
-			FlexoConcept oldValue = this.toFlexoConcept;
-			this.toFlexoConcept = toFlexoConcept;
-			getPropertyChangeSupport().firePropertyChange("toFlexoConcept", oldValue, toFlexoConcept);
-		}
+	protected Object getStartElement() {
+		return getFocusedObject().getStartShape();
 	}
 
 	@Override
-	public boolean isValid() {
+	protected Object getEndElement() {
+		return getFocusedObject().getEndShape();
+	}
 
-		if (getCreatedPropertyName() == null) {
-			return false;
-		}
-
-		if (getFromFlexoConcept() == null) {
-			return false;
-		}
-
-		return true;
+	/**
+	 * A GR concept drawing such a link as a connector between the shapes of both concepts
+	 */
+	@Override
+	protected void buildLinkRepresentation(String createdPropertyName) {
+		buildConnectorGRFlexoConcept();
 	}
 
 	public static final String FROM_CONCEPT_INSTANCE = "fromConceptInstance";
@@ -326,7 +146,7 @@ public class CreateNewFMEPropertyFromDiagramConnector
 
 		// Creates the concept
 		CreateFlexoConcept action = CreateFlexoConcept.actionType
-				.makeNewEmbeddedAction(fromFlexoConceptGR.getDeclaringCompilationUnit().getVirtualModel(), null, this);
+				.makeNewEmbeddedAction(getFromFlexoConceptGR().getDeclaringCompilationUnit().getVirtualModel(), null, this);
 		String conceptName = FMENames.conceptName(getCreatedPropertyName()) + "ConnectorGR";
 		action.setNewFlexoConceptName(conceptName);
 		action.doAction();
@@ -336,7 +156,7 @@ public class CreateNewFMEPropertyFromDiagramConnector
 		CreateFlexoConceptInstanceRole createConceptRole1 = CreateFlexoConceptInstanceRole.actionType.makeNewEmbeddedAction(returned, null,
 				this);
 		createConceptRole1.setRoleName(FROM_CONCEPT_INSTANCE);
-		createConceptRole1.setFlexoConceptInstanceType(fromFlexoConceptGR);
+		createConceptRole1.setFlexoConceptInstanceType(getFromFlexoConceptGR());
 		createConceptRole1.setVirtualModelInstance(new DataBinding<VirtualModelInstance<?, ?>>("container"));
 		createConceptRole1.doAction();
 
@@ -344,7 +164,7 @@ public class CreateNewFMEPropertyFromDiagramConnector
 		CreateFlexoConceptInstanceRole createConceptRole2 = CreateFlexoConceptInstanceRole.actionType.makeNewEmbeddedAction(returned, null,
 				this);
 		createConceptRole2.setRoleName(TO_CONCEPT_INSTANCE);
-		createConceptRole2.setFlexoConceptInstanceType(toFlexoConceptGR);
+		createConceptRole2.setFlexoConceptInstanceType(getToFlexoConceptGR());
 		createConceptRole2.setVirtualModelInstance(new DataBinding<VirtualModelInstance<?, ?>>("container"));
 		createConceptRole2.doAction();
 
@@ -383,7 +203,7 @@ public class CreateNewFMEPropertyFromDiagramConnector
 		// Creates connector property
 		CreateTechnologyRole createConnectorRole = null;
 		createConnectorRole = CreateTechnologyRole.actionType.makeNewEmbeddedAction(returned, null, this);
-		createConnectorRole.setModelSlot(getFreeModelInstance().getFreeModel().getTypedDiagramModelSlot());
+		createConnectorRole.setModelSlot(getFMEFreeModel().getTypedDiagramModelSlot());
 		createConnectorRole.setRoleName(CONNECTOR_ROLE_NAME);
 		createConnectorRole.setFlexoRoleClass(ConnectorRole.class);
 		createConnectorRole.doAction();
@@ -403,8 +223,8 @@ public class CreateNewFMEPropertyFromDiagramConnector
 		createLinkScheme.doAction();
 		LinkScheme linkScheme = (LinkScheme) createLinkScheme.getNewFlexoBehaviour();
 		linkScheme.setSkipConfirmationPanel(false);
-		linkScheme.setFromTargetFlexoConcept(fromFlexoConceptGR);
-		linkScheme.setToTargetFlexoConcept(toFlexoConceptGR);
+		linkScheme.setFromTargetFlexoConcept(getFromFlexoConceptGR());
+		linkScheme.setToTargetFlexoConcept(getToFlexoConceptGR());
 
 		CreateEditionAction setFromFCIAction = CreateEditionAction.actionType.makeNewEmbeddedAction(linkScheme.getControlGraph(), null,
 				this);
@@ -425,16 +245,16 @@ public class CreateNewFMEPropertyFromDiagramConnector
 				this);
 		setPropertyAction.setEditionActionClass(ExpressionAction.class);
 		setPropertyAction
-				.setAssignation(new DataBinding<>(FROM_CONCEPT_INSTANCE + "." + FMEFreeModel.conceptRoleName(fromFlexoConceptGR) + "." + getCreatedPropertyName()));
+				.setAssignation(new DataBinding<>(FROM_CONCEPT_INSTANCE + "." + FMEFreeModel.conceptRoleName(getFromFlexoConceptGR()) + "." + getCreatedPropertyName()));
 		setPropertyAction.doAction();
 		ExpressionAction<?> expAction3 = (ExpressionAction<?>) setPropertyAction.getBaseEditionAction();
-		expAction3.setExpression(new DataBinding<>(TO_CONCEPT_INSTANCE + "." + FMEFreeModel.conceptRoleName(toFlexoConceptGR)));
+		expAction3.setExpression(new DataBinding<>(TO_CONCEPT_INSTANCE + "." + FMEFreeModel.conceptRoleName(getToFlexoConceptGR())));
 
 		CreateEditionAction createAddConnector = null;
 		createAddConnector = CreateEditionAction.actionType.makeNewEmbeddedAction(linkScheme.getControlGraph(), null, this);
 
 		// createAddShape.actionChoice = CreateEditionActionChoice.ModelSlotSpecificAction;
-		createAddConnector.setModelSlot(getFreeModel().getTypedDiagramModelSlot());
+		createAddConnector.setModelSlot(getFMEFreeModel().getTypedDiagramModelSlot());
 		createAddConnector.setEditionActionClass(AddConnector.class);
 		createAddConnector.setAssignation(new DataBinding<>(CONNECTOR_ROLE_NAME));
 		createAddConnector.doAction();
@@ -466,9 +286,9 @@ public class CreateNewFMEPropertyFromDiagramConnector
 
 	private DiagramConnector createConnector() {
 
-		ShapeRole startShapeRole = (ShapeRole) fromFlexoConceptGR.getAccessibleProperty(FMEDiagramFreeModel.SHAPE_ROLE_NAME);
+		ShapeRole startShapeRole = (ShapeRole) getFromFlexoConceptGR().getAccessibleProperty(FMEDiagramFreeModel.SHAPE_ROLE_NAME);
 		DiagramShape startShape = startShapeRole.getMetamodelElement();
-		ShapeRole endShapeRole = (ShapeRole) toFlexoConceptGR.getAccessibleProperty(FMEDiagramFreeModel.SHAPE_ROLE_NAME);
+		ShapeRole endShapeRole = (ShapeRole) getToFlexoConceptGR().getAccessibleProperty(FMEDiagramFreeModel.SHAPE_ROLE_NAME);
 		DiagramShape endShape = endShapeRole.getMetamodelElement();
 
 		org.openflexo.technologyadapter.diagram.model.action.AddConnector addConnectorAction = org.openflexo.technologyadapter.diagram.model.action.AddConnector.actionType

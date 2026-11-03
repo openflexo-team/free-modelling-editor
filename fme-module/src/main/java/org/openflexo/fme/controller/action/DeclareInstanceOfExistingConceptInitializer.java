@@ -1,6 +1,6 @@
 /**
  * 
- * Copyright (c) 2014, Openflexo
+ * Copyright (c) 2026, Openflexo
  * 
  * This file is part of Freemodellingeditor, a component of the software infrastructure 
  * developed at Openflexo.
@@ -35,34 +35,50 @@
  * or visit www.openflexo.org if you need additional information.
  * 
  */
-
-package org.openflexo.fme.diagram.controller.action;
-
-import java.util.logging.Logger;
+package org.openflexo.fme.controller.action;
 
 import org.openflexo.components.wizard.Wizard;
 import org.openflexo.components.wizard.WizardDialog;
-import org.openflexo.fme.diagram.model.action.CreateNewFMEPropertyFromDiagramConnector;
+import org.openflexo.fme.model.action.AbstractDeclareInstanceOfExistingConcept;
 import org.openflexo.foundation.FlexoObject;
+import org.openflexo.foundation.action.FlexoActionFactory;
 import org.openflexo.foundation.action.FlexoActionRunnable;
 import org.openflexo.gina.controller.FIBController.Status;
-import org.openflexo.technologyadapter.diagram.model.DiagramConnector;
+import org.openflexo.rm.Resource;
 import org.openflexo.view.controller.ActionInitializer;
 import org.openflexo.view.controller.ControllerActionInitializer;
 
-public class CreateNewFMEPropertyFromDiagramConnectorInitializer
-		extends ActionInitializer<CreateNewFMEPropertyFromDiagramConnector, DiagramConnector, FlexoObject> {
+/**
+ * Initializer of an action declaring an element as an instance of an existing concept, whatever the technology: it opens a
+ * {@link DeclareInstanceOfExistingConceptWizard}
+ * 
+ * @param <A>
+ *            type of the action
+ * @param <T>
+ *            type of the focused object
+ */
+public class DeclareInstanceOfExistingConceptInitializer<A extends AbstractDeclareInstanceOfExistingConcept<A, T, ?, ?>, T extends FlexoObject>
+		extends ActionInitializer<A, T, FlexoObject> {
 
-	private static final Logger logger = Logger.getLogger(ControllerActionInitializer.class.getPackage().getName());
+	private final Resource representationOptions;
 
-	public CreateNewFMEPropertyFromDiagramConnectorInitializer(ControllerActionInitializer actionInitializer) {
-		super(CreateNewFMEPropertyFromDiagramConnector.actionType, actionInitializer);
+	/**
+	 * @param actionType
+	 *            the action of the technology
+	 * @param representationOptions
+	 *            the component showing what the technology has more to choose in the wizard, its data being the action, or null
+	 * @param actionInitializer
+	 */
+	public DeclareInstanceOfExistingConceptInitializer(FlexoActionFactory<A, T, FlexoObject> actionType, Resource representationOptions,
+			ControllerActionInitializer actionInitializer) {
+		super(actionType, actionInitializer);
+		this.representationOptions = representationOptions;
 	}
 
 	@Override
-	protected FlexoActionRunnable<CreateNewFMEPropertyFromDiagramConnector, DiagramConnector, FlexoObject> getDefaultInitializer() {
+	protected FlexoActionRunnable<A, T, FlexoObject> getDefaultInitializer() {
 		return (e, action) -> {
-			Wizard wizard = new CreateNewFMEPropertyFromDiagramConnectorWizard(action, getController());
+			Wizard wizard = new DeclareInstanceOfExistingConceptWizard(action, representationOptions, getController());
 			WizardDialog dialog = new WizardDialog(wizard, getController());
 			dialog.showDialog();
 			if (dialog.getStatus() != Status.VALIDATED) {
@@ -70,14 +86,12 @@ public class CreateNewFMEPropertyFromDiagramConnectorInitializer
 				return false;
 			}
 			return true;
-			// return instanciateAndShowDialog(action, FMECst.CREATE_NEW_CONCEPT_DIALOG_FIB);
 		};
 	}
 
 	@Override
-	protected FlexoActionRunnable<CreateNewFMEPropertyFromDiagramConnector, DiagramConnector, FlexoObject> getDefaultFinalizer() {
+	protected FlexoActionRunnable<A, T, FlexoObject> getDefaultFinalizer() {
 		return (e, action) -> {
-			logger.info("CreateNewConcept finalizer");
 			getController().selectAndFocusObject(action.getFocusedObject());
 			return true;
 		};

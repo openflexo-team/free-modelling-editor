@@ -1,6 +1,6 @@
 /**
  * 
- * Copyright (c) 2014, Openflexo
+ * Copyright (c) 2026, Openflexo
  * 
  * This file is part of Freemodellingeditor, a component of the software infrastructure 
  * developed at Openflexo.
@@ -35,39 +35,49 @@
  * or visit www.openflexo.org if you need additional information.
  * 
  */
+package org.openflexo.fme.controller.action;
 
-package org.openflexo.fme.diagram.controller.action;
-
-import org.openflexo.fme.diagram.model.action.DisconnectInstanceFromConcept;
+import org.openflexo.components.wizard.Wizard;
+import org.openflexo.components.wizard.WizardDialog;
+import org.openflexo.fme.model.action.AbstractCreateNewConceptFromLink;
 import org.openflexo.foundation.FlexoObject;
+import org.openflexo.foundation.action.FlexoActionFactory;
 import org.openflexo.foundation.action.FlexoActionRunnable;
-import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
+import org.openflexo.gina.controller.FIBController.Status;
 import org.openflexo.view.controller.ActionInitializer;
 import org.openflexo.view.controller.ControllerActionInitializer;
-import org.openflexo.view.controller.FlexoController;
 
-public class DisconnectInstanceFromConceptInitializer
-		extends ActionInitializer<DisconnectInstanceFromConcept, FlexoConceptInstance, FlexoObject> {
+/**
+ * Initializer of an action making a new relational concept emerge from a link, whatever the technology: it opens a {@link CreateNewRelationalConceptWizard} on the action creating the relational concept
+ * 
+ * @param <A>
+ *            type of the action
+ * @param <T>
+ *            type of the focused object
+ */
+public class CreateNewConceptFromLinkInitializer<A extends AbstractCreateNewConceptFromLink<A, T, ?, ?>, T extends FlexoObject>
+		extends ActionInitializer<A, T, FlexoObject> {
 
-	public DisconnectInstanceFromConceptInitializer(ControllerActionInitializer actionInitializer) {
-		super(DisconnectInstanceFromConcept.actionType, actionInitializer);
+	public CreateNewConceptFromLinkInitializer(FlexoActionFactory<A, T, FlexoObject> actionType, ControllerActionInitializer actionInitializer) {
+		super(actionType, actionInitializer);
 	}
 
 	@Override
-	protected FlexoActionRunnable<DisconnectInstanceFromConcept, FlexoConceptInstance, FlexoObject> getDefaultInitializer() {
+	protected FlexoActionRunnable<A, T, FlexoObject> getDefaultInitializer() {
 		return (e, action) -> {
-			// The values of the properties of the instance are lost: nobody should discover that afterwards
-			if (action.getLostPropertyNames().isEmpty()) {
-				return true;
+			Wizard wizard = new CreateNewRelationalConceptWizard(action.getRelationalConceptAction(), getController());
+			WizardDialog dialog = new WizardDialog(wizard, getController());
+			dialog.showDialog();
+			if (dialog.getStatus() != Status.VALIDATED) {
+				// Operation cancelled
+				return false;
 			}
-			return FlexoController.confirm(getModuleLocales(action).localizedForKeyWithParams(
-					"would_you_really_like_to_disconnect_this_instance_(the_values_of_($0)_will_be_lost)_?",
-					String.join(", ", action.getLostPropertyNames())));
+			return true;
 		};
 	}
 
 	@Override
-	protected FlexoActionRunnable<DisconnectInstanceFromConcept, FlexoConceptInstance, FlexoObject> getDefaultFinalizer() {
+	protected FlexoActionRunnable<A, T, FlexoObject> getDefaultFinalizer() {
 		return (e, action) -> {
 			getController().selectAndFocusObject(action.getFocusedObject());
 			return true;

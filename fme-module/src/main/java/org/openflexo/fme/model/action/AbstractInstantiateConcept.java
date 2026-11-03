@@ -39,18 +39,12 @@
 package org.openflexo.fme.model.action;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.openflexo.fme.model.FMEFreeModel;
 import org.openflexo.fme.model.FMEFreeModelInstance;
-import org.openflexo.fme.model.FreeModellingProjectNature;
 import org.openflexo.foundation.FlexoEditor;
 import org.openflexo.foundation.FlexoObject;
-import org.openflexo.foundation.FlexoProject;
-import org.openflexo.foundation.action.FlexoAction;
 import org.openflexo.foundation.action.FlexoActionFactory;
-import org.openflexo.foundation.fml.VirtualModel;
-import org.openflexo.foundation.fml.rt.FMLRTVirtualModelInstance;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 
 /**
@@ -70,12 +64,10 @@ import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
  * 
  */
 public abstract class AbstractInstantiateConcept<A extends AbstractInstantiateConcept<A, FM, FMI>, FM extends FMEFreeModel, FMI extends FMEFreeModelInstance>
-		extends FMEAction<A, FlexoConceptInstance, FlexoObject> {
-
-	private static final Logger logger = Logger.getLogger(AbstractInstantiateConcept.class.getPackage().getName());
+		extends AbstractFreeModelInstanceAction<A, FlexoConceptInstance, FM, FMI> {
 
 	/**
-	 * Instantiate a {@link FlexoAction} with a factory, a focused object and a global selection
+	 * Instantiate a {@link org.openflexo.foundation.action.FlexoAction} with a factory, a focused object and a global selection
 	 * 
 	 * @param actionFactory
 	 * @param focusedObject
@@ -85,50 +77,6 @@ public abstract class AbstractInstantiateConcept<A extends AbstractInstantiateCo
 	public AbstractInstantiateConcept(FlexoActionFactory<A, FlexoConceptInstance, FlexoObject> actionFactory,
 			FlexoConceptInstance focusedObject, List<FlexoObject> globalSelection, FlexoEditor editor) {
 		super(actionFactory, focusedObject, globalSelection, editor);
-	}
-
-	@Override
-	public FreeModellingProjectNature getFreeModellingProjectNature() {
-		FlexoProject<?> project = null;
-		if (getFocusedObject().getResourceCenter() instanceof FlexoProject) {
-			project = (FlexoProject<?>) getFocusedObject().getResourceCenter();
-		}
-		else if (getFocusedObject().getResourceCenter().getDelegatingProjectResource() != null) {
-			project = getFocusedObject().getResourceCenter().getDelegatingProjectResource().getFlexoProject();
-		}
-		else {
-			logger.warning("Could not access to FlexoProject from " + getFocusedObject());
-			return null;
-		}
-		return project.getNature(FreeModellingProjectNature.class);
-	}
-
-	@SuppressWarnings("unchecked")
-	public FM getFMEFreeModel() {
-		FreeModellingProjectNature nature = getFreeModellingProjectNature();
-		if (nature != null) {
-			FMLRTVirtualModelInstance vmi = (FMLRTVirtualModelInstance) getFocusedObject().getVirtualModelInstance();
-			VirtualModel vm = vmi.getVirtualModel();
-			return (FM) nature.getFreeModel(vm.getName());
-		}
-		logger.warning("Sorry, project does not have FreeModellingProjectNature");
-		return null;
-	}
-
-	@SuppressWarnings("unchecked")
-	public FMI getFMEFreeModelInstance() {
-		FreeModellingProjectNature nature = getFreeModellingProjectNature();
-		if (nature == null) {
-			logger.warning("Sorry, project does not have FreeModellingProjectNature");
-			return null;
-		}
-		FMEFreeModel freeModel = getFMEFreeModel();
-		if (freeModel == null) {
-			logger.warning("Sorry, cannot access FMEFreeModel");
-			return null;
-		}
-		FMLRTVirtualModelInstance vmi = (FMLRTVirtualModelInstance) getFocusedObject().getVirtualModelInstance();
-		return (FMI) freeModel.getFreeModelInstance(vmi.getName());
 	}
 
 }

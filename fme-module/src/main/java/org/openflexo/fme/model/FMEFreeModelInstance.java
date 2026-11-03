@@ -107,6 +107,21 @@ public interface FMEFreeModelInstance extends VirtualModelInstanceBasedNatureObj
 
 	public FMESampleData getSampleData();
 
+	/**
+	 * Whether supplied element belongs to the artefact this free model instance federates (its diagram, its slideshow...)
+	 */
+	public boolean contains(Object element);
+
+	/**
+	 * The instance of a GR concept supplied element of the artefact stands for, or null when it stands for none
+	 */
+	public FlexoConceptInstance getGRInstance(Object element);
+
+	/**
+	 * The element of the artefact supplied instance of a GR concept stands for (a shape, a connector...), or null
+	 */
+	public Object getRepresentationElement(FlexoConceptInstance grInstance);
+
 	public abstract class FMEFreeModelInstanceImpl extends VirtualModelInstanceBasedNatureObjectImpl<FreeModellingProjectNature>
 			implements FMEFreeModelInstance {
 
@@ -270,6 +285,28 @@ public interface FMEFreeModelInstance extends VirtualModelInstanceBasedNatureObj
 
 			return returned;
 
+		}
+
+		/**
+		 * By default an instance contains nothing: the technologies answer for their own artefact
+		 */
+		@Override
+		public boolean contains(Object element) {
+			return false;
+		}
+
+		@Override
+		public FlexoConceptInstance getGRInstance(Object element) {
+			if (element == null || getAccessedVirtualModelInstance() == null) {
+				return null;
+			}
+			ObjectLookupResult lookup = getAccessedVirtualModelInstance().lookup(element);
+			return lookup != null ? lookup.flexoConceptInstance : null;
+		}
+
+		@Override
+		public Object getRepresentationElement(FlexoConceptInstance grInstance) {
+			return null;
 		}
 
 		@Override

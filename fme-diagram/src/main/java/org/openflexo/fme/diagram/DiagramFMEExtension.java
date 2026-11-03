@@ -41,26 +41,33 @@ package org.openflexo.fme.diagram;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 import org.openflexo.fme.FMEIconLibrary;
 import org.openflexo.fme.FMETechnologyExtension;
 import org.openflexo.fme.controller.FMEController;
 import org.openflexo.fme.controller.FMEPerspective;
+import org.openflexo.fme.controller.action.CreateNewConceptFromElementInitializer;
+import org.openflexo.fme.controller.action.CreateNewConceptFromLinkInitializer;
+import org.openflexo.fme.controller.action.CreateNewFMEPropertyFromLinkInitializer;
+import org.openflexo.fme.controller.action.DeclareInstanceOfExistingConceptInitializer;
+import org.openflexo.fme.controller.action.DisconnectInstanceFromConceptInitializer;
 import org.openflexo.fme.controller.action.FMEControllerActionInitializer;
 import org.openflexo.fme.diagram.controller.action.CreateFMEDiagramFreeModelInitializer;
-import org.openflexo.fme.diagram.controller.action.CreateNewConceptFromDiagramElementInitializer;
-import org.openflexo.fme.diagram.controller.action.CreateNewConceptFromNoneInitializer;
-import org.openflexo.fme.diagram.controller.action.CreateNewFMEPropertyFromDiagramConnectorInitializer;
-import org.openflexo.fme.diagram.controller.action.DeclareInstanceOfExistingConceptFromDiagramElementInitializer;
-import org.openflexo.fme.diagram.controller.action.DeclareInstanceOfExistingConceptInitializer;
-import org.openflexo.fme.diagram.controller.action.DisconnectInstanceFromConceptInitializer;
 import org.openflexo.fme.diagram.controller.action.DropFreeShapeInitializer;
 import org.openflexo.fme.diagram.controller.action.InstantiateFMEDiagramFreeModelInitializer;
 import org.openflexo.fme.diagram.controller.editor.FreeModelDiagramEditor;
 import org.openflexo.fme.diagram.model.FMEDiagramFreeModel;
 import org.openflexo.fme.diagram.model.FMEDiagramFreeModelInstance;
 import org.openflexo.fme.diagram.model.action.CreateFMEDiagramFreeModel;
+import org.openflexo.fme.diagram.model.action.CreateNewConceptFromDiagramConnector;
+import org.openflexo.fme.diagram.model.action.CreateNewConceptFromDiagramElement;
+import org.openflexo.fme.diagram.model.action.CreateNewConceptFromNoneConcept;
+import org.openflexo.fme.diagram.model.action.CreateNewFMEPropertyFromDiagramConnector;
+import org.openflexo.fme.diagram.model.action.DeclareInstanceOfExistingConcept;
+import org.openflexo.fme.diagram.model.action.DeclareInstanceOfExistingConceptFromDiagramElement;
+import org.openflexo.fme.diagram.model.action.DisconnectInstanceFromConcept;
 import org.openflexo.fme.diagram.model.action.InstantiateFMEDiagramFreeModel;
 import org.openflexo.fme.diagram.view.FMEDiagramFreeModelModuleView;
 import org.openflexo.fme.model.FMEFreeModel;
@@ -72,9 +79,12 @@ import org.openflexo.foundation.nature.NatureObject;
 import org.openflexo.foundation.technologyadapter.TechnologyAdapter;
 import org.openflexo.icon.IconFactory;
 import org.openflexo.pamela.undo.CompoundEdit;
+import org.openflexo.rm.Resource;
+import org.openflexo.rm.ResourceLocator;
 import org.openflexo.swing.FlexoCollabsiblePanelGroup;
 import org.openflexo.technologyadapter.diagram.DiagramTechnologyAdapter;
 import org.openflexo.technologyadapter.diagram.controller.DiagramTechnologyAdapterController;
+import org.openflexo.technologyadapter.diagram.model.DiagramElement;
 import org.openflexo.view.ModuleView;
 import org.openflexo.view.controller.FlexoController;
 
@@ -87,6 +97,11 @@ import org.openflexo.view.controller.FlexoController;
 public class DiagramFMEExtension implements FMETechnologyExtension {
 
 	public static final String IDENTIFIER = "diagram";
+
+	/**
+	 * What a Diagram user chooses more when declaring a shape as an instance of an existing concept: the strategy of representation
+	 */
+	public static final Resource SHAPE_REPRESENTATION_OPTIONS = ResourceLocator.locateResource("Fib/Wizard/ShapeRepresentationOptions.fib");
 
 	@Override
 	public String getIdentifier() {
@@ -150,14 +165,28 @@ public class DiagramFMEExtension implements FMETechnologyExtension {
 		new InstantiateFMEDiagramFreeModelInitializer(actionInitializer);
 
 		new DropFreeShapeInitializer(actionInitializer);
-		new CreateNewConceptFromNoneInitializer(actionInitializer);
-		new DeclareInstanceOfExistingConceptInitializer(actionInitializer);
-		new DisconnectInstanceFromConceptInitializer(actionInitializer);
+		new CreateNewConceptFromElementInitializer<>(CreateNewConceptFromNoneConcept.actionType, actionInitializer);
+		new DeclareInstanceOfExistingConceptInitializer<>(DeclareInstanceOfExistingConcept.actionType, SHAPE_REPRESENTATION_OPTIONS,
+				actionInitializer);
+		new DisconnectInstanceFromConceptInitializer<>(DisconnectInstanceFromConcept.actionType, actionInitializer);
 
 		// Actions applied on Diagram Elements(not currently associated with flexo concept)
-		new CreateNewConceptFromDiagramElementInitializer(actionInitializer);
-		new DeclareInstanceOfExistingConceptFromDiagramElementInitializer(actionInitializer);
-		new CreateNewFMEPropertyFromDiagramConnectorInitializer(actionInitializer);
+		new CreateNewConceptFromElementInitializer<>(CreateNewConceptFromDiagramElement.actionType, actionInitializer) {
+			@Override
+			protected Icon getEnabledIcon(FlexoActionFactory<CreateNewConceptFromDiagramElement, DiagramElement<?>, FlexoObject> actionType) {
+				return FMEIconLibrary.FME_SMALL_ICON;
+			}
+		};
+		new DeclareInstanceOfExistingConceptInitializer<>(DeclareInstanceOfExistingConceptFromDiagramElement.actionType,
+				SHAPE_REPRESENTATION_OPTIONS, actionInitializer) {
+			@Override
+			protected Icon getEnabledIcon(
+					FlexoActionFactory<DeclareInstanceOfExistingConceptFromDiagramElement, DiagramElement<?>, FlexoObject> actionType) {
+				return FMEIconLibrary.FME_SMALL_ICON;
+			}
+		};
+		new CreateNewConceptFromLinkInitializer<>(CreateNewConceptFromDiagramConnector.actionType, actionInitializer);
+		new CreateNewFMEPropertyFromLinkInitializer<>(CreateNewFMEPropertyFromDiagramConnector.actionType, actionInitializer);
 	}
 
 	@Override

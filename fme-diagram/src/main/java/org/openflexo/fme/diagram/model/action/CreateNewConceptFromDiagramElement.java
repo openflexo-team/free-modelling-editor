@@ -39,33 +39,30 @@
 package org.openflexo.fme.diagram.model.action;
 
 import java.util.Vector;
-import java.util.logging.Logger;
 
-import org.openflexo.fme.model.FMEFreeModel;
+import org.openflexo.fme.diagram.model.FMEDiagramFreeModel;
+import org.openflexo.fme.diagram.model.FMEDiagramFreeModelInstance;
+import org.openflexo.fme.model.action.AbstractCreateNewConceptFromElement;
 import org.openflexo.foundation.FlexoEditor;
+import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.FlexoObject;
 import org.openflexo.foundation.FlexoObject.FlexoObjectImpl;
-import org.openflexo.foundation.InvalidArgumentException;
 import org.openflexo.foundation.action.FlexoActionFactory;
 import org.openflexo.foundation.fml.FlexoConcept;
-import org.openflexo.foundation.fml.FlexoConceptInstanceRole;
-import org.openflexo.foundation.fml.FlexoProperty;
-import org.openflexo.foundation.fml.rt.FMLExecutionException;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
-import org.openflexo.foundation.fml.rt.VirtualModelInstance.ObjectLookupResult;
-import org.openflexo.technologyadapter.diagram.model.DiagramConnector;
 import org.openflexo.technologyadapter.diagram.model.DiagramElement;
 import org.openflexo.technologyadapter.diagram.model.DiagramShape;
 
 /**
- * This action is used to create a new FlexoConcept from a diagram element
+ * This action is used to create a new FlexoConcept from a shape of the diagram, starting from the shape itself: the instance of the NoneGR
+ * standing for it is created first when there is none yet. A new concept emerges from a connector with
+ * {@link CreateNewConceptFromDiagramConnector}.
  * 
- * @author vincent
+ * @author vincent, sylvain
  * 
  */
-public class CreateNewConceptFromDiagramElement extends AbstractInstantiateConceptFromDiagramElement<CreateNewConceptFromDiagramElement> {
-
-	private static final Logger logger = Logger.getLogger(CreateNewConceptFromDiagramElement.class.getPackage().getName());
+public class CreateNewConceptFromDiagramElement extends
+		AbstractCreateNewConceptFromElement<CreateNewConceptFromDiagramElement, DiagramElement<?>, FMEDiagramFreeModel, FMEDiagramFreeModelInstance> {
 
 	public static FlexoActionFactory<CreateNewConceptFromDiagramElement, DiagramElement<?>, FlexoObject> actionType = new FlexoActionFactory<CreateNewConceptFromDiagramElement, DiagramElement<?>, FlexoObject>(
 			"create_new_concept", FlexoActionFactory.defaultGroup, FlexoActionFactory.ADD_ACTION_TYPE) {
@@ -81,88 +78,59 @@ public class CreateNewConceptFromDiagramElement extends AbstractInstantiateConce
 
 		@Override
 		public boolean isVisibleForSelection(DiagramElement<?> object, Vector<FlexoObject> globalSelection) {
-			return object instanceof DiagramShape || object instanceof DiagramConnector;
+			return object instanceof DiagramShape;
 		}
 
 		@Override
 		public boolean isEnabledForSelection(DiagramElement<?> object, Vector<FlexoObject> globalSelection) {
-			return object instanceof DiagramShape || object instanceof DiagramConnector;
+			return object instanceof DiagramShape;
 		}
 
 	};
 
 	static {
 		FlexoObjectImpl.addActionForClass(CreateNewConceptFromDiagramElement.actionType, DiagramShape.class);
-		FlexoObjectImpl.addActionForClass(CreateNewConceptFromDiagramElement.actionType, DiagramConnector.class);
 	}
 
 	private CreateNewConceptFromDiagramElement(DiagramElement<?> focusedObject, Vector<FlexoObject> globalSelection, FlexoEditor editor) {
 		super(actionType, focusedObject, globalSelection, editor);
 	}
 
-	private FlexoConceptInstance flexoConceptInstance;
-	private FlexoConcept flexoConcept;
+	/**
+	 * The name of the shape
+	 */
+	@Override
+	protected String getDefaultInstanceName() {
+		return getFocusedObject().getName();
+	}
 
 	@Override
-	protected void doAction(Object context) throws InvalidArgumentException, FMLExecutionException {
+	protected FlexoConceptInstance getContainerGRInstance() {
+		return DiagramRepresentations.containerGRInstanceOf(getFMEFreeModelInstance(), getFocusedObject());
+	}
 
-		// Unused FlexoConcept containerConcept = null;
-		if (getFocusedObject().getParent() != null) {
-			ObjectLookupResult lookup = getFreeModelInstance().getAccessedVirtualModelInstance().lookup(getFocusedObject().getParent());
-			if (lookup != null) {
-				// System.out.println("lookup: " + lookup.flexoConceptInstance + " pty=" + lookup.property);
-				FlexoConcept containerConceptGR = lookup.flexoConceptInstance.getFlexoConcept();
-				FlexoProperty<?> p = FMEFreeModel.conceptRole(containerConceptGR);
-				if (p instanceof FlexoConceptInstanceRole) {
-					FlexoConceptInstanceRole fciRole = (FlexoConceptInstanceRole) p;
-					// Unused containerConcept = fciRole.getFlexoConceptType();
-				}
-			}
+	/**
+	 * The instance standing for the shape: the one of the NoneGR, created when there is none yet
+	 */
+	@Override
+	protected FlexoConceptInstance retrieveRepresentationInstance(FlexoConcept grConcept) throws FlexoException {
+		FlexoConceptInstance existing = getFMEFreeModelInstance().getGRInstance(getFocusedObject());
+		if (existing != null) {
+			return existing;
 		}
-
-		logger.info("Create new instance of created concept from diagram element ");
-		getNoneFlexoConcept();
-
-		if (getFocusedObject() instanceof DiagramShape) {
-			logger.info("Create new concept from shape element ");
-			flexoConceptInstance = createFlexoConceptInstanceFromDiagramShape((DiagramShape) getFocusedObject());
-			CreateNewConceptFromNoneConcept actionCreateNewConcept = CreateNewConceptFromNoneConcept.actionType
-					.makeNewEmbeddedAction(flexoConceptInstance, null, this);
-			actionCreateNewConcept.doAction();
-			flexoConcept = actionCreateNewConcept.getNewFlexoConcept();
-		}
-		else if (getFocusedObject() instanceof DiagramConnector) {
-			logger.info("Create new concept from connector element ");
-
-			CreateNewConceptFromDiagramConnector actionCreateNewConcept = CreateNewConceptFromDiagramConnector.actionType
-					.makeNewEmbeddedAction((DiagramConnector) getFocusedObject(), null, this);
-			actionCreateNewConcept.doAction();
-
-			if (!actionCreateNewConcept.hasActionExecutionSucceeded()) {
-				return;
-			}
-
-			flexoConceptInstance = actionCreateNewConcept.getNewFlexoConceptInstance();
-
-			if (flexoConceptInstance == null) {
-				return;
-			}
-
-			flexoConcept = flexoConceptInstance.getFlexoConcept();
-
-		}
-
+		return DiagramRepresentations.createNoneInstance(getFMEFreeModelInstance(), (DiagramShape) getFocusedObject(), this);
 	}
 
-	public FlexoConcept getFlexoConcept() {
-		return flexoConcept;
+	@Override
+	protected void configureRepresentation(FlexoConceptInstance grInstance, FlexoConcept newConcept, FlexoConcept newGRConcept)
+			throws FlexoException {
+		DiagramRepresentations.configureNewConceptShape(getFMEFreeModel(), newGRConcept, newConcept, (DiagramShape) getFocusedObject(),
+				this);
 	}
 
-	public void setFlexoConcept(FlexoConcept flexoConcept) {
-		this.flexoConcept = flexoConcept;
+	@Override
+	protected void refreshRepresentation(FlexoConceptInstance grInstance) {
+		DiagramRepresentations.invalidate(getFocusedObject());
 	}
 
-	public FlexoConceptInstance getFlexoConceptInstance() {
-		return flexoConceptInstance;
-	}
 }

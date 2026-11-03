@@ -1,6 +1,6 @@
 /**
  * 
- * Copyright (c) 2014, Openflexo
+ * Copyright (c) 2026, Openflexo
  * 
  * This file is part of Freemodellingeditor, a component of the software infrastructure 
  * developed at Openflexo.
@@ -35,34 +35,37 @@
  * or visit www.openflexo.org if you need additional information.
  * 
  */
-
-package org.openflexo.fme.diagram.controller.action;
-
-import java.util.logging.Logger;
+package org.openflexo.fme.controller.action;
 
 import org.openflexo.components.wizard.Wizard;
 import org.openflexo.components.wizard.WizardDialog;
-import org.openflexo.fme.diagram.model.action.CreateNewConceptFromNoneConcept;
+import org.openflexo.fme.model.action.AbstractCreateNewFMEPropertyFromLink;
 import org.openflexo.foundation.FlexoObject;
+import org.openflexo.foundation.action.FlexoActionFactory;
 import org.openflexo.foundation.action.FlexoActionRunnable;
-import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.gina.controller.FIBController.Status;
 import org.openflexo.view.controller.ActionInitializer;
 import org.openflexo.view.controller.ControllerActionInitializer;
 
-public class CreateNewConceptFromNoneInitializer
-		extends ActionInitializer<CreateNewConceptFromNoneConcept, FlexoConceptInstance, FlexoObject> {
+/**
+ * Initializer of an action making a new property emerge from a link, whatever the technology: it opens a {@link CreateNewFMEPropertyFromLinkWizard}
+ * 
+ * @param <A>
+ *            type of the action
+ * @param <T>
+ *            type of the focused object
+ */
+public class CreateNewFMEPropertyFromLinkInitializer<A extends AbstractCreateNewFMEPropertyFromLink<A, T, ?, ?>, T extends FlexoObject>
+		extends ActionInitializer<A, T, FlexoObject> {
 
-	private static final Logger logger = Logger.getLogger(ControllerActionInitializer.class.getPackage().getName());
-
-	public CreateNewConceptFromNoneInitializer(ControllerActionInitializer actionInitializer) {
-		super(CreateNewConceptFromNoneConcept.actionType, actionInitializer);
+	public CreateNewFMEPropertyFromLinkInitializer(FlexoActionFactory<A, T, FlexoObject> actionType, ControllerActionInitializer actionInitializer) {
+		super(actionType, actionInitializer);
 	}
 
 	@Override
-	protected FlexoActionRunnable<CreateNewConceptFromNoneConcept, FlexoConceptInstance, FlexoObject> getDefaultInitializer() {
+	protected FlexoActionRunnable<A, T, FlexoObject> getDefaultInitializer() {
 		return (e, action) -> {
-			Wizard wizard = new CreateNewConceptFromNoneConceptWizard(action, getController());
+			Wizard wizard = new CreateNewFMEPropertyFromLinkWizard(action, getController());
 			WizardDialog dialog = new WizardDialog(wizard, getController());
 			dialog.showDialog();
 			if (dialog.getStatus() != Status.VALIDATED) {
@@ -74,12 +77,10 @@ public class CreateNewConceptFromNoneInitializer
 	}
 
 	@Override
-	protected FlexoActionRunnable<CreateNewConceptFromNoneConcept, FlexoConceptInstance, FlexoObject> getDefaultFinalizer() {
+	protected FlexoActionRunnable<A, T, FlexoObject> getDefaultFinalizer() {
 		return (e, action) -> {
-			logger.info("CreateNewConceptFromNoneConcept finalizer");
 			getController().selectAndFocusObject(action.getFocusedObject());
 			return true;
 		};
 	}
-
 }

@@ -60,6 +60,7 @@ import org.openflexo.foundation.fml.action.CreateFlexoConceptInstanceRole;
 import org.openflexo.foundation.fml.action.CreatePrimitiveRole;
 import org.openflexo.foundation.fml.editionaction.DeleteAction;
 import org.openflexo.foundation.fml.rt.FMLRTModelSlot;
+import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.foundation.fml.rt.VirtualModelInstance;
 import org.openflexo.foundation.fml.rt.editionaction.DeleteFlexoConceptInstance;
 import org.openflexo.foundation.fml.rt.rm.FMLRTVirtualModelInstanceResourceFactory;
@@ -230,6 +231,18 @@ public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellin
 	public static String conceptRoleName(FlexoConcept grConcept) {
 		FlexoConceptInstanceRole role = conceptRole(grConcept);
 		return role != null ? role.getName() : CONCEPT_ROLE_NAME;
+	}
+
+	/**
+	 * The instance of the conceptual concept supplied instance of a GR concept stands for, or null (an instance of the NoneGR, or not an
+	 * instance of a GR concept at all)
+	 */
+	public static FlexoConceptInstance representedInstance(FlexoConceptInstance grInstance) {
+		if (grInstance == null || grInstance.getFlexoConcept() == null) {
+			return null;
+		}
+		FlexoConceptInstanceRole role = conceptRole(grInstance.getFlexoConcept());
+		return role != null ? grInstance.getFlexoActor(role) : null;
 	}
 
 	/**

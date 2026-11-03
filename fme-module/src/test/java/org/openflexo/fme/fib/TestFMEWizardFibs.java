@@ -110,4 +110,19 @@ public class TestFMEWizardFibs extends GenericFIBTestCase {
 		validateFIB("Fib/Wizard/ConfigureNewFMEProperty.fib");
 	}
 
+	@Test
+	public void testConfigureInstanceOfExistingConcept() {
+		validateFIB("Fib/Wizard/ConfigureInstanceOfExistingConcept.fib");
+	}
+
+	@Test
+	public void testConfigureNewConceptFromElement() {
+		validateFIB("Fib/Wizard/ConfigureNewConceptFromElement.fib");
+	}
+
+	@Test
+	public void testConfigureNewFMEPropertyFromLink() {
+		validateFIB("Fib/Wizard/ConfigureNewFMEPropertyFromLink.fib");
+	}
+
 }
