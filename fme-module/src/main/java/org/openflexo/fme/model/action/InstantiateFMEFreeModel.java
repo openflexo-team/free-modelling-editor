@@ -85,7 +85,7 @@ public abstract class InstantiateFMEFreeModel<A extends InstantiateFMEFreeModel<
 
 		// If no FreeModel was defined as metamodel of instance to be created, create a new one
 		if (getFreeModel() == null) {
-			createFreeModelAction = CreateFMEDiagramFreeModel.actionType.makeNewEmbeddedAction(getNature(), null, this);
+			createFreeModelAction = makeCreateFreeModelAction();
 		}
 
 	}

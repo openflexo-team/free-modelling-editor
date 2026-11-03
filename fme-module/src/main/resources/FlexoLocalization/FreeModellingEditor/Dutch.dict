@@ -114,3 +114,6 @@ relationship_ends_have_no_common_type=relationship_ends_have_no_common_type
 embedding_mode=embedding_mode
 flat_mode=flat_mode
 hierarchical_mode=hierarchical_mode
+choose_technology=Kies de technologie van het vrije model
+diagram=Diagram
+free_model=Vrij model

@@ -1,1 +1,1 @@
-include 'fme-module'
+include 'fme-module', 'fme-diagram'

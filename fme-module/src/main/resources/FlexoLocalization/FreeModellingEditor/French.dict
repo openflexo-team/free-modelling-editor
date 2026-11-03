@@ -117,3 +117,6 @@ relationship_ends_have_no_common_type=Pas d'extr\u00E9mit\u00E9 pour la super-cl
 embedding_mode=Voir par 'contenance'
 flat_mode=Voir tout \u00E0 plat
 hierarchical_mode=Vue hi\u00E9rarchique
+choose_technology=Choisissez la technologie du mod\u00E8le libre
+diagram=Diagramme
+free_model=Mod\u00E8le libre

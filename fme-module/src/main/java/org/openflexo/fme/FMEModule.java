@@ -41,15 +41,12 @@ package org.openflexo.fme;
 import java.util.logging.Logger;
 
 import org.openflexo.ApplicationContext;
-import org.openflexo.diana.swing.JDianaInteractiveEditor;
-import org.openflexo.diana.swing.view.JDrawingView;
 import org.openflexo.fme.controller.FMEController;
-import org.openflexo.foundation.FlexoObject;
 import org.openflexo.foundation.fml.FMLTechnologyAdapter;
 import org.openflexo.foundation.fml.rt.FMLRTTechnologyAdapter;
+import org.openflexo.foundation.technologyadapter.TechnologyAdapter;
 import org.openflexo.foundation.technologyadapter.TechnologyAdapterService;
 import org.openflexo.module.FlexoModule;
-import org.openflexo.technologyadapter.diagram.DiagramTechnologyAdapter;
 import org.openflexo.view.controller.FlexoController;
 
 /**
@@ -64,11 +61,6 @@ public class FMEModule extends FlexoModule<FMEModule> {
 	public static final String FME_MODULE_SHORT_NAME = "FME";
 	public static final String FME_MODULE_NAME = "Free Modelling Editor";
 
-	private JDianaInteractiveEditor<?> screenshotController;
-	private JDrawingView<?> screenshot = null;
-	private boolean drawWorkingArea;
-	private FlexoObject screenshotObject;
-
 	public FMEModule(ApplicationContext applicationContext) throws Exception {
 		super(applicationContext);
 		// ProgressWindow.setProgressInstance(FlexoLocalization.getMainLocalizer().localizedForKey("build_editor"));
@@ -80,12 +72,19 @@ public class FMEModule extends FlexoModule<FMEModule> {
 	}
 
 	@Override
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void initModule() {
 		super.initModule();
 		TechnologyAdapterService taService = getApplicationContext().getTechnologyAdapterService();
 		taService.activateTechnologyAdapter(taService.getTechnologyAdapter(FMLTechnologyAdapter.class), true);
 		taService.activateTechnologyAdapter(taService.getTechnologyAdapter(FMLRTTechnologyAdapter.class), true);
-		taService.activateTechnologyAdapter(taService.getTechnologyAdapter(DiagramTechnologyAdapter.class), true);
+		for (FMETechnologyExtension extension : FMETechnologyExtensions.getExtensions()) {
+			for (TechnologyAdapter technologyAdapter : taService.getTechnologyAdapters()) {
+				if (extension.getTechnologyAdapterClass().isInstance(technologyAdapter)) {
+					taService.activateTechnologyAdapter(technologyAdapter, true);
+				}
+			}
+		}
 		// Put here a code to display default view
 		// getFMEController().setCurrentEditedObjectAsModuleView(getFMEController().getViewPointLibrary());
 	}
@@ -133,84 +132,6 @@ public class FMEModule extends FlexoModule<FMEModule> {
 			return 0.1f;
 		}
 		return reply;
-	}
-
-	/*@Override
-	public JComponent createScreenshotForExampleDiagram(ExampleDiagram target) {
-		if (target == null) {
-			if (logger.isLoggable(Level.SEVERE)) {
-				logger.severe("Cannot create screenshot for null target!");
-			}
-			return null;
-		}
-	
-		logger.info("createScreenshotForShema() " + target);
-	
-		screenshotObject = target;
-	
-		// prevent example diagram to be marked as modified during screenshot generation
-		target.setIgnoreNotifications();
-		screenshotController = new ExampleDiagramEditor(getFMEController(), target, true);
-	
-		screenshot = screenshotController.getDrawingView();
-		drawWorkingArea = screenshot.getDrawing().getRoot().getDrawWorkingArea();
-		screenshot.getDrawing().getRoot().setDrawWorkingArea(false);
-		screenshot.getPaintManager().disablePaintingCache();
-		screenshot.validate();
-		Dimension d = screenshot.getComputedMinimumSize();
-		d.height += 20;
-		d.width += 20;
-		screenshot.setSize(d);
-		screenshot.setPreferredSize(d);
-		target.resetIgnoreNotifications();
-	
-		return screenshot;
-	}
-	
-	@Override
-	public JComponent createScreenshotForDiagramPalette(DiagramPalette target) {
-		if (target == null) {
-			if (logger.isLoggable(Level.SEVERE)) {
-				logger.severe("Cannot create screenshot for null target!");
-			}
-			return null;
-		}
-	
-		logger.info("createScreenshotForPalette() " + target);
-	
-		screenshotObject = target;
-	
-		// prevent process to be marked as modified during screenshot generation
-		target.setIgnoreNotifications();
-		screenshotController = new DiagramPaletteEditor(getFMEController(), target, true);
-	
-		screenshot = screenshotController.getDrawingView();
-		drawWorkingArea = screenshot.getDrawing().getRoot().getDrawWorkingArea();
-		screenshot.getDrawing().getRoot().setDrawWorkingArea(false);
-		screenshot.getPaintManager().disablePaintingCache();
-		screenshot.validate();
-		Dimension d = new Dimension((int) screenshot.getDrawing().getRoot().getWidth(), (int) screenshot.getDrawing().getRoot().getHeight());
-		screenshot.setSize(d);
-		screenshot.setPreferredSize(d);
-		target.resetIgnoreNotifications();
-	
-		return screenshot;
-	}*/
-
-	public void finalizeScreenshotGeneration() {
-		logger.info("finalizeScreenshotGeneration()");
-
-		if (screenshot != null) {
-			// screenshotObject.setIgnoreNotifications();
-			screenshot.getDrawing().getRoot().setDrawWorkingArea(drawWorkingArea);
-			// screenshotObject.resetIgnoreNotifications();
-			screenshotController.delete();
-			if (screenshot.getParent() != null) {
-				screenshot.getParent().remove(screenshot);
-			}
-			screenshotController = null;
-			screenshot = null;
-		}
 	}
 
 }

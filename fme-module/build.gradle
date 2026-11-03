@@ -4,10 +4,6 @@ dependencies {
   implementation flexoUi()
   implementation fmlTechnologyAdapterUi()
   implementation fmlRtTechnologyAdapterUi()
-  implementation diagramConnector()
-  implementation diagramConnectorUi()
-  implementation powerpointConnector()
-  implementation powerpointConnectorUi()
   runtimeOnly flexoOntology()
   runtimeOnly flexoOntologyUi()
   // external dep

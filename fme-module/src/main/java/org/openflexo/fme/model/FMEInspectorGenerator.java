@@ -184,9 +184,10 @@ public class FMEInspectorGenerator {
 	 * Test-only seam: (re)generates a GR concept's own inspector the way {@link #updateGRInspector(FlexoConcept, LocalizedDelegate)}
 	 * did before <code>@Inspector(derived=…)</code> existed - simulates a free model saved before this change, so
 	 * {@link #generateMissingGRInspectors(VirtualModel, LocalizedDelegate)}'s migration path can be exercised without a save/reload
-	 * cycle. Never called from production code: a GR concept with a conceptual counterpart always derives now.
+	 * cycle. Never called from production code: a GR concept with a conceptual counterpart always derives now (public only because
+	 * the tests of the technology extensions live in other modules).
 	 */
-	static FIBComponentResource generateLegacyGRInspector(FlexoConcept grConcept, LocalizedDelegate locales) {
+	public static FIBComponentResource generateLegacyGRInspector(FlexoConcept grConcept, LocalizedDelegate locales) {
 		return update(grConcept, new GRContents(grConcept, locales));
 	}
 

@@ -105,7 +105,7 @@
 				resizable="true" title="free_model" displayTitle="true"
 				columnWidth="200" showIcon="false" name="name" />
 			<AddAction id="26"
-				method="controller.createNewDiagramFreeModel(data)"
+				method="controller.createNewFreeModel(data)"
 				name="add_action" />
 		</Table>
 		<Table id="27" visibleRowCount="5"
@@ -125,7 +125,7 @@
 				resizable="true" title="label" displayTitle="true" columnWidth="300"
 				showIcon="false" name="label" />
 			<AddAction id="30" isAvailable="(table.selected != null)"
-				method="controller.instantiateNewDiagram(table.selected)"
+				method="controller.instantiateFreeModel(table.selected)"
 				name="add_action" />
 		</Table>
 	</Panel>
@@ -144,7 +144,7 @@
 		constraints="twocols(anchor=east;expandHorizontally=true;expandVertically=false;fill=both;gridHeight=-1;gridWidth=0;gridX=-1;gridY=-1;insetsBottom=30;insetsLeft=20;insetsRight=20;insetsTop=0;location=center;padX=0;padY=0;weightX=1.0;weightY=0.1)"
 		name="FIBPanel">
 		<Button id="34" buttonType="Trigger"
-			action="controller.createNewDiagram(data)" label="new_diagram"
+			action="controller.createNewFreeModelInstance(data)" label="new_diagram"
 			localize="true"
 			constraints="flow(anchor=east;fill=vertical;gridHeight=1;gridWidth=1;gridX=-1;gridY=-1;insetsBottom=30;insetsLeft=20;insetsRight=20;insetsTop=0;location=center;padX=0;padY=0;weightX=1.0;weightY=0.1)"
 			height="50" width="180" name="Button" />

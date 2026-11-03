@@ -38,20 +38,22 @@
 
 package org.openflexo.fme.controller;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.SwingUtilities;
 
 import org.openflexo.fme.FMEIconLibrary;
 import org.openflexo.fme.FMEModule;
-import org.openflexo.fme.controller.editor.FreeModelDiagramEditor;
-import org.openflexo.fme.model.FMEDiagramFreeModelInstance;
+import org.openflexo.fme.FMETechnologyExtension;
+import org.openflexo.fme.FMETechnologyExtensions;
 import org.openflexo.fme.model.FMEFreeModel;
 import org.openflexo.fme.model.FMEFreeModelInstance;
 import org.openflexo.fme.model.FreeModellingProjectNature;
 import org.openflexo.fme.view.ConvertToFMEProjectView;
-import org.openflexo.fme.view.FMEDiagramFreeModelModuleView;
 import org.openflexo.fme.view.FMEFreeModelModuleView;
 import org.openflexo.fme.view.FMEProjectNatureModuleView;
 import org.openflexo.fme.view.FMEWelcomePanelModuleView;
@@ -60,23 +62,19 @@ import org.openflexo.fme.widget.FIBFreeModellingProjectBrowser;
 import org.openflexo.fme.widget.FIBRepresentedConceptBrowser;
 import org.openflexo.foundation.FlexoObject;
 import org.openflexo.foundation.FlexoProject;
-import org.openflexo.inspector.FIBFlexoConceptInstanceInspectorPanel;
-import org.openflexo.module.FlexoModule.WelcomePanel;
-import org.openflexo.pamela.undo.CompoundEdit;
-import javax.swing.SwingUtilities;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.FlexoConceptInstanceRole;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.foundation.fml.rt.VirtualModelInstance;
+import org.openflexo.inspector.FIBFlexoConceptInstanceInspectorPanel;
 import org.openflexo.inspector.ModuleInspectorController.EmptySelectionActivated;
 import org.openflexo.inspector.ModuleInspectorController.InspectedObjectChanged;
 import org.openflexo.inspector.ModuleInspectorController.MultipleSelectionActivated;
+import org.openflexo.module.FlexoModule.WelcomePanel;
 import org.openflexo.swing.FlexoCollabsiblePanel;
 import org.openflexo.swing.FlexoCollabsiblePanelGroup;
-import org.openflexo.technologyadapter.diagram.controller.DiagramTechnologyAdapterController;
 import org.openflexo.view.ModuleView;
 import org.openflexo.view.controller.FlexoController;
-import org.openflexo.view.controller.TechnologyAdapterControllerService;
 import org.openflexo.view.controller.model.NaturePerspective;
 
 public class FMEPerspective extends NaturePerspective<FreeModellingProjectNature> {
@@ -87,7 +85,8 @@ public class FMEPerspective extends NaturePerspective<FreeModellingProjectNature
 	private final FIBRepresentedConceptBrowser representedConceptBrowser;
 	private final FIBConceptBrowser conceptBrowser;
 
-	private FlexoCollabsiblePanelGroup inspectorPanelGroup;
+	private final Map<FMETechnologyExtension, FlexoCollabsiblePanelGroup> inspectorPanelGroups = new HashMap<>();
+	private boolean followsInspectedObject = false;
 	private FlexoCollabsiblePanel representedConceptPanel;
 	private FIBFlexoConceptInstanceInspectorPanel inspectorPanel;
 
@@ -114,14 +113,27 @@ public class FMEPerspective extends NaturePerspective<FreeModellingProjectNature
 		return "free_modelling_perspective";
 	}
 
-	public FlexoCollabsiblePanelGroup getInspectorPanelGroup() {
-		if (inspectorPanelGroup == null) {
-			inspectorPanelGroup = getDiagramTechnologyAdapterController(getController()).getInspectors().getPanelGroup();
-			representedConceptPanel = inspectorPanelGroup.insertContentsAtIndex(
+	/**
+	 * The inspector panel group shown while a free model instance of supplied extension is displayed: the inspector of the represented
+	 * concept first, then the inspectors of the technology of the extension, if any.<br>
+	 * The inspector of the represented concept is a single component: it belongs to the group of the last extension that asked for it
+	 */
+	public FlexoCollabsiblePanelGroup getInspectorPanelGroup(FMETechnologyExtension extension) {
+		FlexoCollabsiblePanelGroup returned = inspectorPanelGroups.get(extension);
+		if (returned == null) {
+			returned = extension.getInspectorPanelGroup(getController());
+			if (returned == null) {
+				returned = new FlexoCollabsiblePanelGroup();
+			}
+			representedConceptPanel = returned.insertContentsAtIndex(
 					getController().getModuleLocales().localizedForKey("represented_concept"), inspectorPanel, 0);
-			getController().getModuleInspectorController().addObserver((o, notification) -> updateInspectorTitle(notification));
+			inspectorPanelGroups.put(extension, returned);
+			if (!followsInspectedObject) {
+				getController().getModuleInspectorController().addObserver((o, notification) -> updateInspectorTitle(notification));
+				followsInspectedObject = true;
+			}
 		}
-		return inspectorPanelGroup;
+		return returned;
 	}
 
 	/**
@@ -173,11 +185,6 @@ public class FMEPerspective extends NaturePerspective<FreeModellingProjectNature
 			return conceptRole.getFlexoConceptType().getName();
 		}
 		return concept.getName();
-	}
-
-	public DiagramTechnologyAdapterController getDiagramTechnologyAdapterController(FlexoController controller) {
-		TechnologyAdapterControllerService tacService = controller.getApplicationContext().getTechnologyAdapterControllerService();
-		return tacService.getTechnologyAdapterController(DiagramTechnologyAdapterController.class);
 	}
 
 	@Override
@@ -329,24 +336,12 @@ public class FMEPerspective extends NaturePerspective<FreeModellingProjectNature
 			// A free model created before the inspectors of its concepts were generated gets them when opened
 			((FMEFreeModelInstance) object).getFreeModel().generateMissingInspectors();
 		}
-		if (object instanceof FMEDiagramFreeModelInstance) {
-			// Initialization of Diagram representation may rise PAMELA edits
-			// The goal is here to embed all those edits in a special edit record
-			// Which is to be discarded as undoable action at the end of this initialization
-			CompoundEdit edit = null;
-			if (getController().getEditor().getUndoManager() != null) {
-				edit = getController().getEditor().getUndoManager().startRecording("Initialize free diagram");
+		if (object instanceof FMEFreeModelInstance) {
+			FMETechnologyExtension extension = FMETechnologyExtensions.getExtension((FMEFreeModelInstance) object);
+			if (extension != null) {
+				return extension.createModuleView((FMEFreeModelInstance) object, (FMEController) getController(), this);
 			}
-			DiagramTechnologyAdapterController diagramTAC = getController().getApplicationContext().getTechnologyAdapterControllerService()
-					.getTechnologyAdapterController(DiagramTechnologyAdapterController.class);
-			FreeModelDiagramEditor editor = new FreeModelDiagramEditor((FMEDiagramFreeModelInstance) object, false, getController(),
-					diagramTAC.getToolFactory());
-			if (edit != null) {
-				getController().getEditor().getUndoManager().stopRecording(edit);
-				// Make this edit not-undoable
-				edit.die();
-			}
-			return new FMEDiagramFreeModelModuleView(editor, this);
+			logger.warning("No FreeModellingEditor extension for " + object);
 		}
 		return super.createModuleViewForMasterObject(object);
 	}

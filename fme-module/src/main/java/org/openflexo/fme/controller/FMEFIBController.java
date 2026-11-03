@@ -43,10 +43,8 @@ import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 
 import org.openflexo.fme.FMEModule;
-import org.openflexo.fme.controller.editor.FreeModelDiagramEditor;
 import org.openflexo.fme.model.FMEFreeModel;
 import org.openflexo.fme.model.FreeModellingProjectNature;
-import org.openflexo.fme.view.FMEDiagramFreeModelModuleView;
 import org.openflexo.foundation.FlexoProject;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.FlexoConceptInstanceRole;
@@ -88,13 +86,6 @@ public class FMEFIBController extends FlexoFIBController {
 	@Override
 	public FMEController getFlexoController() {
 		return (FMEController) super.getFlexoController();
-	}
-
-	public FreeModelDiagramEditor getDiagramEditor() {
-		if (getFlexoController().getCurrentModuleView() instanceof FMEDiagramFreeModelModuleView) {
-			return ((FMEDiagramFreeModelModuleView) getFlexoController().getCurrentModuleView()).getEditor();
-		}
-		return null;
 	}
 
 	public FreeModellingProjectNature getFreeModellingProjectNature() {

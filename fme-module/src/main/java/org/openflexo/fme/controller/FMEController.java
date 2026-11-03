@@ -44,10 +44,10 @@ import javax.swing.ImageIcon;
 
 import org.openflexo.fme.FMEIconLibrary;
 import org.openflexo.fme.FMEModule;
+import org.openflexo.fme.FMETechnologyExtension;
+import org.openflexo.fme.FMETechnologyExtensions;
 import org.openflexo.fme.controller.action.FMEControllerActionInitializer;
 import org.openflexo.fme.model.FMEConceptualModel;
-import org.openflexo.fme.model.FMEDiagramFreeModel;
-import org.openflexo.fme.model.FMEDiagramFreeModelInstance;
 import org.openflexo.fme.model.FMEFreeModel;
 import org.openflexo.fme.model.FMEFreeModelInstance;
 import org.openflexo.fme.model.FMESampleData;
@@ -211,11 +211,11 @@ public class FMEController extends FlexoController {
 		else if (object instanceof FMESampleData) {
 			return FMLRTIconLibrary.VIRTUAL_MODEL_INSTANCE_ICON;
 		}
-		else if (object instanceof FMEDiagramFreeModelInstance) {
-			return FMEIconLibrary.DIAGRAM_ICON;
-		}
-		else if (object instanceof FMEDiagramFreeModel) {
-			return IconFactory.getImageIcon(FMEIconLibrary.DIAGRAM_ICON, FMEIconLibrary.FME_MARKER);
+		for (FMETechnologyExtension extension : FMETechnologyExtensions.getExtensions()) {
+			ImageIcon returned = extension.getIconForObject(object);
+			if (returned != null) {
+				return returned;
+			}
 		}
 		return super.iconForObject(object);
 	}

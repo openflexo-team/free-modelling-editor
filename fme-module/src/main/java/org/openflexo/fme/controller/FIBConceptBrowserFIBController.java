@@ -55,6 +55,8 @@ public class FIBConceptBrowserFIBController extends FMEFIBController {
 
 	private ViewMode viewMode = ViewMode.Hierarchical;
 
+	private String conceptFilter = "*";
+
 	private final ViewModeButtons viewModeButtons = new ViewModeButtons(this, "FlatIcon", "HierarchicalIcon", "EmbeddingIcon");
 
 	public FIBConceptBrowserFIBController(FIBComponent component, GinaViewFactory<?> viewFactory) {
@@ -89,6 +91,18 @@ public class FIBConceptBrowserFIBController extends FMEFIBController {
 			this.viewMode = viewMode;
 			getPropertyChangeSupport().firePropertyChange("viewMode", oldValue, viewMode);
 			viewModeButtons.select(viewMode);
+		}
+	}
+
+	public String getConceptFilter() {
+		return conceptFilter;
+	}
+
+	public void setConceptFilter(String conceptFilter) {
+		if ((conceptFilter == null && this.conceptFilter != null) || (conceptFilter != null && !conceptFilter.equals(this.conceptFilter))) {
+			String oldValue = this.conceptFilter;
+			this.conceptFilter = conceptFilter;
+			getPropertyChangeSupport().firePropertyChange("conceptFilter", oldValue, conceptFilter);
 		}
 	}
 

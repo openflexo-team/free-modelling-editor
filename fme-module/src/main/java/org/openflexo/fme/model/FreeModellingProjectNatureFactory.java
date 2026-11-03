@@ -38,8 +38,11 @@
 
 package org.openflexo.fme.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
+import org.openflexo.fme.FMETechnologyExtensions;
 import org.openflexo.fme.model.action.GivesFMENature;
 import org.openflexo.foundation.FlexoEditor;
 import org.openflexo.foundation.FlexoProject;
@@ -66,6 +69,16 @@ public class FreeModellingProjectNatureFactory extends DefaultProjectNatureFacto
 		givesFMENature.doAction();
 
 		return givesFMENature.getNewNature();
+	}
+
+	/**
+	 * The nature, and the free models and free model instances brought by the technology extensions, which the nature does not import
+	 */
+	@Override
+	public List<Class<?>> getProjectNatureSpecificClasses() {
+		List<Class<?>> returned = new ArrayList<>(super.getProjectNatureSpecificClasses());
+		returned.addAll(FMETechnologyExtensions.getModelEntities());
+		return returned;
 	}
 
 }

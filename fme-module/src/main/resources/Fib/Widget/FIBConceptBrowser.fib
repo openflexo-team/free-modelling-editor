@@ -19,7 +19,7 @@
           <Image localize="true" imageFile="../../Icons/HierarchicalModel_20x20.png" imageWidth="80" imageHeight="46" sizeAdjustment="OriginalSize" tooltipText="hierarchical_mode" constraints="flow()" name="HierarchicalIcon" clickAction="controller.setViewModeToHierarchical()" />
           <Image localize="true" imageFile="../../Icons/Embedding_20x20.png" imageWidth="80" imageHeight="46" sizeAdjustment="OriginalSize" tooltipText="embedding_mode" constraints="flow()" name="EmbeddingIcon" clickAction="controller.setViewModeToEmbedding()" />
         </Panel>
-        <TextField data="controller.diagramEditor.conceptFilter" constraints="border(location=center)" name="finder" localize="true" manageDynamicModel="true" columns="7" text="TextField" />
+        <TextField data="controller.conceptFilter" constraints="border(location=center)" name="finder" localize="true" manageDynamicModel="true" columns="7" text="TextField" />
       </Panel>
       <Panel layout="twocols" darkLevel="0" constraints="border(location=center)" name="BrowsersPanel">
       <Browser root="data.freeModel.conceptualModel" iteratorClassName="org.openflexo.foundation.FlexoObject" visibleRowCount="5" rowHeight="18" boundToSelectionManager="true" selectionMode="DiscontiguousTreeSelection" showFooter="true" rootVisible="true" showRootsHandle="true" localize="true" enable="" manageDynamicModel="true" name="embeddingConceptsBrowser" visible="controller.viewMode.name==&quot;Embedding&quot;" index="2" constraints="twocols(expandHorizontally=true;expandVertically=true;location=center)">

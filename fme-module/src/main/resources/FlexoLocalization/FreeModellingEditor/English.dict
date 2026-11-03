@@ -117,3 +117,6 @@ relationship_ends_have_no_common_type=No end for the super concept: the concepts
 embedding_mode=Embedding mode
 flat_mode=Flat mode
 hierarchical_mode=Hierarchical mode
+choose_technology=Choose the technology of the free model
+diagram=Diagram
+free_model=Free model

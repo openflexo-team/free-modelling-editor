@@ -57,18 +57,16 @@ import org.openflexo.foundation.nature.VirtualModelInstanceBasedNatureObject;
 import org.openflexo.localization.FlexoLocalization;
 import org.openflexo.logging.FlexoLogger;
 import org.openflexo.pamela.annotations.Getter;
-import org.openflexo.pamela.annotations.Import;
-import org.openflexo.pamela.annotations.Imports;
 import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.pamela.annotations.PropertyIdentifier;
 import org.openflexo.pamela.annotations.Setter;
-import org.openflexo.technologyadapter.diagram.fml.FMLControlledDiagramVirtualModelInstanceNature;
 
 /**
  * Represents a {@link FMEFreeModelInstance} in the FreeModellingEditor<br>
  * 
- * The base of a {@link FMEFreeModelInstance} is a {@link FMLRTVirtualModelInstance} with the specific
- * {@link FMLControlledDiagramVirtualModelInstanceNature}<br>
+ * The base of a {@link FMEFreeModelInstance} is a {@link FMLRTVirtualModelInstance}, federating the representation of its technology
+ * (a diagram for instance)<br>
+ * Concrete free model instances are brought by the {@link org.openflexo.fme.FMETechnologyExtension}s<br>
  * From a technical point of view, a {@link FMEFreeModelInstance} is just a wrapper above a {@link FMLRTVirtualModelInstance} located in
  * project's freeModellingView
  * 
@@ -76,7 +74,6 @@ import org.openflexo.technologyadapter.diagram.fml.FMLControlledDiagramVirtualMo
  * 
  */
 @ModelEntity(isAbstract = true)
-@Imports({ @Import(FMEDiagramFreeModelInstance.class) })
 public interface FMEFreeModelInstance extends VirtualModelInstanceBasedNatureObject<FreeModellingProjectNature>, PropertyChangeListener {
 
 	@PropertyIdentifier(type = FMEFreeModel.class)

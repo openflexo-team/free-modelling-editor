@@ -48,13 +48,13 @@ import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.action.FlexoAction;
 import org.openflexo.foundation.fml.DeletionScheme;
 import org.openflexo.foundation.fml.FlexoConcept;
+import org.openflexo.foundation.fml.FlexoConceptInstanceRole;
 import org.openflexo.foundation.fml.FlexoConceptInstanceType;
+import org.openflexo.foundation.fml.FlexoProperty;
 import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.Visibility;
 import org.openflexo.foundation.fml.action.CreateEditionAction;
 import org.openflexo.foundation.fml.action.CreateFlexoBehaviour;
-import org.openflexo.foundation.fml.FlexoConceptInstanceRole;
-import org.openflexo.foundation.fml.FlexoProperty;
 import org.openflexo.foundation.fml.action.CreateFlexoConcept;
 import org.openflexo.foundation.fml.action.CreateFlexoConceptInstanceRole;
 import org.openflexo.foundation.fml.action.CreatePrimitiveRole;
@@ -70,8 +70,6 @@ import org.openflexo.pamela.annotations.DeserializationFinalizer;
 import org.openflexo.pamela.annotations.Embedded;
 import org.openflexo.pamela.annotations.Getter;
 import org.openflexo.pamela.annotations.Getter.Cardinality;
-import org.openflexo.pamela.annotations.Import;
-import org.openflexo.pamela.annotations.Imports;
 import org.openflexo.pamela.annotations.ModelEntity;
 import org.openflexo.pamela.annotations.PropertyIdentifier;
 import org.openflexo.pamela.annotations.Remover;
@@ -80,7 +78,7 @@ import org.openflexo.pamela.annotations.XMLElement;
 
 /**
  * Represents a {@link FMEFreeModel} in the FreeModellingEditor<br>
- * This is an abstract concept.
+ * This is an abstract concept: concrete free models are brought by the {@link org.openflexo.fme.FMETechnologyExtension}s.
  * 
  * The base of a {@link FMEFreeModel} is a {@link VirtualModel} which aims to federate the {@link FMEConceptualModel} with a given
  * representation to elicitate new or existing concepts.
@@ -90,7 +88,6 @@ import org.openflexo.pamela.annotations.XMLElement;
  * 
  */
 @ModelEntity(isAbstract = true)
-@Imports({ @Import(FMEDiagramFreeModel.class) })
 public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellingProjectNature> {
 
 	public static final String NONE_FLEXO_CONCEPT_NAME = "NoneGR";

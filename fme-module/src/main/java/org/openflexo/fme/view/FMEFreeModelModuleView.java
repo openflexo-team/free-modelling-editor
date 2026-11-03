@@ -23,9 +23,10 @@ package org.openflexo.fme.view;
 import javax.swing.ImageIcon;
 
 import org.openflexo.fme.FMEIconLibrary;
+import org.openflexo.fme.FMETechnologyExtension;
+import org.openflexo.fme.FMETechnologyExtensions;
 import org.openflexo.fme.model.FMEFreeModel;
 import org.openflexo.fme.model.FMEFreeModelInstance;
-import org.openflexo.fme.model.action.InstantiateFMEDiagramFreeModel;
 import org.openflexo.gina.model.FIBComponent;
 import org.openflexo.gina.view.GinaViewFactory;
 import org.openflexo.icon.IconFactory;
@@ -65,13 +66,22 @@ public class FMEFreeModelModuleView extends FIBModuleView<FMEFreeModel> {
 			super(component, viewFactory, controller);
 		}
 
-		public void instantiateNewDiagramFreeModel(FMEFreeModel freeModel) {
-			InstantiateFMEDiagramFreeModel action = InstantiateFMEDiagramFreeModel.actionType.makeNewAction(freeModel, null, getEditor());
-			action.doAction();
+		/**
+		 * Creates a new instance of supplied free model
+		 */
+		public void instantiateFreeModel(FMEFreeModel freeModel) {
+			FMETechnologyExtension extension = FMETechnologyExtensions.getExtension(freeModel);
+			if (extension != null) {
+				extension.getInstantiateFreeModelActionType().makeNewAction(freeModel, null, getEditor()).doAction();
+			}
 		}
 
 		public ImageIcon getFreeModelIcon() {
-			return IconFactory.getImageIcon(FMEIconLibrary.DIAGRAM_BIG_ICON, FMEIconLibrary.FME_BIG_MARKER);
+			FMETechnologyExtension extension = getDataObject() instanceof FMEFreeModel
+					? FMETechnologyExtensions.getExtension((FMEFreeModel) getDataObject())
+					: null;
+			return IconFactory.getImageIcon(extension != null ? extension.getBigIcon() : FMEIconLibrary.FME_BIG_ICON,
+					FMEIconLibrary.FME_BIG_MARKER);
 		}
 
 		public void selectFreeModelInstance(FMEFreeModelInstance modelInstance) {

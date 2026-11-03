@@ -20,13 +20,16 @@
 
 package org.openflexo.fme.view;
 
+import java.util.List;
+
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 
 import org.openflexo.fme.FMEIconLibrary;
+import org.openflexo.fme.FMETechnologyExtension;
+import org.openflexo.fme.FMETechnologyExtensions;
 import org.openflexo.fme.model.FMEFreeModel;
 import org.openflexo.fme.model.FreeModellingProjectNature;
-import org.openflexo.fme.model.action.CreateFMEDiagramFreeModel;
-import org.openflexo.fme.model.action.InstantiateFMEDiagramFreeModel;
 import org.openflexo.gina.model.FIBComponent;
 import org.openflexo.gina.view.GinaViewFactory;
 import org.openflexo.icon.IconFactory;
@@ -34,6 +37,7 @@ import org.openflexo.icon.IconLibrary;
 import org.openflexo.rm.Resource;
 import org.openflexo.rm.ResourceLocator;
 import org.openflexo.view.FIBModuleView;
+import org.openflexo.view.FlexoFrame;
 import org.openflexo.view.controller.FlexoController;
 import org.openflexo.view.controller.FlexoFIBController;
 import org.openflexo.view.controller.model.FlexoPerspective;
@@ -67,20 +71,57 @@ public class FMEProjectNatureModuleView extends FIBModuleView<FreeModellingProje
 			super(component, viewFactory, controller);
 		}
 
-		public void createNewDiagramFreeModel(FreeModellingProjectNature projectNature) {
-			CreateFMEDiagramFreeModel action = CreateFMEDiagramFreeModel.actionType.makeNewAction(projectNature, null, getEditor());
-			action.doAction();
+		/**
+		 * Creates a new free model, of the technology the user chooses when several are available
+		 */
+		public void createNewFreeModel(FreeModellingProjectNature projectNature) {
+			FMETechnologyExtension extension = chooseExtension();
+			if (extension != null) {
+				extension.getCreateFreeModelActionType().makeNewAction(projectNature, null, getEditor()).doAction();
+			}
 		}
 
-		public void createNewDiagram(FreeModellingProjectNature projectNature) {
-			InstantiateFMEDiagramFreeModel action = InstantiateFMEDiagramFreeModel.actionType.makeNewAction(projectNature, null,
-					getEditor());
-			action.doAction();
+		/**
+		 * Creates a new free model instance, of the technology the user chooses when several are available, choosing or creating its free
+		 * model
+		 */
+		public void createNewFreeModelInstance(FreeModellingProjectNature projectNature) {
+			FMETechnologyExtension extension = chooseExtension();
+			if (extension != null) {
+				extension.getInstantiateFreeModelActionType().makeNewAction(projectNature, null, getEditor()).doAction();
+			}
 		}
 
-		public void instantiateNewDiagram(FMEFreeModel freeModel) {
-			InstantiateFMEDiagramFreeModel action = InstantiateFMEDiagramFreeModel.actionType.makeNewAction(freeModel, null, getEditor());
-			action.doAction();
+		/**
+		 * Creates a new instance of supplied free model
+		 */
+		public void instantiateFreeModel(FMEFreeModel freeModel) {
+			FMETechnologyExtension extension = FMETechnologyExtensions.getExtension(freeModel);
+			if (extension != null) {
+				extension.getInstantiateFreeModelActionType().makeNewAction(freeModel, null, getEditor()).doAction();
+			}
+		}
+
+		/**
+		 * The technology extension to use: the only one when there is only one, the one the user chooses otherwise (null if cancelled)
+		 */
+		private FMETechnologyExtension chooseExtension() {
+			List<FMETechnologyExtension> extensions = FMETechnologyExtensions.getExtensions();
+			if (extensions.size() <= 1) {
+				return extensions.isEmpty() ? null : extensions.get(0);
+			}
+			String[] names = new String[extensions.size()];
+			for (int i = 0; i < names.length; i++) {
+				names[i] = getFlexoController().getModuleLocales().localizedForKey(extensions.get(i).getIdentifier());
+			}
+			Object chosen = JOptionPane.showInputDialog(FlexoFrame.getActiveFrame(), getFlexoController().getModuleLocales().localizedForKey("choose_technology"),
+					getFlexoController().getModuleLocales().localizedForKey("free_model"), JOptionPane.QUESTION_MESSAGE, null, names, names[0]);
+			for (int i = 0; i < names.length; i++) {
+				if (names[i].equals(chosen)) {
+					return extensions.get(i);
+				}
+			}
+			return null;
 		}
 
 		public ImageIcon getProjectIcon() {

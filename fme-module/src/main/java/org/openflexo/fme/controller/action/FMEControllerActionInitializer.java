@@ -40,6 +40,8 @@ package org.openflexo.fme.controller.action;
 
 import java.util.logging.Logger;
 
+import org.openflexo.fme.FMETechnologyExtension;
+import org.openflexo.fme.FMETechnologyExtensions;
 import org.openflexo.fme.controller.FMEController;
 import org.openflexo.selection.SelectionManager;
 import org.openflexo.view.controller.ControllerActionInitializer;
@@ -72,25 +74,12 @@ public class FMEControllerActionInitializer extends ControllerActionInitializer 
 
 		new GivesFMENatureInitializer(this);
 
-		new CreateFMEDiagramFreeModelInitializer(this);
-		new InstantiateFMEDiagramFreeModelInitializer(this);
-		// new CreateFreeModelFromPPTInitializer(this);
+		for (FMETechnologyExtension extension : FMETechnologyExtensions.getExtensions()) {
+			extension.initializeActions(this);
+		}
 
-		new CreateFMEPPTFreeModelInitializer(this);
-
-		new DropFreeShapeInitializer(this);
 		new CreateNewConceptInitializer(this);
 		new CreateNewRelationalConceptInitializer(this);
-		new CreateNewConceptFromNoneInitializer(this);
-		new DeclareInstanceOfExistingConceptInitializer(this);
-		new DisconnectInstanceFromConceptInitializer(this);
-		// new CreateFreeModelDiagramInitializer(this);
-		// new CreateFreeModelDiagramFromPPTInitializer(this);
-
-		// Actions applied on Diagram Elements(not currently associated with flexo concept)
-		new CreateNewConceptFromDiagramElementInitializer(this);
-		new DeclareInstanceOfExistingConceptFromDiagramElementInitializer(this);
-		new CreateNewFMEPropertyFromDiagramConnectorInitializer(this);
 
 		new DeleteFreeModelInitializer(this);
 		new DeleteFreeModelInstanceInitializer(this);

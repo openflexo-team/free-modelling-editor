@@ -41,9 +41,8 @@ package org.openflexo.fme.model.action;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.openflexo.fme.model.FMEDiagramFreeModel;
-import org.openflexo.fme.model.FMEDiagramFreeModelInstance;
 import org.openflexo.fme.model.FMEFreeModel;
+import org.openflexo.fme.model.FMEFreeModelInstance;
 import org.openflexo.fme.model.FreeModellingProjectNature;
 import org.openflexo.foundation.FlexoEditor;
 import org.openflexo.foundation.FlexoObject;
@@ -55,14 +54,22 @@ import org.openflexo.foundation.fml.rt.FMLRTVirtualModelInstance;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 
 /**
- * Abstract action is used to identify an instance of NoneGR as a conceptual instance<br>
+ * Abstract action focused on a {@link FlexoConceptInstance} of a free model instance (an instance of one of its GR concepts, the NoneGR
+ * for instance), giving access to the free model and the free model instance it belongs to<br>
  * 
- * Focused object is here a {@link FlexoConceptInstance} of the NoneGR
+ * The type parameters are the kinds of free model and free model instance of the technology
+ * 
+ * @param <A>
+ *            type of the action
+ * @param <FM>
+ *            type of the free model
+ * @param <FMI>
+ *            type of the free model instance
  * 
  * @author sylvain
  * 
  */
-public abstract class AbstractInstantiateConcept<A extends AbstractInstantiateConcept<A>>
+public abstract class AbstractInstantiateConcept<A extends AbstractInstantiateConcept<A, FM, FMI>, FM extends FMEFreeModel, FMI extends FMEFreeModelInstance>
 		extends FMEAction<A, FlexoConceptInstance, FlexoObject> {
 
 	private static final Logger logger = Logger.getLogger(AbstractInstantiateConcept.class.getPackage().getName());
@@ -96,18 +103,20 @@ public abstract class AbstractInstantiateConcept<A extends AbstractInstantiateCo
 		return project.getNature(FreeModellingProjectNature.class);
 	}
 
-	public FMEDiagramFreeModel getFMEFreeModel() {
+	@SuppressWarnings("unchecked")
+	public FM getFMEFreeModel() {
 		FreeModellingProjectNature nature = getFreeModellingProjectNature();
 		if (nature != null) {
 			FMLRTVirtualModelInstance vmi = (FMLRTVirtualModelInstance) getFocusedObject().getVirtualModelInstance();
 			VirtualModel vm = vmi.getVirtualModel();
-			return (FMEDiagramFreeModel) nature.getFreeModel(vm.getName());
+			return (FM) nature.getFreeModel(vm.getName());
 		}
 		logger.warning("Sorry, project does not have FreeModellingProjectNature");
 		return null;
 	}
 
-	public FMEDiagramFreeModelInstance getFMEFreeModelInstance() {
+	@SuppressWarnings("unchecked")
+	public FMI getFMEFreeModelInstance() {
 		FreeModellingProjectNature nature = getFreeModellingProjectNature();
 		if (nature == null) {
 			logger.warning("Sorry, project does not have FreeModellingProjectNature");
@@ -119,7 +128,7 @@ public abstract class AbstractInstantiateConcept<A extends AbstractInstantiateCo
 			return null;
 		}
 		FMLRTVirtualModelInstance vmi = (FMLRTVirtualModelInstance) getFocusedObject().getVirtualModelInstance();
-		return (FMEDiagramFreeModelInstance) freeModel.getFreeModelInstance(vmi.getName());
+		return (FMI) freeModel.getFreeModelInstance(vmi.getName());
 	}
 
 }
