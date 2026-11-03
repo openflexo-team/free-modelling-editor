@@ -45,6 +45,7 @@ import org.openflexo.diana.ShapeGraphicalRepresentation;
 import org.openflexo.fme.diagram.controller.editor.DynamicPalette.GraphicalRepresentationSet;
 import org.openflexo.fme.diagram.model.FMEDiagramFreeModel;
 import org.openflexo.fme.diagram.model.FMEDiagramFreeModelInstance;
+import org.openflexo.fme.diagram.model.action.DeclareInstanceOfExistingConcept.GRStrategy;
 import org.openflexo.fme.model.FMEFreeModel;
 import org.openflexo.foundation.FlexoEditor;
 import org.openflexo.foundation.FlexoException;
@@ -75,10 +76,6 @@ public class DeclareInstanceOfExistingConceptFromDiagramElement
 		extends AbstractInstantiateConceptFromDiagramElement<DeclareInstanceOfExistingConceptFromDiagramElement> {
 
 	private static final Logger logger = Logger.getLogger(DeclareInstanceOfExistingConceptFromDiagramElement.class.getPackage().getName());
-
-	public static enum GRStrategy {
-		GetConceptShape, RedefineShapeOfConcept, KeepShape
-	}
 
 	public static FlexoActionFactory<DeclareInstanceOfExistingConceptFromDiagramElement, DiagramElement<?>, FlexoObject> actionType = new FlexoActionFactory<DeclareInstanceOfExistingConceptFromDiagramElement, DiagramElement<?>, FlexoObject>(
 			"declare_instance_of_existing_concept_from_diagram_element", FlexoActionFactory.defaultGroup,

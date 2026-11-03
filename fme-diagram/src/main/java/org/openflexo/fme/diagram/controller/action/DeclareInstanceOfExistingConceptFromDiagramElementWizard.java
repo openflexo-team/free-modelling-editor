@@ -46,7 +46,7 @@ import org.openflexo.ApplicationContext;
 import org.openflexo.components.wizard.FlexoActionWizard;
 import org.openflexo.components.wizard.WizardStep;
 import org.openflexo.fme.diagram.model.action.DeclareInstanceOfExistingConceptFromDiagramElement;
-import org.openflexo.fme.diagram.model.action.DeclareInstanceOfExistingConceptFromDiagramElement.GRStrategy;
+import org.openflexo.fme.diagram.model.action.DeclareInstanceOfExistingConcept.GRStrategy;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.FlexoConceptInstanceType;
 import org.openflexo.foundation.fml.VirtualModel;

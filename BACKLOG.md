@@ -102,6 +102,7 @@ moves between an element and its concept (the `GRStrategy` of the Diagram action
 **Next candidates.**
 - `DeclareInstanceOfExistingConceptFromDiagramElement` duplicates most of the declare routine, starting from a diagram
   element instead of a NoneGR instance: the "from a plain element" variant is the one PowerPoint needs (FME-F-2), so
-  the template should also accept an element without GR instance yet.
+  the template should also accept an element without GR instance yet. Doing so would also fix `FME-D-2` (see
+  `KNOWN_DEFECTS.md`; `FME-D-1`, the duplicated `GRStrategy` enum, is already fixed).
 - `CreateNewConceptFromNoneConcept` / `CreateNewConceptFromDiagramElement`, then `DisconnectInstanceFromConcept`, on
   the same pattern.
