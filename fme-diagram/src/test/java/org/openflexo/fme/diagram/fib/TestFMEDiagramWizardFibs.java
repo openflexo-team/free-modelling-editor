@@ -46,11 +46,6 @@ import org.openflexo.rm.ResourceLocator;
 public class TestFMEDiagramWizardFibs extends GenericFIBTestCase {
 
 	@Test
-	public void testChooseDiagramFreeModel() {
-		validateFIB("Fib/Wizard/ChooseDiagramFreeModel.fib");
-	}
-
-	@Test
 	public void testDescribeDiagramFreeModel() {
 		validateFIB("Fib/Wizard/DescribeDiagramFreeModel.fib");
 	}

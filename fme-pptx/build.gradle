@@ -1,0 +1,20 @@
+dependencies {
+  implementation project(":fme-module")
+
+  // openflexo dep
+  implementation flexoFoundation()
+  implementation flexoUi()
+  implementation fmlTechnologyAdapterUi()
+  implementation fmlRtTechnologyAdapterUi()
+  implementation powerpointConnector()
+  implementation powerpointConnectorUi()
+  // external dep
+  // testing dep
+  testImplementation testUtils()
+  testImplementation ginaTest()
+  testImplementation flexoFoundationTest()
+  testImplementation flexoUiTest()
+  testRuntimeOnly flexoTestResources()
+  // The sample decks
+  testRuntimeOnly openflexoModule("pptx-ta-test-rc")
+}

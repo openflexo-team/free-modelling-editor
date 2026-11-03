@@ -125,4 +125,14 @@ public class TestFMEWizardFibs extends GenericFIBTestCase {
 		validateFIB("Fib/Wizard/ConfigureNewFMEPropertyFromLink.fib");
 	}
 
+	@Test
+	public void testChooseFreeModel() {
+		validateFIB("Fib/Wizard/ChooseFreeModel.fib");
+	}
+
+	@Test
+	public void testDescribeFreeModel() {
+		validateFIB("Fib/Wizard/DescribeFreeModel.fib");
+	}
+
 }

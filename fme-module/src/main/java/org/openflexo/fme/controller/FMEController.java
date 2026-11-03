@@ -65,6 +65,7 @@ import org.openflexo.icon.FMLIconLibrary;
 import org.openflexo.icon.FMLRTIconLibrary;
 import org.openflexo.icon.IconFactory;
 import org.openflexo.icon.IconLibrary;
+import org.openflexo.inspector.ModuleInspectorController;
 import org.openflexo.module.FlexoModule.WelcomePanel;
 import org.openflexo.selection.MouseSelectionManager;
 import org.openflexo.view.FlexoMainPane;
@@ -85,11 +86,49 @@ public class FMEController extends FlexoController {
 
 	public FMEPerspective FREE_MODELLING_PERSPECTIVE;
 
+	private ModuleInspectorController fmeInspectorController;
+
 	/**
 	 * Default constructor
 	 */
 	public FMEController(FMEModule module) {
 		super(module);
+	}
+
+	/**
+	 * The inspector of the FreeModellingEditor shows what the extensions say for a selected object
+	 * ({@link FMETechnologyExtension#getInspectedObject(Object)}): the instance of the concept a selected PowerPoint shape stands for, for
+	 * instance
+	 */
+	@Override
+	public ModuleInspectorController getModuleInspectorController() {
+		if (fmeInspectorController == null) {
+			fmeInspectorController = new ModuleInspectorController(this) {
+				@Override
+				public boolean inspectObject(Object object) {
+					return super.inspectObject(inspectedObjectFor(object));
+				}
+			};
+		}
+		return fmeInspectorController;
+	}
+
+	private static Object inspectedObjectFor(Object selectedObject) {
+		for (FMETechnologyExtension extension : FMETechnologyExtensions.getExtensions()) {
+			Object inspected = extension.getInspectedObject(selectedObject);
+			if (inspected != selectedObject) {
+				return inspected;
+			}
+		}
+		return selectedObject;
+	}
+
+	@Override
+	public void dispose() {
+		super.dispose();
+		if (fmeInspectorController != null) {
+			fmeInspectorController.delete();
+		}
 	}
 
 	@Override

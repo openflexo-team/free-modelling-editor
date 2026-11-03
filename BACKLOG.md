@@ -43,8 +43,10 @@ directly. Adding another technology meant editing all of them.
 - The localized keys of the Diagram extension still live in the dictionaries of the core.
 - The inspector of the represented concept is one Swing component: with several extensions, it belongs to the inspector
   group of the last one displayed (`FMEPerspective.getInspectorPanelGroup`).
-- The nature panel still shows the labels "New diagram", "Import ppt slide" (disabled) and "Import excel" (no action):
-  to revisit with the screens of FME-F-2.
+- Done (2026-11-03, with FME-F-2): the nature panel shows one button per technology, generated from the extensions (a
+  GINA `Iteration`), labelled with the instantiation action of the technology ("New diagram", "Annotate a PowerPoint
+  slideshow"); the dead buttons "Import ppt slide" and "Import excel" are gone. The button of the free model panel takes
+  the label of the technology of its free model.
 
 ### FME-F-2 — PowerPoint extension (`fme-pptx`)  ·  `IN PROGRESS`
 
@@ -67,13 +69,39 @@ existing concepts of the conceptual model, without modifying the `.pptx`.
   PowerPoint inspector).
 - A concept instance can be represented both in a diagram and in a deck (the sample data is shared).
 
-**Plan.** Lot 1, the generic actions in the core and Diagram rebuilt on them (FME-F-3 step 2): done. Lot 2: the `fme-pptx`
-module (free model, instance, actions on a shape, view). Lot 3: the actions on glued connectors.
+**Plan.** Lot 1, the generic actions in the core and Diagram rebuilt on them (FME-F-3 step 2): done. Lot 2, the `fme-pptx`
+module: done. Lot 3: the actions on glued connectors.
+
+**Done (lot 2, 2026-11-03).**
+- Module `fme-pptx` (`org.openflexo.fme.pptx`), extension `PowerpointFMEExtension`, in the products freemodelling and
+  openflexo-designer.
+- `FMEPowerpointFreeModel`: its virtual model has a `BasicPowerpointModelSlot` (`slideshow`), connected by the creation scheme
+  to the slideshow given as parameter; each GR concept has a `PowerpointShapeRole` (`shape`). `FMEPowerpointFreeModelInstance`
+  annotates a slideshow chosen among those of the resource centers, referenced where it is.
+- Actions on a shape: new concept, instance of an existing concept (new or existing instance), disconnect, on the core
+  templates. `PowerpointAnnotations` registers the connected free model instances, so that the actions, which only know the
+  shape, are enabled for a shape of an annotated slideshow that carries no annotation yet (declare, new concept) or one
+  (disconnect). Disconnecting deletes the instance standing for the shape without its deletion scheme, after detaching the
+  shape and the conceptual instance.
+- View `FMEPowerpointFreeModelModuleView`: the slideshow view of pptx-ta-ui with `ConceptDecorationProvider` (border of the
+  color of the concept, by its rank in the conceptual model, and a badge with its name); the right column shows the browser
+  of the shown slide and the inspector of the represented concept. An instance chosen in a browser of the left column brings
+  the slide of its shape (the shape is not selected).
+- Core: the inspector of the FreeModellingEditor shows what the extension answers for a selected object
+  (`FMETechnologyExtension.getInspectedObject`): the instance a shape stands for, nothing for a shape that stands for none.
+  The steps "choose the free model" and "describe the free model" of the wizards are generic components of the core
+  (`ChooseFreeModel.fib`, `DescribeFreeModel.fib`), Diagram uses them too.
+- Checked by `TestPowerpointFreeModel` on CycloCity (pptx-ta-test-rc): creation, instantiation, new concept, new and
+  existing instance, overlay and inspected object, disconnection with and without orphan, save and reload (the annotations
+  point to the same shapes, the slideshow resource is never modified; the bytes of the deck are compared only when it is a
+  file, not inside a jar), plus the extension and the wizard component.
+
+**Not tried in the running application.** The contextual menu on a shape, the wizards, the overlay, the columns.
 
 **Prerequisites in openflexo-pptx.** Shape identity that survives a reload (PPTX-F-5), the type of `PowerpointShapeRole`
-(PPTX-D-4), and a contextual menu and decoration hooks in the slideshow view (PPTX-F-6): done. Still to do there: a
-`PowerpointShapeRole` whose actor is never deleted with its instance, and a slideshow view letting the embedding module place
-the browser of the slide.
+(PPTX-D-4), and a contextual menu and decoration hooks in the slideshow view (PPTX-F-6): done; a `PowerpointShapeRole` whose
+actor is never deleted nor cloned with its instance, and a slideshow view letting the embedding module place the browser of
+the slide: done with lot 2.
 
 ### FME-F-3 — A generic layer of free-modelling actions  ·  `IN PROGRESS`
 

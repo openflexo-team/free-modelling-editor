@@ -82,11 +82,27 @@ public class FMEProjectNatureModuleView extends FIBModuleView<FreeModellingProje
 		}
 
 		/**
-		 * Creates a new free model instance, of the technology the user chooses when several are available, choosing or creating its free
-		 * model
+		 * The technologies available, one button each
 		 */
-		public void createNewFreeModelInstance(FreeModellingProjectNature projectNature) {
-			FMETechnologyExtension extension = chooseExtension();
+		public List<FMETechnologyExtension> getExtensions() {
+			return FMETechnologyExtensions.getExtensions();
+		}
+
+		/**
+		 * The label of the button creating a new free model instance of supplied technology: the name of its action
+		 */
+		public String newFreeModelInstanceLabel(FMETechnologyExtension extension) {
+			if (extension == null) {
+				return null;
+			}
+			return getFlexoController().getModuleLocales()
+					.localizedForKey(extension.getInstantiateFreeModelActionType().getUnlocalizedName());
+		}
+
+		/**
+		 * Creates a new free model instance of supplied technology, choosing or creating its free model
+		 */
+		public void createNewFreeModelInstance(FreeModellingProjectNature projectNature, FMETechnologyExtension extension) {
 			if (extension != null) {
 				extension.getInstantiateFreeModelActionType().makeNewAction(projectNature, null, getEditor()).doAction();
 			}

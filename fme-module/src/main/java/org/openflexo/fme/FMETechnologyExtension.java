@@ -137,6 +137,15 @@ public interface FMETechnologyExtension {
 	 */
 	public FlexoCollabsiblePanelGroup getInspectorPanelGroup(FlexoController controller);
 
+	/**
+	 * What the inspector of the represented concept shows when supplied object is selected: by default the object itself. A technology
+	 * whose elements are not instances of concepts themselves (a PowerPoint shape) answers the instance of the GR concept standing for the
+	 * element, or null when it stands for none; it answers supplied object for anything else.
+	 */
+	public default Object getInspectedObject(Object selectedObject) {
+		return selectedObject;
+	}
+
 	public default boolean handles(FMEFreeModel freeModel) {
 		return getFreeModelClass().isInstance(freeModel);
 	}

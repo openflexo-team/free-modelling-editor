@@ -93,7 +93,7 @@ public class InstantiateFMEDiagramFreeModelWizard
 	 * @author sylvain
 	 *
 	 */
-	@FIBPanel("Fib/Wizard/ChooseDiagramFreeModel.fib")
+	@FIBPanel("Fib/Wizard/ChooseFreeModel.fib")
 	public class ChooseDiagramFreeModel extends ChooseFreeModel {
 
 		@Override

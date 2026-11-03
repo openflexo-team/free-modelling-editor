@@ -122,6 +122,6 @@
 			key="step_description2" />
 	</LocalizedDictionary>
 	<FIBVariable id="39"
-		type="org.openflexo.fme.diagram.controller.action.InstantiateFMEDiagramFreeModelWizard$ChooseDiagramFreeModel"
+		type="org.openflexo.fme.controller.action.AbstractInstantiateFMEFreeModelWizard$ChooseFreeModel"
 		name="data" />
 </Panel>

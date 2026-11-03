@@ -84,6 +84,18 @@ public class FMEFreeModelModuleView extends FIBModuleView<FMEFreeModel> {
 					FMEIconLibrary.FME_BIG_MARKER);
 		}
 
+		/**
+		 * The label of the button instantiating supplied free model: the name of the instantiation action of its technology
+		 */
+		public String instantiateFreeModelLabel(FMEFreeModel freeModel) {
+			FMETechnologyExtension extension = freeModel != null ? FMETechnologyExtensions.getExtension(freeModel) : null;
+			if (extension == null) {
+				return null;
+			}
+			return getFlexoController().getModuleLocales()
+					.localizedForKey(extension.getInstantiateFreeModelActionType().getUnlocalizedName());
+		}
+
 		public void selectFreeModelInstance(FMEFreeModelInstance modelInstance) {
 			getFlexoController().selectAndFocusObject(modelInstance);
 		}
