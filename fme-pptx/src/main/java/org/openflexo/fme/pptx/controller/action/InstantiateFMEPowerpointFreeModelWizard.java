@@ -38,7 +38,7 @@
 package org.openflexo.fme.pptx.controller.action;
 
 import java.awt.Image;
-import java.util.List;
+import java.lang.reflect.Type;
 
 import org.openflexo.fme.controller.action.AbstractInstantiateFMEFreeModelWizard;
 import org.openflexo.fme.pptx.model.FMEPowerpointFreeModel;
@@ -46,7 +46,9 @@ import org.openflexo.fme.pptx.model.action.InstantiateFMEPowerpointFreeModel;
 import org.openflexo.gina.annotation.FIBPanel;
 import org.openflexo.icon.IconFactory;
 import org.openflexo.icon.IconLibrary;
+import org.openflexo.technologyadapter.powerpoint.PowerpointTechnologyAdapter;
 import org.openflexo.technologyadapter.powerpoint.gui.PowerpointIconLibrary;
+import org.openflexo.technologyadapter.powerpoint.model.PowerpointSlideshow;
 import org.openflexo.technologyadapter.powerpoint.rm.PowerpointSlideshowResource;
 import org.openflexo.view.controller.FlexoController;
 
@@ -119,8 +121,12 @@ public class InstantiateFMEPowerpointFreeModelWizard
 			return super.isValid();
 		}
 
-		public List<PowerpointSlideshowResource> getAvailableSlideshows() {
-			return getAction().getAvailableSlideshows();
+		public PowerpointTechnologyAdapter getPowerpointTechnologyAdapter() {
+			return getServiceManager().getTechnologyAdapterService().getTechnologyAdapter(PowerpointTechnologyAdapter.class);
+		}
+
+		public Type getSlideshowType() {
+			return PowerpointSlideshow.class;
 		}
 
 		public PowerpointSlideshowResource getSlideshowResource() {

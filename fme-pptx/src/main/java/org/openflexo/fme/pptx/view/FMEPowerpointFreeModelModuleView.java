@@ -57,13 +57,14 @@ import org.openflexo.selection.SelectionListener;
 import org.openflexo.selection.SelectionManager;
 import org.openflexo.swing.FlexoCollabsiblePanelGroup;
 import org.openflexo.technologyadapter.powerpoint.view.PowerpointSlideshowView;
+import org.openflexo.technologyadapter.powerpoint.view.PowerpointSlideshowView.ThumbnailsPosition;
 import org.openflexo.view.SelectionSynchronizedModuleView;
 import org.openflexo.view.controller.FlexoController;
 import org.openflexo.view.controller.model.FlexoPerspective;
 
 /**
- * The view of a free model instance annotating a slideshow: the slideshow view of pptx-ta-ui (the shown slide, the thumbnails on its
- * right) with the overlay of the concepts ({@link ConceptDecorationProvider}).<br>
+ * The view of a free model instance annotating a slideshow: the slideshow view of pptx-ta-ui (the shown slide, the thumbnails in a row
+ * below it) with the overlay of the concepts ({@link ConceptDecorationProvider}).<br>
  * The left column of the perspective is the one of every free model instance. The right column shows the browser of the shown slide on
  * top, and the inspector of the represented concept below.
  * 
@@ -86,7 +87,8 @@ public class FMEPowerpointFreeModelModuleView extends JPanel
 		this.freeModelInstance = freeModelInstance;
 		this.controller = controller;
 		this.perspective = perspective;
-		slideshowView = new PowerpointSlideshowView(freeModelInstance.getSlideshow(), controller, perspective);
+		// The thumbnails in a row below the slide leave the width to the slide, between the two columns of the perspective
+		slideshowView = new PowerpointSlideshowView(freeModelInstance.getSlideshow(), controller, perspective, ThumbnailsPosition.BOTTOM);
 		// The browser of the slide is in the right column
 		slideshowView.setInstallsBrowser(false);
 		decorations = new ConceptDecorationProvider(freeModelInstance);
@@ -149,6 +151,7 @@ public class FMEPowerpointFreeModelModuleView extends JPanel
 		perspective.setBottomRightView(getInspectorPanelGroup());
 		controller.getControllerModel().setRightViewVisible(true);
 		perspective.focusOnObject(freeModelInstance);
+		updateHighlights();
 		decorations.refresh();
 	}
 
@@ -180,6 +183,7 @@ public class FMEPowerpointFreeModelModuleView extends JPanel
 	 */
 	@Override
 	public void fireObjectSelected(FlexoObject object) {
+		updateHighlights();
 		if (object instanceof FlexoConceptInstance) {
 			Object element = freeModelInstance.getRepresentationElement((FlexoConceptInstance) object);
 			if (element instanceof FlexoObject) {
@@ -192,10 +196,12 @@ public class FMEPowerpointFreeModelModuleView extends JPanel
 
 	@Override
 	public void fireObjectDeselected(FlexoObject object) {
+		updateHighlights();
 	}
 
 	@Override
 	public void fireResetSelection() {
+		updateHighlights();
 	}
 
 	@Override
@@ -204,6 +210,14 @@ public class FMEPowerpointFreeModelModuleView extends JPanel
 
 	@Override
 	public void fireEndMultipleSelection() {
+		updateHighlights();
+	}
+
+	/**
+	 * The annotated shapes standing for what is selected are highlighted strongly, the others lightly
+	 */
+	private void updateHighlights() {
+		decorations.setSelection(getSelectionManager() != null ? getSelectionManager().getSelection() : null);
 	}
 
 	@Override

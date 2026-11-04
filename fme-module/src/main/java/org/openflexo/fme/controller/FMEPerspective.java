@@ -38,12 +38,14 @@
 
 package org.openflexo.fme.controller;
 
+import java.awt.BorderLayout;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import org.openflexo.fme.FMEIconLibrary;
@@ -86,8 +88,9 @@ public class FMEPerspective extends NaturePerspective<FreeModellingProjectNature
 	private final FIBConceptBrowser conceptBrowser;
 
 	private final Map<FMETechnologyExtension, FlexoCollabsiblePanelGroup> inspectorPanelGroups = new HashMap<>();
+	private final Map<FMETechnologyExtension, FlexoCollabsiblePanel> representedConceptPanels = new HashMap<>();
+	private final Map<FMETechnologyExtension, JPanel> inspectorHolders = new HashMap<>();
 	private boolean followsInspectedObject = false;
-	private FlexoCollabsiblePanel representedConceptPanel;
 	private FIBFlexoConceptInstanceInspectorPanel inspectorPanel;
 
 	/**
@@ -116,7 +119,8 @@ public class FMEPerspective extends NaturePerspective<FreeModellingProjectNature
 	/**
 	 * The inspector panel group shown while a free model instance of supplied extension is displayed: the inspector of the represented
 	 * concept first, then the inspectors of the technology of the extension, if any.<br>
-	 * The inspector of the represented concept is a single component: it belongs to the group of the last extension that asked for it
+	 * The inspector of the represented concept is a single component shared by the groups of all the extensions: each group holds it in
+	 * its own container, and it is moved into the container of the group asked for, the one about to be shown
 	 */
 	public FlexoCollabsiblePanelGroup getInspectorPanelGroup(FMETechnologyExtension extension) {
 		FlexoCollabsiblePanelGroup returned = inspectorPanelGroups.get(extension);
@@ -125,13 +129,22 @@ public class FMEPerspective extends NaturePerspective<FreeModellingProjectNature
 			if (returned == null) {
 				returned = new FlexoCollabsiblePanelGroup();
 			}
-			representedConceptPanel = returned.insertContentsAtIndex(
-					getController().getModuleLocales().localizedForKey("represented_concept"), inspectorPanel, 0);
+			JPanel holder = new JPanel(new BorderLayout());
+			holder.setOpaque(false);
+			inspectorHolders.put(extension, holder);
+			representedConceptPanels.put(extension,
+					returned.insertContentsAtIndex(getController().getModuleLocales().localizedForKey("represented_concept"), holder, 0));
 			inspectorPanelGroups.put(extension, returned);
 			if (!followsInspectedObject) {
 				getController().getModuleInspectorController().addObserver((o, notification) -> updateInspectorTitle(notification));
 				followsInspectedObject = true;
 			}
+		}
+		JPanel holder = inspectorHolders.get(extension);
+		if (inspectorPanel.getParent() != holder) {
+			holder.add(inspectorPanel, BorderLayout.CENTER);
+			holder.revalidate();
+			holder.repaint();
 		}
 		return returned;
 	}
@@ -151,7 +164,7 @@ public class FMEPerspective extends NaturePerspective<FreeModellingProjectNature
 		if (title != null) {
 			final String newTitle = title;
 			SwingUtilities.invokeLater(() -> {
-				if (representedConceptPanel != null) {
+				for (FlexoCollabsiblePanel representedConceptPanel : representedConceptPanels.values()) {
 					representedConceptPanel.setTitle(newTitle);
 				}
 			});

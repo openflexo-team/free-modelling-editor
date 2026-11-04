@@ -49,6 +49,7 @@ import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
@@ -252,18 +253,39 @@ public class TestPowerpointFreeModel extends OpenflexoProjectAtRunTimeTestCase {
 		assertEquals(2, nature.getRepresentations(firstInstance).size());
 	}
 
-	/** The overlay marks the annotated shapes with the color and the name of their concept; the inspector shows their instance */
+	/**
+	 * The overlay highlights the annotated shapes, lightly, and strongly with a red border those standing for the selection; nothing is
+	 * written over them. The inspector shows their instance
+	 */
 	@Test
 	@TestOrder(5)
 	public void testOverlayAndInspectedObject() throws Exception {
 
 		ConceptDecorationProvider decorations = new ConceptDecorationProvider(freeModelInstance);
-		Decoration decoration = decorations.getDecoration(first);
-		assertNotNull(decoration);
-		assertEquals("Company", decoration.getBadge());
-		assertEquals(decorations.colorOf(company), decoration.getBorderColor());
-		assertNull(decoration.getFillTint());
-		assertEquals(decoration.getBorderColor(), decorations.getDecoration(third).getBorderColor());
+		assertSame(company, decorations.getConcept(first));
+		assertLight(decorations.getDecoration(first));
+		assertLight(decorations.getDecoration(second));
+		assertLight(decorations.getDecoration(third));
+
+		// The shape alone
+		decorations.setSelection(Collections.singletonList(first));
+		assertStrong(decorations.getDecoration(first));
+		assertLight(decorations.getDecoration(third));
+
+		// The instance of the concept: every shape standing for it
+		FlexoConceptInstance firstInstance = FMEFreeModel.representedInstance(freeModelInstance.getGRInstance(first));
+		decorations.setSelection(Collections.singletonList(firstInstance));
+		assertStrong(decorations.getDecoration(first));
+		assertStrong(decorations.getDecoration(third));
+		assertLight(decorations.getDecoration(second));
+
+		// The instance of the GR concept
+		decorations.setSelection(Collections.singletonList(freeModelInstance.getGRInstance(second)));
+		assertStrong(decorations.getDecoration(second));
+		assertLight(decorations.getDecoration(first));
+
+		decorations.setSelection(null);
+		assertLight(decorations.getDecoration(second));
 
 		PowerpointShape plain = null;
 		for (PowerpointShape shape : first.getPowerpointSlide().getPowerpointShapes()) {
@@ -277,6 +299,20 @@ public class TestPowerpointFreeModel extends OpenflexoProjectAtRunTimeTestCase {
 		PowerpointFMEExtension extension = new PowerpointFMEExtension();
 		assertSame(freeModelInstance.getGRInstance(first), extension.getInspectedObject(first));
 		assertNull(extension.getInspectedObject(plain));
+	}
+
+	private static void assertLight(Decoration decoration) {
+		assertNotNull(decoration);
+		assertEquals(ConceptDecorationProvider.HIGHLIGHT, decoration.getFillTint());
+		assertNull(decoration.getBorderColor());
+		assertNull(decoration.getBadge());
+	}
+
+	private static void assertStrong(Decoration decoration) {
+		assertNotNull(decoration);
+		assertEquals(ConceptDecorationProvider.SELECTED_HIGHLIGHT, decoration.getFillTint());
+		assertEquals(ConceptDecorationProvider.SELECTED_BORDER, decoration.getBorderColor());
+		assertNull(decoration.getBadge());
 	}
 
 	/** The annotation goes, the shape stays; the conceptual instance goes with its last representation */

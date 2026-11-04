@@ -87,8 +87,10 @@ module: done. Lot 3: the actions on glued connectors.
   shape, are enabled for a shape of an annotated slideshow that carries no annotation yet (declare, new concept) or one
   (disconnect). Disconnecting deletes the instance standing for the shape without its deletion scheme, after detaching the
   shape and the conceptual instance.
-- View `FMEPowerpointFreeModelModuleView`: the slideshow view of pptx-ta-ui with `ConceptDecorationProvider` (border of the
-  color of the concept, by its rank in the conceptual model, and a badge with its name); the right column shows the browser
+- View `FMEPowerpointFreeModelModuleView`: the slideshow view of pptx-ta-ui with `ConceptDecorationProvider`, a highlighter
+  (2026-11-04, after a first run): an annotated shape is painted over in light transparent yellow, in stronger yellow with a
+  red border while it, its instance or the instance of its concept is selected; nothing is written over the shapes (the
+  first version, a border of the color of the concept and its name, hid the contents); the right column shows the browser
   of the shown slide and the inspector of the represented concept. An instance chosen in a browser of the left column brings
   the slide of its shape (the shape is not selected).
 - Core: the inspector of the FreeModellingEditor shows what the extension answers for a selected object
@@ -108,7 +110,16 @@ core, the step "choose the free model" now only lists the free models of the tec
 (`InstantiateFMEFreeModel.getAvailableFreeModels()`): it listed every free model of the nature, a Diagram wizard offering a
 PowerPoint free model. Checked by `TestPowerpointFreeModel`.
 
-**Not tried in the running application.** The contextual menu on a shape, the wizards, the overlay, the columns.
+**First run in the application (2026-11-03), fixed.**
+- The view of an annotation showed neither the browsers of the left column (until it was closed and opened again) nor the
+  slide browser and the concept inspector of the right column: `willShow()` threw while it built the inspector group, which
+  is empty for PowerPoint (GINA-D-8). The concept inspector, a single component, is now held by one container per
+  technology and moved into the one shown: it was left in the group of the last technology opened.
+- The slideshow is chosen with the resource selector of the platform (`FIBResourceSelector`) instead of a drop-down list.
+- The thumbnails are a row below the slide, which leaves the width to the slide (`PowerpointSlideshowView.ThumbnailsPosition`,
+  the PowerPoint module keeps its column on the right).
+
+**Not tried in the running application yet.** The contextual menu on a shape, the overlay, the declaring wizards.
 
 **Prerequisites in openflexo-pptx.** Shape identity that survives a reload (PPTX-F-5), the type of `PowerpointShapeRole`
 (PPTX-D-4), and a contextual menu and decoration hooks in the slideshow view (PPTX-F-6): done; a `PowerpointShapeRole` whose
