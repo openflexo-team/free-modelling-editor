@@ -66,6 +66,7 @@ import org.openflexo.fme.pptx.model.action.InstantiateFMEPowerpointFreeModel;
 import org.openflexo.fme.pptx.view.FMEPowerpointFreeModelModuleView;
 import org.openflexo.foundation.FlexoObject;
 import org.openflexo.foundation.action.FlexoActionFactory;
+import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.foundation.nature.NatureObject;
 import org.openflexo.foundation.technologyadapter.TechnologyAdapter;
 import org.openflexo.icon.IconFactory;
@@ -167,13 +168,16 @@ public class PowerpointFMEExtension implements FMETechnologyExtension {
 	}
 
 	/**
-	 * A shape of an annotated slideshow shows the instance of the concept it stands for, or nothing when it is not annotated
+	 * A shape of an annotated slideshow shows the instance of the concept it stands for; a shape that is not annotated shows its own
+	 * PowerPoint inspector
 	 */
 	@Override
 	public Object getInspectedObject(Object selectedObject) {
-		if (selectedObject instanceof PowerpointShape
-				&& !PowerpointAnnotations.getFreeModelInstances((PowerpointShape) selectedObject).isEmpty()) {
-			return PowerpointAnnotations.getGRInstance((PowerpointShape) selectedObject);
+		if (selectedObject instanceof PowerpointShape) {
+			FlexoConceptInstance grInstance = PowerpointAnnotations.getGRInstance((PowerpointShape) selectedObject);
+			if (grInstance != null) {
+				return grInstance;
+			}
 		}
 		return selectedObject;
 	}
