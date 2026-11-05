@@ -106,7 +106,13 @@ public class FMEController extends FlexoController {
 			fmeInspectorController = new ModuleInspectorController(this) {
 				@Override
 				public boolean inspectObject(Object object) {
-					return super.inspectObject(inspectedObjectFor(object));
+					Object inspected = inspectedObjectFor(object);
+					if (inspected == null && object != null) {
+						// An extension says the object shows nothing here (a PowerPoint shape that is not annotated, for instance)
+						resetInspector();
+						return true;
+					}
+					return super.inspectObject(inspected);
 				}
 			};
 		}

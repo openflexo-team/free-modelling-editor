@@ -37,7 +37,6 @@
  */
 package org.openflexo.fme.pptx;
 
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
@@ -65,8 +64,6 @@ public class TestPowerpointFMEExtension {
 		FMETechnologyExtension extension = FMETechnologyExtensions.getExtension(PowerpointFMEExtension.IDENTIFIER);
 		assertTrue(extension instanceof PowerpointFMEExtension);
 		assertSame(PowerpointTechnologyAdapter.class, extension.getTechnologyAdapterClass());
-		// Only the inspector of the represented concept
-		assertNull(extension.getInspectorPanelGroup(null));
 		// What is not a PowerPoint shape is inspected as it is
 		Object other = new Object();
 		assertSame(other, extension.getInspectedObject(other));

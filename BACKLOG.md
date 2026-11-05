@@ -69,8 +69,8 @@ existing concepts of the conceptual model, without modifying the `.pptx`.
   nesting giving containment come later.
 - Screens: the left column is the one of the Diagram extension; the center is the slideshow view of pptx-ta-ui (slide,
   thumbnails on its right) with an overlay marking annotated shapes (border colored by concept, badge with the concept
-  name); the right column shows the browser of the shown slide on top, the inspector below: the represented concept for an
-  annotated shape, the PowerPoint inspector of the shape otherwise.
+  name); the right column shows the browser of the shown slide on top and, below, two collapsible inspectors as for a diagram:
+  the represented concept (opened by default, empty for a shape that is not annotated) and the PowerPoint shape.
 - A concept instance can be represented both in a diagram and in a deck (the sample data is shared).
 
 **Plan.** Lot 1, the generic actions in the core and Diagram rebuilt on them (FME-F-3 step 2): done. Lot 2, the `fme-pptx`
@@ -120,8 +120,10 @@ PowerPoint free model. Checked by `TestPowerpointFreeModel`.
 - The slideshow is chosen with the resource selector of the platform (`FIBResourceSelector`) instead of a drop-down list.
 - The thumbnails are a row below the slide, which leaves the width to the slide (`PowerpointSlideshowView.ThumbnailsPosition`,
   the PowerPoint module keeps its column on the right).
-- A shape that is not annotated could not be inspected ("No inspector for null"): it now shows its PowerPoint inspector
-  (2026-11-05).
+- A shape that is not annotated could not be inspected ("No inspector for null"). The bottom of the right column now holds two
+  collapsible inspectors, as for a diagram (2026-11-05): the represented concept, opened by default and empty for a shape
+  that is not annotated, and the PowerPoint inspector of the selected shape (`PowerpointShapeInspectors`), which also shows
+  the first shape of an instance chosen in a browser.
 
 **Not tried in the running application yet.** The contextual menu on a shape, the overlay, the declaring wizards.
 

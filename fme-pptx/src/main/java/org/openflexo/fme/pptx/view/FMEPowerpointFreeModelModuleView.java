@@ -67,7 +67,8 @@ import org.openflexo.view.controller.model.FlexoPerspective;
  * The view of a free model instance annotating a slideshow: the slideshow view of pptx-ta-ui (the shown slide, the thumbnails in a row
  * below it) with the overlay of the concepts ({@link ConceptDecorationProvider}).<br>
  * The left column of the perspective is the one of every free model instance. The right column shows the browser of the shown slide on
- * top, and the inspector of the represented concept below.
+ * top, and below the inspector of the represented concept (opened) and the PowerPoint inspector of the selected shape
+ * ({@link PowerpointShapeInspectors}).
  * 
  * @author sylvain
  * 
@@ -218,10 +219,15 @@ public class FMEPowerpointFreeModelModuleView extends JPanel
 	}
 
 	/**
-	 * The annotated shapes standing for what is selected are highlighted strongly, the others lightly
+	 * The annotated shapes standing for what is selected are highlighted strongly, the others lightly; the PowerPoint inspector shows the
+	 * selected PowerPoint object, or the first shape standing for the selected instance
 	 */
 	private void updateHighlights() {
-		decorations.setSelection(getSelectionManager() != null ? getSelectionManager().getSelection() : null);
+		List<FlexoObject> selection = getSelectionManager() != null ? getSelectionManager().getSelection() : null;
+		decorations.setSelection(selection);
+		if (getInspectorPanelGroup() instanceof PowerpointShapeInspectors) {
+			((PowerpointShapeInspectors) getInspectorPanelGroup()).inspect(decorations.getInspectedPowerpointObject(selection));
+		}
 	}
 
 	@Override

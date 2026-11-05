@@ -304,8 +304,20 @@ public class TestPowerpointFreeModel extends OpenflexoProjectAtRunTimeTestCase {
 
 		PowerpointFMEExtension extension = new PowerpointFMEExtension();
 		assertSame(freeModelInstance.getGRInstance(first), extension.getInspectedObject(first));
-		// A shape that is not annotated shows its own PowerPoint inspector
-		assertSame(plain, extension.getInspectedObject(plain));
+		// A shape that is not annotated shows no instance (its PowerPoint inspector is in PowerpointShapeInspectors)
+		assertNull(extension.getInspectedObject(plain));
+		// Nor does a slide
+		assertNull(extension.getInspectedObject(first.getPowerpointSlide()));
+
+		// The PowerPoint inspector: the PowerPoint object selected, annotated or not, or the first shape of the instance selected
+		assertSame(plain, decorations.getInspectedPowerpointObject(Collections.singletonList(plain)));
+		assertSame(first, decorations.getInspectedPowerpointObject(Collections.singletonList(first)));
+		assertSame(first.getPowerpointSlide(), decorations.getInspectedPowerpointObject(Collections.singletonList(first.getPowerpointSlide())));
+		assertSame(decorations.getAnnotatedElements(firstInstance).get(0),
+				decorations.getInspectedPowerpointObject(Collections.singletonList(firstInstance)));
+		assertSame(second, decorations.getInspectedPowerpointObject(Collections.singletonList(freeModelInstance.getGRInstance(second))));
+		assertNull(decorations.getInspectedPowerpointObject(Arrays.asList(first, second)));
+		assertNull(decorations.getInspectedPowerpointObject(null));
 	}
 
 	private static void assertLight(Decoration decoration) {

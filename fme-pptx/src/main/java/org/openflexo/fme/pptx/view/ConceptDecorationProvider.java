@@ -41,7 +41,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -52,6 +52,7 @@ import org.openflexo.fme.pptx.model.FMEPowerpointFreeModelInstance;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.FlexoConceptInstanceRole;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
+import org.openflexo.technologyadapter.powerpoint.model.PowerpointObject;
 import org.openflexo.technologyadapter.powerpoint.model.PowerpointSlideElement;
 import org.openflexo.technologyadapter.powerpoint.view.PowerpointElementDecorationProvider;
 
@@ -163,8 +164,25 @@ public class ConceptDecorationProvider extends PowerpointElementDecorationProvid
 		return returned;
 	}
 
+	/**
+	 * What the PowerPoint inspector shows for supplied selection: the PowerPoint object selected alone, the first shape standing for the
+	 * instance selected alone, nothing otherwise
+	 */
+	public PowerpointObject getInspectedPowerpointObject(List<?> selection) {
+		if (selection == null || selection.size() != 1) {
+			return null;
+		}
+		Object selected = selection.get(0);
+		if (selected instanceof PowerpointObject) {
+			return (PowerpointObject) selected;
+		}
+		List<PowerpointSlideElement> elements = getAnnotatedElements(selected);
+		return elements.isEmpty() ? null : elements.get(0);
+	}
+
 	private Map<Object, Annotation> computeAnnotations() {
-		Map<Object, Annotation> returned = new HashMap<>();
+		// In the order the shapes were annotated: the first shape of an instance does not change from one call to the other
+		Map<Object, Annotation> returned = new LinkedHashMap<>();
 		if (freeModelInstance.getAccessedVirtualModelInstance() != null) {
 			for (FlexoConceptInstance grInstance : freeModelInstance.getAccessedVirtualModelInstance().getFlexoConceptInstances()) {
 				Object element = freeModelInstance.getRepresentationElement(grInstance);
