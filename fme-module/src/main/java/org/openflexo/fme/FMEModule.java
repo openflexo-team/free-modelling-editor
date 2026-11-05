@@ -42,6 +42,7 @@ import java.util.logging.Logger;
 
 import org.openflexo.ApplicationContext;
 import org.openflexo.fme.controller.FMEController;
+import org.openflexo.foundation.FlexoProject;
 import org.openflexo.foundation.fml.FMLTechnologyAdapter;
 import org.openflexo.foundation.fml.rt.FMLRTTechnologyAdapter;
 import org.openflexo.foundation.technologyadapter.TechnologyAdapter;
@@ -69,6 +70,14 @@ public class FMEModule extends FlexoModule<FMEModule> {
 	@Override
 	public String getLocalizationDirectory() {
 		return "FlexoLocalization/FreeModellingEditor";
+	}
+
+	/**
+	 * The views of the free modelling editor show the virtual models and instances of the project: load them in the loading task
+	 */
+	@Override
+	public void loadProjectContents(FlexoProject<?> project) {
+		loadVirtualModelsAndInstances(project);
 	}
 
 	@Override

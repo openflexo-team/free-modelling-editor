@@ -68,13 +68,16 @@ existing concepts of the conceptual model, without modifying the `.pptx`.
 - Actions on a connector glued to two annotated shapes: new relational concept, new property. Disabled otherwise. Groups and
   nesting giving containment come later.
 - Screens: the left column is the one of the Diagram extension; the center is the slideshow view of pptx-ta-ui (slide,
-  thumbnails on its right) with an overlay marking annotated shapes (border colored by concept, badge with the concept
-  name); the right column shows the browser of the shown slide on top and, below, two collapsible inspectors as for a diagram:
+  thumbnails in a row below it) with an overlay marking annotated shapes (a transparent yellow highlight, stronger when its
+  instance is selected; no border, no label); the right column shows the browser of the shown slide on top and, below, two collapsible inspectors as for a diagram:
   the represented concept (opened by default, empty for a shape that is not annotated) and the PowerPoint shape.
 - A concept instance can be represented both in a diagram and in a deck (the sample data is shared).
 
 **Plan.** Lot 1, the generic actions in the core and Diagram rebuilt on them (FME-F-3 step 2): done. Lot 2, the `fme-pptx`
-module: done. Lot 3: the actions on glued connectors.
+module: done. Lot 3, the actions on glued connectors: `TODO`, postponed by the user on 2026-11-05 (to resume in a later
+session; nothing started). It covers a new relational concept and a new property from a connector glued to two annotated
+shapes, disabled otherwise, on the core templates `CreateNewConceptFromLink` / `CreateNewFMEPropertyFromLink` (FME-F-3), and
+relies on the glued ends that `PowerpointLine` already exposes. FME-F-2 stays `IN PROGRESS` until it is done.
 
 **Done (lot 2, 2026-11-03).**
 - Module `fme-pptx` (`org.openflexo.fme.pptx`), extension `PowerpointFMEExtension`, in the products freemodelling and
