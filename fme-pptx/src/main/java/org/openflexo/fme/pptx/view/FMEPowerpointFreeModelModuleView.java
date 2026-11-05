@@ -56,6 +56,7 @@ import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.selection.SelectionListener;
 import org.openflexo.selection.SelectionManager;
 import org.openflexo.swing.FlexoCollabsiblePanelGroup;
+import org.openflexo.technologyadapter.powerpoint.model.PowerpointSlideElement;
 import org.openflexo.technologyadapter.powerpoint.view.PowerpointSlideshowView;
 import org.openflexo.technologyadapter.powerpoint.view.PowerpointSlideshowView.ThumbnailsPosition;
 import org.openflexo.view.SelectionSynchronizedModuleView;
@@ -93,6 +94,8 @@ public class FMEPowerpointFreeModelModuleView extends JPanel
 		slideshowView.setInstallsBrowser(false);
 		decorations = new ConceptDecorationProvider(freeModelInstance);
 		slideshowView.setDecorationProvider(decorations);
+		// An instance selected in a browser selects its shapes in the slides, with their handles
+		slideshowView.setRepresentedElements(decorations::getAnnotatedElements);
 		add(slideshowView, BorderLayout.CENTER);
 		freeModelInstance.getPropertyChangeSupport().addPropertyChangeListener(this);
 	}
@@ -136,6 +139,7 @@ public class FMEPowerpointFreeModelModuleView extends JPanel
 	public void deleteModuleView() {
 		freeModelInstance.getPropertyChangeSupport().removePropertyChangeListener(this);
 		slideshowView.setDecorationProvider(null);
+		slideshowView.setRepresentedElements(null);
 		slideshowView.deleteModuleView();
 		controller.removeModuleView(this);
 	}
@@ -179,15 +183,15 @@ public class FMEPowerpointFreeModelModuleView extends JPanel
 	}
 
 	/**
-	 * An instance chosen in a browser brings the slide of the shape it stands for
+	 * An instance chosen in a browser brings the slide of the first shape standing for it (the editors of the slides select those shapes)
 	 */
 	@Override
 	public void fireObjectSelected(FlexoObject object) {
 		updateHighlights();
 		if (object instanceof FlexoConceptInstance) {
-			Object element = freeModelInstance.getRepresentationElement((FlexoConceptInstance) object);
-			if (element instanceof FlexoObject) {
-				slideshowView.fireObjectSelected((FlexoObject) element);
+			List<PowerpointSlideElement> elements = decorations.getAnnotatedElements(object);
+			if (!elements.isEmpty()) {
+				slideshowView.fireObjectSelected(elements.get(0));
 			}
 			return;
 		}

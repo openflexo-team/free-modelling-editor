@@ -38,10 +38,12 @@
 package org.openflexo.fme.pptx.view;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -55,8 +57,8 @@ import org.openflexo.technologyadapter.powerpoint.view.PowerpointElementDecorati
 
 /**
  * The overlay of an annotated slideshow, as a highlighter: a shape standing for an instance of a concept is painted over in transparent
- * yellow, lightly to recall that it is annotated, strongly and with a red border while it is selected. A shape which is not annotated is
- * left as it is. Nothing is written over the shapes, which stay readable.<br>
+ * yellow, lightly to recall that it is annotated, strongly while it is selected (a selected shape also gets the selection handles of
+ * every shape). A shape which is not annotated is left as it is. Nothing is written over the shapes, which stay readable.<br>
  * A shape is selected when the selection holds the shape, the instance of its GR concept, or the instance of the concept it stands for
  * (the other shapes standing for that instance are then highlighted too).
  * 
@@ -69,8 +71,6 @@ public class ConceptDecorationProvider extends PowerpointElementDecorationProvid
 	public static final Color HIGHLIGHT = new Color(255, 230, 0, 50);
 	/** Strong highlight of a selected annotated shape */
 	public static final Color SELECTED_HIGHLIGHT = new Color(255, 230, 0, 120);
-	/** Border of a selected annotated shape */
-	public static final Color SELECTED_BORDER = new Color(220, 30, 30);
 
 	private final FMEPowerpointFreeModelInstance freeModelInstance;
 
@@ -143,6 +143,26 @@ public class ConceptDecorationProvider extends PowerpointElementDecorationProvid
 				|| selection.contains(annotation.conceptInstance));
 	}
 
+	/**
+	 * The annotated elements standing for supplied object: the instance of a GR concept or the instance of a concept (all the shapes
+	 * representing it), none for any other object
+	 */
+	public List<PowerpointSlideElement> getAnnotatedElements(Object object) {
+		if (annotations == null) {
+			annotations = computeAnnotations();
+		}
+		List<PowerpointSlideElement> returned = new ArrayList<>();
+		if (object instanceof FlexoConceptInstance) {
+			for (Map.Entry<Object, Annotation> entry : annotations.entrySet()) {
+				if ((entry.getValue().grInstance == object || entry.getValue().conceptInstance == object)
+						&& entry.getKey() instanceof PowerpointSlideElement) {
+					returned.add((PowerpointSlideElement) entry.getKey());
+				}
+			}
+		}
+		return returned;
+	}
+
 	private Map<Object, Annotation> computeAnnotations() {
 		Map<Object, Annotation> returned = new HashMap<>();
 		if (freeModelInstance.getAccessedVirtualModelInstance() != null) {
@@ -164,7 +184,7 @@ public class ConceptDecorationProvider extends PowerpointElementDecorationProvid
 			return null;
 		}
 		if (isSelected(element)) {
-			return new Decoration(SELECTED_BORDER, SELECTED_HIGHLIGHT, null);
+			return new Decoration(null, SELECTED_HIGHLIGHT, null);
 		}
 		return new Decoration(null, HIGHLIGHT, null);
 	}

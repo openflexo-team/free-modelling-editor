@@ -88,11 +88,13 @@ module: done. Lot 3: the actions on glued connectors.
   (disconnect). Disconnecting deletes the instance standing for the shape without its deletion scheme, after detaching the
   shape and the conceptual instance.
 - View `FMEPowerpointFreeModelModuleView`: the slideshow view of pptx-ta-ui with `ConceptDecorationProvider`, a highlighter
-  (2026-11-04, after a first run): an annotated shape is painted over in light transparent yellow, in stronger yellow with a
-  red border while it, its instance or the instance of its concept is selected; nothing is written over the shapes (the
-  first version, a border of the color of the concept and its name, hid the contents); the right column shows the browser
+  (2026-11-04, after a first run): an annotated shape is painted over in light transparent yellow, in stronger yellow while
+  it, its instance or the instance of its concept is selected (a selected shape keeps the usual selection handles; a red
+  border was tried and dropped); nothing is written over the shapes (the first version, a border of the color of the
+  concept and its name, hid the contents); the right column shows the browser
   of the shown slide and the inspector of the represented concept. An instance chosen in a browser of the left column brings
-  the slide of its shape (the shape is not selected).
+  the slide of its shape, and selects in the slides every shape standing for it, with the usual handles (2026-11-05;
+  the selection of the application keeps the instance alone, so the inspector still shows it).
 - Core: the inspector of the FreeModellingEditor shows what the extension answers for a selected object
   (`FMETechnologyExtension.getInspectedObject`): the instance a shape stands for, nothing for a shape that stands for none.
   The steps "choose the free model" and "describe the free model" of the wizards are generic components of the core

@@ -50,6 +50,7 @@ import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 import org.junit.Test;
@@ -254,8 +255,8 @@ public class TestPowerpointFreeModel extends OpenflexoProjectAtRunTimeTestCase {
 	}
 
 	/**
-	 * The overlay highlights the annotated shapes, lightly, and strongly with a red border those standing for the selection; nothing is
-	 * written over them. The inspector shows their instance
+	 * The overlay highlights the annotated shapes, lightly, and strongly those standing for the selection; nothing is written or bordered
+	 * over them. The inspector shows their instance
 	 */
 	@Test
 	@TestOrder(5)
@@ -287,6 +288,11 @@ public class TestPowerpointFreeModel extends OpenflexoProjectAtRunTimeTestCase {
 		decorations.setSelection(null);
 		assertLight(decorations.getDecoration(second));
 
+		// The shapes an instance selected in a browser selects in the slides
+		assertEquals(new HashSet<>(Arrays.asList(first, third)), new HashSet<>(decorations.getAnnotatedElements(firstInstance)));
+		assertEquals(Arrays.asList(second), decorations.getAnnotatedElements(freeModelInstance.getGRInstance(second)));
+		assertTrue(decorations.getAnnotatedElements(first).isEmpty());
+
 		PowerpointShape plain = null;
 		for (PowerpointShape shape : first.getPowerpointSlide().getPowerpointShapes()) {
 			if (freeModelInstance.getGRInstance(shape) == null) {
@@ -298,7 +304,8 @@ public class TestPowerpointFreeModel extends OpenflexoProjectAtRunTimeTestCase {
 
 		PowerpointFMEExtension extension = new PowerpointFMEExtension();
 		assertSame(freeModelInstance.getGRInstance(first), extension.getInspectedObject(first));
-		assertNull(extension.getInspectedObject(plain));
+		// A shape that is not annotated shows its own PowerPoint inspector
+		assertSame(plain, extension.getInspectedObject(plain));
 	}
 
 	private static void assertLight(Decoration decoration) {
@@ -311,7 +318,7 @@ public class TestPowerpointFreeModel extends OpenflexoProjectAtRunTimeTestCase {
 	private static void assertStrong(Decoration decoration) {
 		assertNotNull(decoration);
 		assertEquals(ConceptDecorationProvider.SELECTED_HIGHLIGHT, decoration.getFillTint());
-		assertEquals(ConceptDecorationProvider.SELECTED_BORDER, decoration.getBorderColor());
+		assertNull(decoration.getBorderColor());
 		assertNull(decoration.getBadge());
 	}
 
