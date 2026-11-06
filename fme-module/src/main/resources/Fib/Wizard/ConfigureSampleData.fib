@@ -105,14 +105,14 @@
 			value="new_virtual_model_instance_name"
 			key="new_virtual_model_instance_name" />
 		<Localized id="33" lang="French"
-			value="new_virtual_model_instance_name"
+			value="Nom de la nouvelle instance de VirtualModel"
 			key="new_virtual_model_instance_name" />
 		<Localized id="34" lang="English"
 			value="Virtual model instance" key="virtual_model_instance" />
 		<Localized id="35" lang="Dutch"
 			value="virtual_model_instance" key="virtual_model_instance" />
 		<Localized id="36" lang="French"
-			value="virtual_model_instance" key="virtual_model_instance" />
+			value="Instance de VirtualModel" key="virtual_model_instance" />
 	</LocalizedDictionary>
 	<FIBVariable id="37"
 		type="org.openflexo.fme.controller.action.GivesFMENatureWizard$ConfigureSampleData"

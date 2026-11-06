@@ -18,7 +18,7 @@
     <Localized id="35" lang="French" value="&lt;html&gt;&#xA;  &lt;head&gt;&#xA;    &#xA;  &lt;/head&gt;&#xA;  &lt;body&gt;&#xA;    Juste pour cette instance, lui laisser cette repr&amp;#233;sentation graphique&#xA;  &lt;/body&gt;&#xA;&lt;/html&gt;&#xA;" key="KeepShape_description" />
     <Localized id="36" lang="English" value="Label" key="label" />
     <Localized id="37" lang="Dutch" value="Label" key="label" />
-    <Localized id="38" lang="French" value="label" key="label" />
+    <Localized id="38" lang="French" value="Libellé" key="label" />
   </LocalizedDictionary>
   <FIBVariable id="39" type="org.openflexo.fme.diagram.model.action.ShapeRepresentation$Owner" name="data" />
 </Panel>
