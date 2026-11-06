@@ -34,9 +34,6 @@
     <Localized id="29" lang="English" value="Represent an existing instance" key="represent_an_existing_instance" />
     <Localized id="30" lang="Dutch" value="Represent an existing instance" key="represent_an_existing_instance" />
     <Localized id="31" lang="French" value="Représenter une instance existante" key="represent_an_existing_instance" />
-    <Localized id="32" lang="English" value="Name" key="name" />
-    <Localized id="33" lang="Dutch" value="Naam" key="name" />
-    <Localized id="34" lang="French" value="Nom" key="name" />
     <Localized id="35" lang="English" value="Container" key="container" />
     <Localized id="36" lang="Dutch" value="Container" key="container" />
     <Localized id="37" lang="French" value="Conteneur" key="container" />

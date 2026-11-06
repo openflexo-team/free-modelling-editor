@@ -35,18 +35,12 @@
   <Label id="24" label="description" align="right" localize="true" constraints="twocols(anchor=north_east;expandHorizontally=false;expandVertically=false;fill=none;gridHeight=1;gridWidth=1;gridX=-1;gridY=-1;index=12;insetsBottom=0;insetsLeft=20;insetsRight=10;insetsTop=0;location=left;padX=0;padY=0;weightX=0.0;weightY=0.0)" index="9" name="DescriptionLabel" />
   <TextArea id="25" rows="5" columns="6" text="TextArea" localize="true" data="data.newConceptDescription" constraints="twocols(anchor=center;expandHorizontally=true;expandVertically=true;fill=both;gridHeight=1;gridWidth=0;gridX=-1;gridY=-1;index=13;insetsBottom=20;insetsLeft=0;insetsRight=20;insetsTop=0;location=right;padX=0;padY=0;weightX=1.0;weightY=1.0)" index="10" name="TextArea" />
   <LocalizedDictionary id="26">
-    <Localized id="27" lang="English" value="Name" key="name" />
-    <Localized id="28" lang="Dutch" value="Naam" key="name" />
-    <Localized id="29" lang="French" value="Nom" key="name" />
     <Localized id="30" lang="English" value="Source concept" key="source_concept" />
     <Localized id="31" lang="Dutch" value="source_concept" key="source_concept" />
     <Localized id="32" lang="French" value="Concept source" key="source_concept" />
     <Localized id="33" lang="English" value="Destination concept" key="destination_concept" />
     <Localized id="34" lang="Dutch" value="destination_concept" key="destination_concept" />
     <Localized id="35" lang="French" value="Concept destination" key="destination_concept" />
-    <Localized id="36" lang="English" value="Description" key="description" />
-    <Localized id="37" lang="Dutch" value="Beschrijving" key="description" />
-    <Localized id="38" lang="French" value="Description" key="description" />
     <Localized id="39" lang="English" value="Renderer" key="renderer" />
     <Localized id="40" lang="Dutch" value="Renderer" key="renderer" />
     <Localized id="41" lang="French" value="Label du connecteur" key="renderer" />

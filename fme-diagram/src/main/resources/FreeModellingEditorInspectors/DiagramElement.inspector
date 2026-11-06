@@ -15,7 +15,6 @@
  	 </Table>
 -->
   <LocalizedDictionary>
-    <Localized key="name" lang="English" value="Name" />
   </LocalizedDictionary>
   <Parameter name="title" value="Instance" />
 </Panel>

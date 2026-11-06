@@ -142,9 +142,6 @@
 		<Localized id="37" lang="English" value="Icon" key="icon" />
 		<Localized id="38" lang="Dutch" value="Icon" key="icon" />
 		<Localized id="39" lang="French" value="Icône" key="icon" />
-		<Localized id="40" lang="English" value="Name" key="name" />
-		<Localized id="41" lang="Dutch" value="Name" key="name" />
-		<Localized id="42" lang="French" value="Nom" key="name" />
 		<Localized id="43" lang="English" value="Description"
 			key="description" />
 		<Localized id="44" lang="Dutch" value="Description"

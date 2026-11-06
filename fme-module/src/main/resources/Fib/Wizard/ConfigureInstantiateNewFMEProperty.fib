@@ -187,9 +187,6 @@
 		horizontalScrollbarPolicy="HORIZONTAL_SCROLLBAR_AS_NEEDED" index="15"
 		name="TextArea" />
 	<LocalizedDictionary id="35">
-		<Localized id="36" lang="English" value="Name" key="name" />
-		<Localized id="37" lang="Dutch" value="Name" key="name" />
-		<Localized id="38" lang="French" value="Nom" key="name" />
 		<Localized id="39" lang="English" value="Type" key="type" />
 		<Localized id="40" lang="Dutch" value="Type" key="type" />
 		<Localized id="41" lang="French" value="Type" key="type" />
