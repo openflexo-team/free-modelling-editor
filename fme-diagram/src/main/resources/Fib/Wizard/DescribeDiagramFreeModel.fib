@@ -15,13 +15,13 @@
   <TextArea id="12" rows="5" columns="6" text="TextArea" localize="true" data="data.freeModelDescription" constraints="twocols(anchor=center;expandHorizontally=true;expandVertically=true;fill=both;gridHeight=1;gridWidth=0;gridX=-1;gridY=-1;index=13;insetsBottom=20;insetsLeft=0;insetsRight=20;insetsTop=0;location=right;padX=0;padY=0;weightX=1.0;weightY=1.0)" index="13" name="TextArea" />
   <LocalizedDictionary id="13">
     <Localized id="14" lang="English" value="Free model name" key="free_model_name" />
-    <Localized id="15" lang="Dutch" value="free_model_name" key="free_model_name" />
+    <Localized id="15" lang="Dutch" value="Naam van het vrije model" key="free_model_name" />
     <Localized id="16" lang="French" value="Nom du FreeModel" key="free_model_name" />
     <Localized id="17" lang="English" value="Diagram specification folder" key="diagram_specification_folder" />
-    <Localized id="18" lang="Dutch" value="diagram_specification_folder" key="diagram_specification_folder" />
+    <Localized id="18" lang="Dutch" value="Map van de diagramspecificaties" key="diagram_specification_folder" />
     <Localized id="19" lang="French" value="Répertoire de DiagramSpecification" key="diagram_specification_folder" />
     <Localized id="20" lang="English" value="Free model description" key="free_model_description" />
-    <Localized id="21" lang="Dutch" value="free_model_description" key="free_model_description" />
+    <Localized id="21" lang="Dutch" value="Beschrijving van het vrije model" key="free_model_description" />
     <Localized id="22" lang="French" value="Description du FreeModel" key="free_model_description" />
   </LocalizedDictionary>
   <FIBVariable id="23" type="org.openflexo.fme.diagram.controller.action.CreateFMEDiagramFreeModelWizard$DescribeDiagramFreeModel" name="data" />

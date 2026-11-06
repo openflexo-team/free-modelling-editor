@@ -15,7 +15,7 @@
   <TextArea id="6" rows="5" columns="6" text="TextArea" data="data.freeModelInstanceDescription" constraints="twocols(anchor=center;expandHorizontally=true;expandVertically=true;fill=both;gridHeight=1;gridWidth=0;gridX=-1;gridY=-1;index=13;insetsBottom=20;insetsLeft=0;insetsRight=20;insetsTop=5;location=right;padX=0;padY=0;weightX=1.0;weightY=1.0)" index="13" name="TextArea" />
   <LocalizedDictionary id="7">
     <Localized id="8" lang="English" value="Slideshow" key="slideshow" />
-    <Localized id="9" lang="Dutch" value="Slideshow" key="slideshow" />
+    <Localized id="9" lang="Dutch" value="Presentatie" key="slideshow" />
     <Localized id="10" lang="French" value="Présentation" key="slideshow" />
   </LocalizedDictionary>
   <FIBVariable id="11" type="org.openflexo.fme.pptx.controller.action.InstantiateFMEPowerpointFreeModelWizard$DescribePowerpointFreeModelInstance" name="data" />

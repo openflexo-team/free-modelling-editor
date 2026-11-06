@@ -12,10 +12,10 @@
   </Panel>
   <LocalizedDictionary id="9">
     <Localized id="10" lang="English" value="New project" key="new_project" />
-    <Localized id="11" lang="Dutch" value="new_project" key="new_project" />
+    <Localized id="11" lang="Dutch" value="Nieuw project" key="new_project" />
     <Localized id="12" lang="French" value="Nouveau projet" key="new_project" />
     <Localized id="13" lang="English" value="Open project" key="open_project" />
-    <Localized id="14" lang="Dutch" value="open_project" key="open_project" />
+    <Localized id="14" lang="Dutch" value="Project openen" key="open_project" />
     <Localized id="15" lang="French" value="Ouvrir un projet" key="open_project" />
     <Localized id="16" lang="English" value="&lt;html&gt;&#xA;  &lt;head&gt;&#xA;    &#xA;  &lt;/head&gt;&#xA;  &lt;body&gt;&#xA;    Welcome to the Free Modelling Editor&#xA;  &lt;/body&gt;&#xA;&lt;/html&gt;&#xA;" key="welcome_to _the_free_modelling_editor" />
     <Localized id="17" lang="Dutch" value="&lt;html&gt;&#xA;&lt;head&gt;&#xA;&lt;/head&gt;&#xA;&lt;body&gt;&#xA;welcome_to _the_free_modelling_editor&#xA;&lt;/body&gt;&#xA;&lt;/html&gt;" key="welcome_to _the_free_modelling_editor" />
@@ -24,10 +24,10 @@
     <Localized id="20" lang="Dutch" value="&lt;html&gt;&#xA;&lt;head&gt;&#xA;&lt;/head&gt;&#xA;&lt;body&gt;&#xA;welcome_informations&#xA;&lt;/body&gt;&#xA;&lt;/html&gt;" key="welcome_informations" />
     <Localized id="21" lang="French" value="&lt;html&gt;&#xA;  &lt;head&gt;&#xA;    &#xA;  &lt;/head&gt;&#xA;  &lt;body&gt;&#xA;    Le Free Modeling Editor est un outil de dessin vous permettant de faire &#xA;    &amp;#233;merger vos concepts m&amp;#233;tiers &amp;#224; partir des donn&amp;#233;es que vous avez d&amp;#233;j&amp;#224;. Le &#xA;    FME vous offre la possibilit&amp;#233; de :&#xA;&#xA;    &lt;ul&gt;&#xA;      &lt;li&gt;&#xA;        Identifier et d&amp;#233;finir des concepts &amp;#224; partir de dessins ou de donn&amp;#233;es &#xA;        existantes&#xA;      &lt;/li&gt;&#xA;      &lt;li&gt;&#xA;        Cr&amp;#233;er des &amp;#233;diteurs graphiques li&amp;#233;s &amp;#224; vos nouveaux concepts&#xA;      &lt;/li&gt;&#xA;      &lt;li&gt;&#xA;        Importer des dessins directement d'une diapositive PowerPoint&#xA;      &lt;/li&gt;&#xA;      &lt;li&gt;&#xA;        D&amp;#233;finir et importer des donn&amp;#233;es &amp;#224; partir d'un tableau Excel&#xA;      &lt;/li&gt;&#xA;    &lt;/ul&gt;&#xA;    Votre &amp;#233;diteur graphique peut ensuite &amp;#234;tre compl&amp;#233;t&amp;#233; gr&amp;#226;ce aux outils de &#xA;    l'Openflexo Modeler afin de connecter intelligement vos concepts &amp;#224; vos &#xA;    donn&amp;#233;es. Vous ne d&amp;#233;truirerez pas votre project existant en lui donnant la &#xA;    nature &amp;quot;Free Modelling&amp;quot;&#xA;  &lt;/body&gt;&#xA;&lt;/html&gt;&#xA;" key="welcome_informations" />
     <Localized id="22" lang="English" value="Want to work with the &quot;Free Modelling Editor&quot; ?" key="gives_your_project_free_modelling_nature" />
-    <Localized id="23" lang="Dutch" value="gives_your_project_free_modelling_nature" key="gives_your_project_free_modelling_nature" />
+    <Localized id="23" lang="Dutch" value="Wilt u werken met de 'Free Modelling Editor'?" key="gives_your_project_free_modelling_nature" />
     <Localized id="24" lang="French" value="Voulez you travailler avec le &quot;Free Modelling Editor&quot; ?" key="gives_your_project_free_modelling_nature" />
     <Localized id="25" lang="English" value="Gives your project the &quot;Free Modelling&quot; nature" key="convert_your_project" />
-    <Localized id="26" lang="Dutch" value="convert_your_project" key="convert_your_project" />
+    <Localized id="26" lang="Dutch" value="Uw project converteren" key="convert_your_project" />
     <Localized id="27" lang="French" value="Donnez à votre projet la nature &quot;Free Modelling&quot;" key="convert_your_project" />
   </LocalizedDictionary>
   <FIBVariable id="28" type="org.openflexo.foundation.FlexoProject" name="data" />

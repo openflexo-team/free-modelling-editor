@@ -5,7 +5,7 @@
   <Label id="19" label="label" align="left" localize="true" data="(grStrategyRBList.selected.toString + &quot;_description&quot;)" constraints="twocols(expandHorizontally=true;expandVertically=false;insetsBottom=0;insetsLeft=0;insetsRight=20;insetsTop=0;location=right)" visible="data.shapeRepresentation.hasGRConcept" font="SansSerif,0,11" name="Label" />
   <LocalizedDictionary id="20">
     <Localized id="24" lang="English" value="Representation strategy" key="representation_strategy" />
-    <Localized id="25" lang="Dutch" value="representation_strategy" key="representation_strategy" />
+    <Localized id="25" lang="Dutch" value="Voorstellingsstrategie" key="representation_strategy" />
     <Localized id="26" lang="French" value="Stratégie de représentation" key="representation_strategy" />
     <Localized id="27" lang="English" value="&lt;html&gt;&#xA;  &lt;head&gt;&#xA;    &#xA;  &lt;/head&gt;&#xA;  &lt;body&gt;&#xA;    Give to the new instance the graphical representation of related concept&#xA;  &lt;/body&gt;&#xA;&lt;/html&gt;&#xA;" key="GetConceptShape_description" />
     <Localized id="28" lang="Dutch" value="&lt;html&gt;&#xA;&lt;head&gt;&#xA;&lt;/head&gt;&#xA;&lt;body&gt;&#xA;GetConceptShape_description&#xA;&lt;/body&gt;&#xA;&lt;/html&gt;" key="GetConceptShape_description" />

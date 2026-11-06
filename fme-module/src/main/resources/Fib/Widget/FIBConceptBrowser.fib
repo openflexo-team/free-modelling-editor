@@ -64,6 +64,6 @@
   <LocalizedDictionary>
     <Localized key="all_concepts" lang="English" value="All concepts"/>
     <Localized key="all_concepts" lang="French" value="Tous les concepts" />
-    <Localized key="all_concepts" lang="Dutch" value="All concepts" />
+    <Localized key="all_concepts" lang="Dutch" value="Alle concepten" />
   </LocalizedDictionary>
 </Panel>

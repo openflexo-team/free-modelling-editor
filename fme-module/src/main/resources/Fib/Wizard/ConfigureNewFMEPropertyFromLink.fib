@@ -79,7 +79,7 @@
 		<Localized id="29" lang="French" value="Type" key="type" />
 		<Localized id="30" lang="English" value="Enum values"
 			key="enum_values" />
-		<Localized id="31" lang="Dutch" value="enum_values"
+		<Localized id="31" lang="Dutch" value="Enumwaarden"
 			key="enum_values" />
 		<Localized id="32" lang="French" value="Valeurs"
 			key="enum_values" />
@@ -94,19 +94,19 @@
 			key="enum_values_description" />
 		<Localized id="36" lang="English" value="Description"
 			key="description" />
-		<Localized id="37" lang="Dutch" value="Description"
+		<Localized id="37" lang="Dutch" value="Beschrijving"
 			key="description" />
 		<Localized id="38" lang="French" value="Description"
 			key="description" />
 		<Localized id="39" lang="English" value="Source concept"
 			key="source_concept" />
-		<Localized id="40" lang="Dutch" value="Source concept"
+		<Localized id="40" lang="Dutch" value="Bronconcept"
 			key="source_concept" />
 		<Localized id="41" lang="French" value="Concept source"
 			key="source_concept" />
 		<Localized id="42" lang="English"
 			value="Destination concept" key="destination_concept" />
-		<Localized id="43" lang="Dutch" value="Destination concept"
+		<Localized id="43" lang="Dutch" value="Doelconcept"
 			key="destination_concept" />
 		<Localized id="44" lang="French" value="Concept destination"
 			key="destination_concept" />

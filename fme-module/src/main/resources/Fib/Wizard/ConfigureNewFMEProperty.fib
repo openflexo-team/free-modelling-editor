@@ -77,7 +77,7 @@
 		<Localized id="26" lang="French" value="Type" key="type" />
 		<Localized id="27" lang="English" value="Enum values"
 			key="enum_values" />
-		<Localized id="28" lang="Dutch" value="enum_values"
+		<Localized id="28" lang="Dutch" value="Enumwaarden"
 			key="enum_values" />
 		<Localized id="29" lang="French" value="Valeurs"
 			key="enum_values" />
@@ -92,7 +92,7 @@
 			key="enum_values_description" />
 		<Localized id="33" lang="English" value="Description"
 			key="description" />
-		<Localized id="34" lang="Dutch" value="Description"
+		<Localized id="34" lang="Dutch" value="Beschrijving"
 			key="description" />
 		<Localized id="35" lang="French" value="Description"
 			key="description" />

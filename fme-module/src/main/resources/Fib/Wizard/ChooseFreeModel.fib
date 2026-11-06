@@ -72,18 +72,18 @@
 		<Localized id="15" lang="English"
 			value="What would you like to do ?" key="what_would_you_like_to_do" />
 		<Localized id="16" lang="Dutch"
-			value="what_would_you_like_to_do" key="what_would_you_like_to_do" />
+			value="Wat wilt u doen?" key="what_would_you_like_to_do" />
 		<Localized id="17" lang="French"
 			value="Que voulez vous faire ?" key="what_would_you_like_to_do" />
 		<Localized id="18" lang="English"
 			value="New virtual model name" key="new_virtual_model_name" />
 		<Localized id="19" lang="Dutch"
-			value="new_virtual_model_name" key="new_virtual_model_name" />
+			value="Naam van het nieuwe VirtualModel" key="new_virtual_model_name" />
 		<Localized id="20" lang="French"
 			value="Nom du VirtualModel à créer" key="new_virtual_model_name" />
 		<Localized id="21" lang="English" value="Relative path"
 			key="relative_path" />
-		<Localized id="22" lang="Dutch" value="relative_path"
+		<Localized id="22" lang="Dutch" value="Relatief pad"
 			key="relative_path" />
 		<Localized id="23" lang="French" value="Path relatif"
 			key="relative_path" />
@@ -95,7 +95,7 @@
 			key="virtual_model" />
 		<Localized id="27" lang="English"
 			value="New freel model name" key="new_freel_model_name" />
-		<Localized id="28" lang="Dutch" value="new_freel_model_name"
+		<Localized id="28" lang="Dutch" value="Naam van het nieuwe vrije model"
 			key="new_freel_model_name" />
 		<Localized id="29" lang="French"
 			value="Nom du nouveau FreeModel" key="new_freel_model_name" />
@@ -108,7 +108,7 @@
 		<Localized id="33" lang="English"
 			value="Free model to instantiate" key="free_model_to_instantiate" />
 		<Localized id="34" lang="Dutch"
-			value="free_model_to_instantiate" key="free_model_to_instantiate" />
+			value="Te instantiëren vrij model" key="free_model_to_instantiate" />
 		<Localized id="35" lang="French"
 			value="FreeModel à instancier" key="free_model_to_instantiate" />
 		<Localized id="36" lang="English"

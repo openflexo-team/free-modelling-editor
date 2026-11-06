@@ -36,10 +36,10 @@
   <TextArea id="25" rows="5" columns="6" text="TextArea" localize="true" data="data.newConceptDescription" constraints="twocols(anchor=center;expandHorizontally=true;expandVertically=true;fill=both;gridHeight=1;gridWidth=0;gridX=-1;gridY=-1;index=13;insetsBottom=20;insetsLeft=0;insetsRight=20;insetsTop=0;location=right;padX=0;padY=0;weightX=1.0;weightY=1.0)" index="10" name="TextArea" />
   <LocalizedDictionary id="26">
     <Localized id="30" lang="English" value="Source concept" key="source_concept" />
-    <Localized id="31" lang="Dutch" value="source_concept" key="source_concept" />
+    <Localized id="31" lang="Dutch" value="Bronconcept" key="source_concept" />
     <Localized id="32" lang="French" value="Concept source" key="source_concept" />
     <Localized id="33" lang="English" value="Destination concept" key="destination_concept" />
-    <Localized id="34" lang="Dutch" value="destination_concept" key="destination_concept" />
+    <Localized id="34" lang="Dutch" value="Doelconcept" key="destination_concept" />
     <Localized id="35" lang="French" value="Concept destination" key="destination_concept" />
     <Localized id="39" lang="English" value="Renderer" key="renderer" />
     <Localized id="40" lang="Dutch" value="Renderer" key="renderer" />

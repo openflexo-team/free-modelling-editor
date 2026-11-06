@@ -192,7 +192,7 @@
 		<Localized id="41" lang="French" value="Type" key="type" />
 		<Localized id="42" lang="English" value="Enum values"
 			key="enum_values" />
-		<Localized id="43" lang="Dutch" value="enum_values"
+		<Localized id="43" lang="Dutch" value="Enumwaarden"
 			key="enum_values" />
 		<Localized id="44" lang="French" value="Valeurs"
 			key="enum_values" />
@@ -207,19 +207,19 @@
 			key="enum_values_description" />
 		<Localized id="48" lang="English" value="Description"
 			key="description" />
-		<Localized id="49" lang="Dutch" value="Description"
+		<Localized id="49" lang="Dutch" value="Beschrijving"
 			key="description" />
 		<Localized id="50" lang="French" value="Description"
 			key="description" />
 		<Localized id="90" lang="English" value="Value for this instance"
 			key="value_for_this_instance" />
-		<Localized id="91" lang="Dutch" value="Value for this instance"
+		<Localized id="91" lang="Dutch" value="Waarde voor deze instantie"
 			key="value_for_this_instance" />
 		<Localized id="92" lang="French" value="Valeur pour cette instance"
 			key="value_for_this_instance" />
 		<Localized id="93" lang="English" value="Default value (other instances)"
 			key="default_value" />
-		<Localized id="94" lang="Dutch" value="Default value (other instances)"
+		<Localized id="94" lang="Dutch" value="Standaardwaarde"
 			key="default_value" />
 		<Localized id="95" lang="French" value="Valeur par d&#233;faut (autres instances)"
 			key="default_value" />

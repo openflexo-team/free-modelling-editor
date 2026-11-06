@@ -157,13 +157,13 @@
 		</Iteration>
 	</Panel>
 	<LocalizedDictionary id="37">
-		<Localized id="38" lang="Dutch" value="new_project"
+		<Localized id="38" lang="Dutch" value="Nieuw project"
 			key="new_project" />
 		<Localized id="39" lang="French" value="Nouveau projet"
 			key="new_project" />
 		<Localized id="40" lang="English" value="Open project"
 			key="open_project" />
-		<Localized id="41" lang="Dutch" value="open_project"
+		<Localized id="41" lang="Dutch" value="Project openen"
 			key="open_project" />
 		<Localized id="42" lang="French" value="Ouvrir un projet"
 			key="open_project" />
@@ -187,28 +187,28 @@
 			key="welcome_informations" />
 		<Localized id="49" lang="English" value="Conceptual model"
 			key="conceptual_model" />
-		<Localized id="50" lang="Dutch" value="conceptual_model"
+		<Localized id="50" lang="Dutch" value="Conceptueel model"
 			key="conceptual_model" />
 		<Localized id="51" lang="French" value="Modèle conceptuel"
 			key="conceptual_model" />
 		<Localized id="52" lang="English" value="Sample data"
 			key="sample_data" />
-		<Localized id="53" lang="Dutch" value="sample_data"
+		<Localized id="53" lang="Dutch" value="Voorbeeldgegevens"
 			key="sample_data" />
 		<Localized id="54" lang="French" value="Jeu de données"
 			key="sample_data" />
 		<Localized id="64" lang="English" value="Free models"
 			key="free_models" />
-		<Localized id="65" lang="Dutch" value="free_models"
+		<Localized id="65" lang="Dutch" value="Vrije modellen"
 			key="free_models" />
 		<Localized id="66" lang="French" value="Free Models"
 			key="free_models" />
 		<Localized id="67" lang="English" value="Icon" key="icon" />
-		<Localized id="68" lang="Dutch" value="Icon" key="icon" />
+		<Localized id="68" lang="Dutch" value="Pictogram" key="icon" />
 		<Localized id="69" lang="French" value="Icône" key="icon" />
 		<Localized id="70" lang="English" value="Free model"
 			key="free_model" />
-		<Localized id="71" lang="Dutch" value="free_model"
+		<Localized id="71" lang="Dutch" value="Vrij model"
 			key="free_model" />
 		<Localized id="72" lang="French" value="Free Model"
 			key="free_model" />

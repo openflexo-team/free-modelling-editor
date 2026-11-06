@@ -39,6 +39,6 @@
 		<Localized key="represented_concepts" lang="French"
 			value="Concepts représentés" />
 		<Localized key="represented_concepts" lang="Dutch"
-			value="Represented concepts" />
+			value="Voorgestelde concepten" />
 	</LocalizedDictionary>
 </Panel>

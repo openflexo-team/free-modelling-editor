@@ -77,18 +77,18 @@
 		<Localized id="19" lang="English"
 			value="What would you like to do ?" key="what_would_you_like_to_do" />
 		<Localized id="20" lang="Dutch"
-			value="what_would_you_like_to_do" key="what_would_you_like_to_do" />
+			value="Wat wilt u doen?" key="what_would_you_like_to_do" />
 		<Localized id="21" lang="French"
 			value="Que voulez vous faire ?" key="what_would_you_like_to_do" />
 		<Localized id="22" lang="English"
 			value="New virtual model name" key="new_virtual_model_name" />
 		<Localized id="23" lang="Dutch"
-			value="new_virtual_model_name" key="new_virtual_model_name" />
+			value="Naam van het nieuwe VirtualModel" key="new_virtual_model_name" />
 		<Localized id="24" lang="French"
 			value="Nom du VirtualModel à créer" key="new_virtual_model_name" />
 		<Localized id="25" lang="English" value="Relative path"
 			key="relative_path" />
-		<Localized id="26" lang="Dutch" value="relative_path"
+		<Localized id="26" lang="Dutch" value="Relatief pad"
 			key="relative_path" />
 		<Localized id="27" lang="French" value="Path relatif"
 			key="relative_path" />
@@ -102,7 +102,7 @@
 			value="New virtual model instance name"
 			key="new_virtual_model_instance_name" />
 		<Localized id="32" lang="Dutch"
-			value="new_virtual_model_instance_name"
+			value="Naam van de nieuwe VirtualModel-instantie"
 			key="new_virtual_model_instance_name" />
 		<Localized id="33" lang="French"
 			value="Nom de la nouvelle instance"
@@ -110,7 +110,7 @@
 		<Localized id="34" lang="English"
 			value="Virtual model instance" key="virtual_model_instance" />
 		<Localized id="35" lang="Dutch"
-			value="virtual_model_instance" key="virtual_model_instance" />
+			value="VirtualModel-instantie" key="virtual_model_instance" />
 		<Localized id="36" lang="French"
 			value="Instance de VirtualModel" key="virtual_model_instance" />
 	</LocalizedDictionary>

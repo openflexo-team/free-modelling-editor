@@ -12,10 +12,10 @@
   </Panel>
   <LocalizedDictionary id="9">
     <Localized id="10" lang="English" value="New project" key="new_project" />
-    <Localized id="11" lang="Dutch" value="new_project" key="new_project" />
+    <Localized id="11" lang="Dutch" value="Nieuw project" key="new_project" />
     <Localized id="12" lang="French" value="Nouveau projet" key="new_project" />
     <Localized id="13" lang="English" value="Open project" key="open_project" />
-    <Localized id="14" lang="Dutch" value="open_project" key="open_project" />
+    <Localized id="14" lang="Dutch" value="Project openen" key="open_project" />
     <Localized id="15" lang="French" value="Ouvrir un projet" key="open_project" />
     <Localized id="16" lang="English" value="&lt;html&gt;&#xA;  &lt;head&gt;&#xA;    &#xA;  &lt;/head&gt;&#xA;  &lt;body&gt;&#xA;    Welcome to the Free Modelling Editor&#xA;  &lt;/body&gt;&#xA;&lt;/html&gt;&#xA;" key="welcome_to _the_free_modelling_editor" />
     <Localized id="17" lang="Dutch" value="&lt;html&gt;&#xA;&lt;head&gt;&#xA;&lt;/head&gt;&#xA;&lt;body&gt;&#xA;welcome_to _the_free_modelling_editor&#xA;&lt;/body&gt;&#xA;&lt;/html&gt;" key="welcome_to _the_free_modelling_editor" />

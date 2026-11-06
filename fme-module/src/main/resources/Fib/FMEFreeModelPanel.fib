@@ -135,46 +135,46 @@
 	<LocalizedDictionary id="33">
 		<Localized id="34" lang="English" value="New diagram"
 			key="new_diagram" />
-		<Localized id="35" lang="Dutch" value="new_diagram"
+		<Localized id="35" lang="Dutch" value="Nieuw diagram"
 			key="new_diagram" />
 		<Localized id="36" lang="French" value="Nouveau diagramme"
 			key="new_diagram" />
 		<Localized id="37" lang="English" value="Icon" key="icon" />
-		<Localized id="38" lang="Dutch" value="Icon" key="icon" />
+		<Localized id="38" lang="Dutch" value="Pictogram" key="icon" />
 		<Localized id="39" lang="French" value="Icône" key="icon" />
 		<Localized id="43" lang="English" value="Description"
 			key="description" />
-		<Localized id="44" lang="Dutch" value="Description"
+		<Localized id="44" lang="Dutch" value="Beschrijving"
 			key="description" />
 		<Localized id="45" lang="French" value="Description"
 			key="description" />
 		<Localized id="46" lang="English" value="Instances"
 			key="instances" />
-		<Localized id="47" lang="Dutch" value="instances"
+		<Localized id="47" lang="Dutch" value="Instanties"
 			key="instances" />
 		<Localized id="48" lang="French" value="Instances"
 			key="instances" />
 		<Localized id="49" lang="English" value="Free model"
 			key="free_model" />
-		<Localized id="50" lang="Dutch" value="free_model"
+		<Localized id="50" lang="Dutch" value="Vrij model"
 			key="free_model" />
 		<Localized id="51" lang="French" value="Free Model"
 			key="free_model" />
 		<Localized id="52" lang="English"
 			value="Instantiate new diagram" key="instantiate_new_diagram" />
 		<Localized id="53" lang="Dutch"
-			value="instantiate_new_diagram" key="instantiate_new_diagram" />
+			value="Nieuw diagram instantiëren" key="instantiate_new_diagram" />
 		<Localized id="54" lang="French"
 			value="Instancier un nouveau diagramme" key="instantiate_new_diagram" />
 		<Localized id="55" lang="English" value="Conceptual model"
 			key="conceptual_model" />
-		<Localized id="56" lang="Dutch" value="conceptual_model"
+		<Localized id="56" lang="Dutch" value="Conceptueel model"
 			key="conceptual_model" />
 		<Localized id="57" lang="French" value="Modèle conceptuel"
 			key="conceptual_model" />
 		<Localized id="58" lang="English" value="Sample data"
 			key="sample_data" />
-		<Localized id="59" lang="Dutch" value="sample_data"
+		<Localized id="59" lang="Dutch" value="Voorbeeldgegevens"
 			key="sample_data" />
 		<Localized id="60" lang="French" value="Jeu de données"
 			key="sample_data" />
