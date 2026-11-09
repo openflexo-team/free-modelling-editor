@@ -59,8 +59,8 @@ import org.openflexo.foundation.FlexoEditor;
 import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.action.FlexoAction;
 import org.openflexo.foundation.fml.DeletionScheme;
-import org.openflexo.foundation.fml.FlexoBehaviourParameter;
-import org.openflexo.foundation.fml.FlexoBehaviourParameter.WidgetType;
+import org.openflexo.foundation.fml.FlexoBehaviourArgument;
+import org.openflexo.foundation.fml.FlexoBehaviourArgument.WidgetType;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.VirtualModel;
 import org.openflexo.foundation.fml.action.CreateEditionAction;
@@ -332,7 +332,7 @@ public interface FMEDiagramFreeModel extends FMEFreeModel {
 			createDropSchemeParameter.setWidgetType(WidgetType.TEXT_FIELD);
 
 			createDropSchemeParameter.doAction();
-			FlexoBehaviourParameter parameter = createDropSchemeParameter.getNewParameter();
+			FlexoBehaviourArgument parameter = createDropSchemeParameter.getNewParameter();
 			if (concept != null) {
 				parameter.setDefaultValue(new DataBinding<String>("\"" + concept.getName() + "\""));
 			}

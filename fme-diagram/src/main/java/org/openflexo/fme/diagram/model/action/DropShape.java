@@ -54,7 +54,7 @@ import org.openflexo.foundation.FlexoEditor;
 import org.openflexo.foundation.FlexoObject;
 import org.openflexo.foundation.FlexoObject.FlexoObjectImpl;
 import org.openflexo.foundation.action.FlexoActionFactory;
-import org.openflexo.foundation.fml.FlexoBehaviourParameter;
+import org.openflexo.foundation.fml.FlexoBehaviourArgument;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.FlexoConceptInstanceRole;
 import org.openflexo.foundation.fml.FlexoProperty;
@@ -137,7 +137,7 @@ public class DropShape extends FMEAction<DropShape, DiagramContainerElement<?>, 
 		if (dsList.size() == 1) {
 
 			DropScheme dropScheme = dsList.get(0);
-			FlexoBehaviourParameter nameParam = dropScheme.getParameters().size() > 0 ? dropScheme.getParameters().get(0) : null;
+			FlexoBehaviourArgument nameParam = dropScheme.getParameters().size() > 0 ? dropScheme.getParameters().get(0) : null;
 			DropSchemeAction action = new DropSchemeAction(dropScheme, getDiagramFreeModelInstance().getAccessedVirtualModelInstance(),
 					null, this);
 			action.setParentInformations(getContainer(), null);

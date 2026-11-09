@@ -42,7 +42,7 @@ import java.util.ArrayList;
 
 import org.openflexo.connie.DataBinding;
 import org.openflexo.fme.model.FMEConceptualModel;
-import org.openflexo.foundation.fml.FlexoBehaviourParameter;
+import org.openflexo.foundation.fml.FlexoBehaviourArgument;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.FlexoProperty;
 import org.openflexo.technologyadapter.diagram.TypedDiagramModelSlot;
@@ -81,7 +81,7 @@ class FMEDiagramConceptRenamer {
 
 		// The default value of the name asked when dropping is the name of the concept, as a String literal
 		for (DropScheme dropScheme : grConcept.getFlexoBehaviours(DropScheme.class)) {
-			FlexoBehaviourParameter parameter = dropScheme.getParameter(FMEConceptualModel.CONCEPT_NAME_PARAMETER);
+			FlexoBehaviourArgument parameter = dropScheme.getParameter(FMEConceptualModel.CONCEPT_NAME_PARAMETER);
 			if (parameter != null && parameter.getDefaultValue() != null
 					&& ("\"" + oldConceptName + "\"").equals(String.valueOf(parameter.getDefaultValue()))) {
 				parameter.setDefaultValue(new DataBinding<String>("\"" + newConceptName + "\""));

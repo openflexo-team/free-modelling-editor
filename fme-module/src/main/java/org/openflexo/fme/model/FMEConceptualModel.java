@@ -53,7 +53,7 @@ import org.openflexo.foundation.FlexoException;
 import org.openflexo.foundation.action.FlexoAction;
 import org.openflexo.foundation.fml.CreationScheme;
 import org.openflexo.foundation.fml.DeletionScheme;
-import org.openflexo.foundation.fml.FlexoBehaviourParameter.WidgetType;
+import org.openflexo.foundation.fml.FlexoBehaviourArgument.WidgetType;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.FlexoConceptInstanceRole;
 import org.openflexo.foundation.fml.FlexoProperty;
