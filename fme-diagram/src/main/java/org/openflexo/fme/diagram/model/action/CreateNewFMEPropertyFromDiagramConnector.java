@@ -70,6 +70,7 @@ import org.openflexo.foundation.fml.rt.VirtualModelInstance;
 import org.openflexo.foundation.fml.rt.VirtualModelInstance.ObjectLookupResult;
 import org.openflexo.technologyadapter.diagram.fml.ConnectorRole;
 import org.openflexo.technologyadapter.diagram.fml.LinkScheme;
+import org.openflexo.technologyadapter.diagram.fml.binding.LinkSchemeBindingModel;
 import org.openflexo.technologyadapter.diagram.fml.ShapeRole;
 import org.openflexo.technologyadapter.diagram.fml.editionaction.AddConnector;
 import org.openflexo.technologyadapter.diagram.model.DiagramConnector;
@@ -232,14 +233,14 @@ public class CreateNewFMEPropertyFromDiagramConnector extends
 		setFromFCIAction.setAssignation(new DataBinding<>(FROM_CONCEPT_INSTANCE));
 		setFromFCIAction.doAction();
 		ExpressionAction<?> expAction = (ExpressionAction<?>) setFromFCIAction.getBaseEditionAction();
-		expAction.setExpression(new DataBinding<>(LinkScheme.FROM_TARGET_KEY));
+		expAction.setExpression(new DataBinding<>(LinkSchemeBindingModel.FROM_TARGET));
 
 		CreateEditionAction setToFCIAction = CreateEditionAction.actionType.makeNewEmbeddedAction(linkScheme.getControlGraph(), null, this);
 		setToFCIAction.setEditionActionClass(ExpressionAction.class);
 		setToFCIAction.setAssignation(new DataBinding<>(TO_CONCEPT_INSTANCE));
 		setToFCIAction.doAction();
 		ExpressionAction<?> expAction2 = (ExpressionAction<?>) setToFCIAction.getBaseEditionAction();
-		expAction2.setExpression(new DataBinding<>(LinkScheme.TO_TARGET_KEY));
+		expAction2.setExpression(new DataBinding<>(LinkSchemeBindingModel.TO_TARGET));
 
 		CreateEditionAction setPropertyAction = CreateEditionAction.actionType.makeNewEmbeddedAction(linkScheme.getControlGraph(), null,
 				this);
@@ -262,8 +263,8 @@ public class CreateNewFMEPropertyFromDiagramConnector extends
 		// AssignationAction<DiagramShape> addShapeAssigment = (AssignationAction<DiagramShape>)
 		// createAddShape.getNewEditionAction();
 		AddConnector addConnector = (AddConnector) createAddConnector.getBaseEditionAction();
-		addConnector.setFromShape(new DataBinding<>(LinkScheme.FROM_TARGET_KEY + "." + FMEDiagramFreeModel.SHAPE_ROLE_NAME));
-		addConnector.setToShape(new DataBinding<>(LinkScheme.TO_TARGET_KEY + "." + FMEDiagramFreeModel.SHAPE_ROLE_NAME));
+		addConnector.setFromShape(new DataBinding<>(LinkSchemeBindingModel.FROM_TARGET + "." + FMEDiagramFreeModel.SHAPE_ROLE_NAME));
+		addConnector.setToShape(new DataBinding<>(LinkSchemeBindingModel.TO_TARGET + "." + FMEDiagramFreeModel.SHAPE_ROLE_NAME));
 
 		/*DeletionScheme deletionScheme = returned.getDefaultDeletionScheme();
 		

@@ -83,6 +83,8 @@ import org.openflexo.technologyadapter.diagram.fml.ConnectorRole;
 import org.openflexo.technologyadapter.diagram.fml.DropScheme;
 import org.openflexo.technologyadapter.diagram.fml.FMLControlledDiagramVirtualModelNature;
 import org.openflexo.technologyadapter.diagram.fml.LinkScheme;
+import org.openflexo.technologyadapter.diagram.fml.binding.DropSchemeBindingModel;
+import org.openflexo.technologyadapter.diagram.fml.binding.LinkSchemeBindingModel;
 import org.openflexo.technologyadapter.diagram.fml.ShapeRole;
 import org.openflexo.technologyadapter.diagram.fml.action.CreateDiagramPalette;
 import org.openflexo.technologyadapter.diagram.fml.action.CreateFMLControlledDiagramPaletteElement;
@@ -367,7 +369,7 @@ public interface FMEDiagramFreeModel extends FMEFreeModel {
 
 				try {
 					if (containerConceptGR != null) {
-						bindingPath = BindingPath.parse(DropScheme.TARGET_KEY + "." + FMEFreeModel.conceptRoleName(containerConceptGR), newFCIAction);
+						bindingPath = BindingPath.parse(DropSchemeBindingModel.TARGET + "." + FMEFreeModel.conceptRoleName(containerConceptGR), newFCIAction);
 					}
 					else {
 						bindingPath = BindingPath.parse(SAMPLE_DATA_MODEL_SLOT_NAME, newFCIAction);
@@ -398,7 +400,7 @@ public interface FMEDiagramFreeModel extends FMEFreeModel {
 					addFCI.setContainer(new DataBinding<>(SAMPLE_DATA_MODEL_SLOT_NAME));
 				}
 				else {
-					addFCI.setContainer(new DataBinding<>(DropScheme.TARGET_KEY + "." + FMEFreeModel.conceptRoleName(containerConceptGR)));
+					addFCI.setContainer(new DataBinding<>(DropSchemeBindingModel.TARGET + "." + FMEFreeModel.conceptRoleName(containerConceptGR)));
 				}*/
 			}
 			else {
@@ -440,7 +442,7 @@ public interface FMEDiagramFreeModel extends FMEFreeModel {
 				addShape.setContainer(new DataBinding<>(DIAGRAM_MODEL_SLOT_NAME));
 			}
 			else {
-				addShape.setContainer(new DataBinding<>(DropScheme.TARGET_KEY + "." + FMEDiagramFreeModel.SHAPE_ROLE_NAME));
+				addShape.setContainer(new DataBinding<>(DropSchemeBindingModel.TARGET + "." + FMEDiagramFreeModel.SHAPE_ROLE_NAME));
 			}
 
 			DeletionScheme deletionScheme = returned.getDefaultDeletionScheme();
@@ -534,8 +536,8 @@ public interface FMEDiagramFreeModel extends FMEFreeModel {
 				bv = new BindingPath(addFCI, FMLPrettyPrinter.getInstance());
 			}
 			List<DataBinding<?>> args = new ArrayList<>();
-			args.add(new DataBinding<>(LinkScheme.FROM_TARGET_KEY + "." + FMEFreeModel.conceptRoleName(fromConceptGR)));
-			args.add(new DataBinding<>(LinkScheme.TO_TARGET_KEY + "." + FMEFreeModel.conceptRoleName(toConceptGR)));
+			args.add(new DataBinding<>(LinkSchemeBindingModel.FROM_TARGET + "." + FMEFreeModel.conceptRoleName(fromConceptGR)));
+			args.add(new DataBinding<>(LinkSchemeBindingModel.TO_TARGET + "." + FMEFreeModel.conceptRoleName(toConceptGR)));
 			CreationSchemePathElement creationSchemePathElement = getAccessedVirtualModel().getFMLModelFactory()
 					.newCreationSchemePathElement(null, concept.getCreationSchemes().get(0), args, addFCI);
 			bv.addBindingPathElement(creationSchemePathElement);
@@ -546,9 +548,9 @@ public interface FMEDiagramFreeModel extends FMEFreeModel {
 
 			/*addFCI.setCreationScheme(concept.getCreationSchemes().get(0));
 			AddFlexoConceptInstanceParameter addFCISourceConceptParam = addFCI.getParameter(FMEConceptualModel.FROM_CONCEPT_ROLE_NAME);
-			addFCISourceConceptParam.setValue(new DataBinding<>(LinkScheme.FROM_TARGET_KEY + "." + FMEFreeModel.CONCEPT_ROLE_NAME));
+			addFCISourceConceptParam.setValue(new DataBinding<>(LinkSchemeBindingModel.FROM_TARGET + "." + FMEFreeModel.CONCEPT_ROLE_NAME));
 			AddFlexoConceptInstanceParameter addFCIDestinationConceptParam = addFCI.getParameter(FMEConceptualModel.TO_CONCEPT_ROLE_NAME);
-			addFCIDestinationConceptParam.setValue(new DataBinding<>(LinkScheme.TO_TARGET_KEY + "." + FMEFreeModel.CONCEPT_ROLE_NAME));
+			addFCIDestinationConceptParam.setValue(new DataBinding<>(LinkSchemeBindingModel.TO_TARGET + "." + FMEFreeModel.CONCEPT_ROLE_NAME));
 			addFCI.setReceiver(new DataBinding<>(SAMPLE_DATA_MODEL_SLOT_NAME));*/
 
 			CreateEditionAction createAddConnector = null;
@@ -566,8 +568,8 @@ public interface FMEDiagramFreeModel extends FMEFreeModel {
 
 			AddConnector addConnector = (AddConnector) createAddConnector.getBaseEditionAction();
 
-			addConnector.setFromShape(new DataBinding<>(LinkScheme.FROM_TARGET_KEY + "." + FMEDiagramFreeModel.SHAPE_ROLE_NAME));
-			addConnector.setToShape(new DataBinding<>(LinkScheme.TO_TARGET_KEY + "." + FMEDiagramFreeModel.SHAPE_ROLE_NAME));
+			addConnector.setFromShape(new DataBinding<>(LinkSchemeBindingModel.FROM_TARGET + "." + FMEDiagramFreeModel.SHAPE_ROLE_NAME));
+			addConnector.setToShape(new DataBinding<>(LinkSchemeBindingModel.TO_TARGET + "." + FMEDiagramFreeModel.SHAPE_ROLE_NAME));
 
 			DeletionScheme deletionScheme = returned.getDefaultDeletionScheme();
 
