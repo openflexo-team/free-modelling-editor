@@ -355,11 +355,11 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 			}
 			// givesNameAction.actionChoice = CreateEditionActionChoice.BuiltInAction;
 			givesNameAction.setEditionActionClass(ExpressionAction.class);
-			givesNameAction.setAssignation(new DataBinding<>(labelPropertyName));
+			givesNameAction.setAssignation(new DataBinding<>("this." + labelPropertyName));
 			givesNameAction.doAction();
 
 			AssignationAction<?> nameAssignation = (AssignationAction<?>) givesNameAction.getNewEditionAction();
-			((ExpressionAction<?>) nameAssignation.getAssignableAction()).setExpression(new DataBinding<>("parameters.conceptName"));
+			((ExpressionAction<?>) nameAssignation.getAssignableAction()).setExpression(new DataBinding<>("conceptName"));
 
 			// Create new DeletionScheme
 			CreateFlexoBehaviour createDeletionScheme = null;
@@ -579,12 +579,12 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 					setsFromConceptAction = CreateEditionAction.actionType.makeNewAction(creationScheme.getControlGraph(), null, editor);
 				}
 				setsFromConceptAction.setEditionActionClass(ExpressionAction.class);
-				setsFromConceptAction.setAssignation(new DataBinding<>(fromRoleName));
+				setsFromConceptAction.setAssignation(new DataBinding<>("this." + fromRoleName));
 				setsFromConceptAction.doAction();
 
 				AssignationAction<?> sourceConceptAssignation = (AssignationAction<?>) setsFromConceptAction.getNewEditionAction();
 				((ExpressionAction<?>) sourceConceptAssignation.getAssignableAction())
-						.setExpression(new DataBinding<>("parameters." + fromRoleName));
+						.setExpression(new DataBinding<>(fromRoleName));
 
 				// Create and set destination concept parameter for CreationScheme
 				CreateGenericBehaviourParameter createDestinationConceptParameter = null;
@@ -611,12 +611,12 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 				}
 				// givesNameAction.actionChoice = CreateEditionActionChoice.BuiltInAction;
 				setsToConceptAction.setEditionActionClass(ExpressionAction.class);
-				setsToConceptAction.setAssignation(new DataBinding<>(toRoleName));
+				setsToConceptAction.setAssignation(new DataBinding<>("this." + toRoleName));
 				setsToConceptAction.doAction();
 
 				AssignationAction<?> destinationConceptAssignation = (AssignationAction<?>) setsToConceptAction.getNewEditionAction();
 				((ExpressionAction<?>) destinationConceptAssignation.getAssignableAction())
-						.setExpression(new DataBinding<>("parameters." + toRoleName));
+						.setExpression(new DataBinding<>(toRoleName));
 
 				FMEInspectorGenerator.updateConceptualInspector(returned);
 			}

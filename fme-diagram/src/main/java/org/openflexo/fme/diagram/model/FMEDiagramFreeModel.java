@@ -355,11 +355,11 @@ public interface FMEDiagramFreeModel extends FMEFreeModel {
 				}
 				createAddFlexoConceptInstance.setModelSlot(getSampleDataModelSlot());
 				createAddFlexoConceptInstance.setEditionActionClass(ExpressionAction.class);
-				createAddFlexoConceptInstance.setAssignation(new DataBinding<>(FMEFreeModel.conceptRoleName(returned)));
+				createAddFlexoConceptInstance.setAssignation(new DataBinding<>("this." + FMEFreeModel.conceptRoleName(returned)));
 				createAddFlexoConceptInstance.doAction();
 
 				ExpressionAction newFCIAction = (ExpressionAction) createAddFlexoConceptInstance.getBaseEditionAction();
-				List<DataBinding<?>> args = Collections.singletonList(new DataBinding<>("parameters.conceptName"));
+				List<DataBinding<?>> args = Collections.singletonList(new DataBinding<>("conceptName"));
 				CreationSchemePathElement pathElement = (CreationSchemePathElement) dropScheme.getBindingFactory()
 						.makeNewInstancePathElement(concept.getInstanceType(), null, concept.getCreationSchemes().get(0).getName(), args,
 								newFCIAction);
@@ -394,7 +394,7 @@ public interface FMEDiagramFreeModel extends FMEFreeModel {
 				System.out.println(dropScheme.getFMLPrettyPrint());
 				
 				AddFlexoConceptInstanceParameter addFCINameParam = addFCI.getParameter(FMEConceptualModel.CONCEPT_NAME_PARAMETER);
-				addFCINameParam.setValue(new DataBinding<>("parameters.conceptName"));
+				addFCINameParam.setValue(new DataBinding<>("conceptName"));
 				addFCI.setReceiver(new DataBinding<>(SAMPLE_DATA_MODEL_SLOT_NAME));
 				if (containerConceptGR == null) {
 					addFCI.setContainer(new DataBinding<>(SAMPLE_DATA_MODEL_SLOT_NAME));
@@ -413,11 +413,11 @@ public interface FMEDiagramFreeModel extends FMEFreeModel {
 				}
 				// givesNameAction.actionChoice = CreateEditionActionChoice.BuiltInAction;
 				givesNameAction.setEditionActionClass(ExpressionAction.class);
-				givesNameAction.setAssignation(new DataBinding<>(FMEFreeModel.NAME_ROLE_NAME));
+				givesNameAction.setAssignation(new DataBinding<>("this." + FMEFreeModel.NAME_ROLE_NAME));
 				givesNameAction.doAction();
 
 				AssignationAction<?> nameAssignation = (AssignationAction<?>) givesNameAction.getNewEditionAction();
-				((ExpressionAction<?>) nameAssignation.getAssignableAction()).setExpression(new DataBinding<>("parameters.conceptName"));
+				((ExpressionAction<?>) nameAssignation.getAssignableAction()).setExpression(new DataBinding<>("conceptName"));
 
 			}
 

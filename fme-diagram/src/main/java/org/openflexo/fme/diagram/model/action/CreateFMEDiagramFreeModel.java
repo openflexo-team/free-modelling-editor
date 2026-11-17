@@ -230,10 +230,10 @@ public class CreateFMEDiagramFreeModel extends CreateFMEFreeModel<CreateFMEDiagr
 		CreateEditionAction assignDiagramAction = CreateEditionAction.actionType.makeNewEmbeddedAction(creationScheme.getControlGraph(),
 				null, this);
 		assignDiagramAction.setEditionActionClass(ExpressionAction.class);
-		assignDiagramAction.setAssignation(new DataBinding<>(FMEDiagramFreeModel.DIAGRAM_MODEL_SLOT_NAME));
+		assignDiagramAction.setAssignation(new DataBinding<>("this." + FMEDiagramFreeModel.DIAGRAM_MODEL_SLOT_NAME));
 		assignDiagramAction.doAction();
 		ExpressionAction<?> assignDiagram = (ExpressionAction<?>) assignDiagramAction.getBaseEditionAction();
-		assignDiagram.setExpression(new DataBinding<>("parameters.diagram"));
+		assignDiagram.setExpression(new DataBinding<>("diagram"));
 
 		// Save
 		try {

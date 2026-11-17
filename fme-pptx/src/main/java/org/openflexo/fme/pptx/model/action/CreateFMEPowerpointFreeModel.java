@@ -134,10 +134,10 @@ public class CreateFMEPowerpointFreeModel extends CreateFMEFreeModel<CreateFMEPo
 		CreateEditionAction assignSlideshowAction = CreateEditionAction.actionType.makeNewEmbeddedAction(creationScheme.getControlGraph(),
 				null, this);
 		assignSlideshowAction.setEditionActionClass(ExpressionAction.class);
-		assignSlideshowAction.setAssignation(new DataBinding<>(FMEPowerpointFreeModel.SLIDESHOW_MODEL_SLOT_NAME));
+		assignSlideshowAction.setAssignation(new DataBinding<>("this." + FMEPowerpointFreeModel.SLIDESHOW_MODEL_SLOT_NAME));
 		assignSlideshowAction.doAction();
 		ExpressionAction<?> assignSlideshow = (ExpressionAction<?>) assignSlideshowAction.getBaseEditionAction();
-		assignSlideshow.setExpression(new DataBinding<>("parameters." + FMEPowerpointFreeModel.SLIDESHOW_MODEL_SLOT_NAME));
+		assignSlideshow.setExpression(new DataBinding<>(FMEPowerpointFreeModel.SLIDESHOW_MODEL_SLOT_NAME));
 
 		// Save
 		try {

@@ -170,10 +170,10 @@ public abstract class CreateFMEFreeModel<A extends CreateFMEFreeModel<A>> extend
 		CreateEditionAction assignSampleDataAction = CreateEditionAction.actionType.makeNewEmbeddedAction(creationScheme.getControlGraph(),
 				null, this);
 		assignSampleDataAction.setEditionActionClass(ExpressionAction.class);
-		assignSampleDataAction.setAssignation(new DataBinding<>("sampleData"));
+		assignSampleDataAction.setAssignation(new DataBinding<>("this.sampleData"));
 		assignSampleDataAction.doAction();
 		ExpressionAction<?> assignSampleData = (ExpressionAction<?>) assignSampleDataAction.getBaseEditionAction();
-		assignSampleData.setExpression(new DataBinding<>("parameters.sampleData"));
+		assignSampleData.setExpression(new DataBinding<>("sampleData"));
 
 		/*CreateGenericBehaviourParameter createDiagramParameter = CreateGenericBehaviourParameter.actionType
 				.makeNewEmbeddedAction(creationScheme, null, this);
