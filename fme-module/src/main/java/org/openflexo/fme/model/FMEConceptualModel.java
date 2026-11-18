@@ -49,7 +49,7 @@ import java.util.regex.Pattern;
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.type.PrimitiveType;
 import org.openflexo.foundation.FlexoEditor;
-import org.openflexo.foundation.FlexoException;
+import org.openflexo.foundation.OpenflexoRuntimeException;
 import org.openflexo.foundation.action.FlexoAction;
 import org.openflexo.foundation.fml.CreationScheme;
 import org.openflexo.foundation.fml.DeletionScheme;
@@ -114,10 +114,10 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 	 * @param editor
 	 * @param ownerAction
 	 * @return
-	 * @throws FlexoException
+	 * @throws OpenflexoRuntimeException
 	 */
 	public FlexoConcept getFlexoConcept(String conceptName, FlexoConcept containerConcept, FlexoEditor editor,
-			FlexoAction<?, ?, ?> ownerAction) throws FlexoException;
+			FlexoAction<?, ?, ?> ownerAction) throws OpenflexoRuntimeException;
 
 	/**
 	 * Return (creates when non-existant) a conceptual FlexoConcept in {@link VirtualModel} considered as conceptual model<br>
@@ -130,10 +130,10 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 	 * @param editor
 	 * @param ownerAction
 	 * @return
-	 * @throws FlexoException
+	 * @throws OpenflexoRuntimeException
 	 */
 	public FlexoConcept getRelationalFlexoConcept(String conceptName, FlexoConcept fromConcept, FlexoConcept toConcept, FlexoEditor editor,
-			FlexoAction<?, ?, ?> ownerAction) throws FlexoException;
+			FlexoAction<?, ?, ?> ownerAction) throws OpenflexoRuntimeException;
 
 	/**
 	 * Same as {@link #getFlexoConcept(String, FlexoConcept, FlexoEditor, FlexoAction)}, with the structure of the created concept given
@@ -154,11 +154,11 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 	 * @param ownerAction
 	 *            the action creating the concept: it must not be null, since properties are created by embedded actions
 	 * @return
-	 * @throws FlexoException
+	 * @throws OpenflexoRuntimeException
 	 */
 	public FlexoConcept getFlexoConcept(String conceptName, String description, List<PropertyEntry<?>> properties,
 			String labelPropertyName, FlexoConcept containerConcept, FlexoEditor editor, FlexoAction<?, ?, ?> ownerAction)
-			throws FlexoException;
+			throws OpenflexoRuntimeException;
 
 	/**
 	 * Makes supplied conceptual concept instantiable: gives it a creation scheme (the parameter of which is the label of the instance, which
@@ -171,7 +171,7 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 	 *            the action making the concept instantiable: it must not be null, since behaviours are created by embedded actions
 	 */
 	public void makeInstantiable(FlexoConcept concept, String labelPropertyName, FlexoEditor editor, FlexoAction<?, ?, ?> ownerAction)
-			throws FlexoException;
+			throws OpenflexoRuntimeException;
 
 	/** The renderer of a conceptual concept created by this editor: <code>instance.<i>label property</i></code> */
 	static final Pattern LABEL_RENDERER = Pattern.compile("instance\\.([\\p{L}\\p{Nd}$_]+)");
@@ -214,7 +214,7 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 	 */
 	public FlexoConcept getRelationalFlexoConcept(String conceptName, String description, List<PropertyEntry<?>> properties,
 			String fromRoleName, String toRoleName, FlexoConcept fromConcept, FlexoConcept toConcept, FlexoEditor editor,
-			FlexoAction<?, ?, ?> ownerAction) throws FlexoException;
+			FlexoAction<?, ?, ?> ownerAction) throws OpenflexoRuntimeException;
 
 	/**
 	 * The two roles of supplied relational concept pointing to the concepts it relates: the source one, then the destination one. They are
@@ -301,18 +301,18 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 		 * @param editor
 		 * @param ownerAction
 		 * @return
-		 * @throws FlexoException
+		 * @throws OpenflexoRuntimeException
 		 */
 		@Override
 		public FlexoConcept getFlexoConcept(String conceptName, FlexoConcept containerConcept, FlexoEditor editor,
-				FlexoAction<?, ?, ?> ownerAction) throws FlexoException {
+				FlexoAction<?, ?, ?> ownerAction) throws OpenflexoRuntimeException {
 
 			return getFlexoConcept(conceptName, null, null, NAME_ROLE_NAME, containerConcept, editor, ownerAction);
 		}
 
 		@Override
 		public void makeInstantiable(FlexoConcept concept, String labelPropertyName, FlexoEditor editor, FlexoAction<?, ?, ?> ownerAction)
-				throws FlexoException {
+				throws OpenflexoRuntimeException {
 
 			FlexoConcept returned = concept;
 
@@ -382,7 +382,7 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 		@Override
 		public FlexoConcept getFlexoConcept(String conceptName, String description, List<PropertyEntry<?>> properties,
 				String labelPropertyName, FlexoConcept containerConcept, FlexoEditor editor, FlexoAction<?, ?, ?> ownerAction)
-				throws FlexoException {
+				throws OpenflexoRuntimeException {
 
 			// As typed by the user: FML would not parse it back if it were written as is
 			conceptName = FMENames.conceptName(conceptName);
@@ -457,11 +457,11 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 		 * @param editor
 		 * @param ownerAction
 		 * @return
-		 * @throws FlexoException
+		 * @throws OpenflexoRuntimeException
 		 */
 		@Override
 		public FlexoConcept getRelationalFlexoConcept(String conceptName, FlexoConcept fromConcept, FlexoConcept toConcept,
-				FlexoEditor editor, FlexoAction<?, ?, ?> ownerAction) throws FlexoException {
+				FlexoEditor editor, FlexoAction<?, ?, ?> ownerAction) throws OpenflexoRuntimeException {
 			return getRelationalFlexoConcept(conceptName, null, null, FROM_CONCEPT_ROLE_NAME, TO_CONCEPT_ROLE_NAME, fromConcept, toConcept,
 					editor, ownerAction);
 		}
@@ -469,7 +469,7 @@ public interface FMEConceptualModel extends VirtualModelBasedNatureObject<FreeMo
 		@Override
 		public FlexoConcept getRelationalFlexoConcept(String conceptName, String description, List<PropertyEntry<?>> properties,
 				String fromRoleName, String toRoleName, FlexoConcept fromConcept, FlexoConcept toConcept, FlexoEditor editor,
-				FlexoAction<?, ?, ?> ownerAction) throws FlexoException {
+				FlexoAction<?, ?, ?> ownerAction) throws OpenflexoRuntimeException {
 
 			conceptName = FMENames.conceptName(conceptName);
 			FlexoConcept returned = getAccessedVirtualModel().getFlexoConcept(conceptName);

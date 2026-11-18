@@ -45,7 +45,7 @@ import org.openflexo.fme.model.FMEFreeModelInstance;
 import org.openflexo.fme.model.FMEInspectorGenerator;
 import org.openflexo.fme.model.FMENames;
 import org.openflexo.foundation.FlexoEditor;
-import org.openflexo.foundation.FlexoException;
+import org.openflexo.foundation.OpenflexoRuntimeException;
 import org.openflexo.foundation.FlexoObject;
 import org.openflexo.foundation.InvalidArgumentException;
 import org.openflexo.foundation.action.FlexoActionFactory;
@@ -83,7 +83,7 @@ public abstract class AbstractCreateNewFMEPropertyFromLink<A extends AbstractCre
 	}
 
 	@Override
-	protected void doAction(Object context) throws FlexoException {
+	protected void doAction(Object context) throws OpenflexoRuntimeException {
 
 		if (getFromFlexoConceptInstance() == null) {
 			throw new InvalidArgumentException(getFocusedObject() + " does not start from an instance of a concept");
@@ -115,7 +115,7 @@ public abstract class AbstractCreateNewFMEPropertyFromLink<A extends AbstractCre
 	 * @param createdPropertyName
 	 *            name of the new property
 	 */
-	protected abstract void buildLinkRepresentation(String createdPropertyName) throws FlexoException;
+	protected abstract void buildLinkRepresentation(String createdPropertyName) throws OpenflexoRuntimeException;
 
 	/**
 	 * The name the property is created with: {@link #getPropertyName()}, as typed, normalized into a name FML accepts

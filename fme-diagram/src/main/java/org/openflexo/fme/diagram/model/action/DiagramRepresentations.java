@@ -40,7 +40,7 @@ package org.openflexo.fme.diagram.model.action;
 import org.openflexo.fme.diagram.model.FMEDiagramFreeModel;
 import org.openflexo.fme.diagram.model.FMEDiagramFreeModelInstance;
 import org.openflexo.fme.model.FMEFreeModel;
-import org.openflexo.foundation.FlexoException;
+import org.openflexo.foundation.OpenflexoRuntimeException;
 import org.openflexo.foundation.action.FlexoAction;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.PrimitiveRole;
@@ -100,7 +100,7 @@ public class DiagramRepresentations {
 	 * A new GR concept takes the shape of the element its concept emerged from, and the palette gets an entry for the concept
 	 */
 	public static void configureNewConceptShape(FMEDiagramFreeModel freeModel, FlexoConcept newGRConcept, FlexoConcept newConcept,
-			DiagramShape shapeElement, FlexoAction<?, ?, ?> ownerAction) throws FlexoException {
+			DiagramShape shapeElement, FlexoAction<?, ?, ?> ownerAction) throws OpenflexoRuntimeException {
 		// Add entry in palette
 		freeModel.createPaletteElementForConcept(newGRConcept, newConcept, shapeElement.getGraphicalRepresentation(), ownerAction);
 

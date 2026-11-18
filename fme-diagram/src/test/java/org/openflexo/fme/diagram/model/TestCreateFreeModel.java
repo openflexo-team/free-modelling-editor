@@ -58,7 +58,7 @@ import org.openflexo.fme.diagram.model.action.InstantiateFMEDiagramFreeModel;
 import org.openflexo.fme.model.FMEFreeModel;
 import org.openflexo.fme.model.FreeModellingProjectNature;
 import org.openflexo.foundation.FlexoEditor;
-import org.openflexo.foundation.FlexoException;
+import org.openflexo.foundation.OpenflexoRuntimeException;
 import org.openflexo.foundation.FlexoProject;
 import org.openflexo.foundation.resource.ResourceLoadingCancelledException;
 import org.openflexo.foundation.resource.SaveResourceException;
@@ -164,12 +164,12 @@ public class TestCreateFreeModel extends OpenflexoProjectAtRunTimeTestCase {
 	 * 
 	 * @throws FileNotFoundException
 	 * @throws ResourceLoadingCancelledException
-	 * @throws FlexoException
+	 * @throws OpenflexoRuntimeException
 	 */
 	@Test
 	@TestOrder(5)
 	@Category(UITest.class)
-	public void testReloadProject() throws FileNotFoundException, ResourceLoadingCancelledException, FlexoException {
+	public void testReloadProject() throws FileNotFoundException, ResourceLoadingCancelledException, OpenflexoRuntimeException {
 
 		instanciateTestServiceManager(DiagramTechnologyAdapter.class);
 		editor = loadProject(project.getProjectDirectory());

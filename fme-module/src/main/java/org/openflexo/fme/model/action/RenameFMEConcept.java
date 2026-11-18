@@ -49,7 +49,7 @@ import org.openflexo.fme.model.FMEInspectorGenerator;
 import org.openflexo.fme.model.FMENames;
 import org.openflexo.fme.model.FreeModellingProjectNature;
 import org.openflexo.foundation.FlexoEditor;
-import org.openflexo.foundation.FlexoException;
+import org.openflexo.foundation.OpenflexoRuntimeException;
 import org.openflexo.foundation.FlexoObject;
 import org.openflexo.foundation.FlexoObject.FlexoObjectImpl;
 import org.openflexo.foundation.FlexoProject;
@@ -290,7 +290,7 @@ public class RenameFMEConcept extends FMEAction<RenameFMEConcept, FlexoObject, F
 	}
 
 	@Override
-	protected void doAction(Object context) throws FlexoException {
+	protected void doAction(Object context) throws OpenflexoRuntimeException {
 
 		FlexoConcept concept = getConcept();
 		String oldConceptName = concept.getName();
@@ -313,7 +313,7 @@ public class RenameFMEConcept extends FMEAction<RenameFMEConcept, FlexoObject, F
 				grConcept.setName(grName(getNewConceptName()));
 			}
 		} catch (InvalidNameException e) {
-			throw new FlexoException(e);
+			throw new OpenflexoRuntimeException(e);
 		}
 
 		FMEInspectorGenerator.conceptRenamed(concept, oldConceptName);

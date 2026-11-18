@@ -56,7 +56,7 @@ import org.openflexo.fme.model.FMEInspectorGenerator;
 import org.openflexo.fme.model.FMENames;
 import org.openflexo.fme.model.FreeModellingProjectNature;
 import org.openflexo.foundation.FlexoEditor;
-import org.openflexo.foundation.FlexoException;
+import org.openflexo.foundation.OpenflexoRuntimeException;
 import org.openflexo.foundation.FlexoObject;
 import org.openflexo.foundation.FlexoObject.FlexoObjectImpl;
 import org.openflexo.foundation.action.FlexoActionFactory;
@@ -653,7 +653,7 @@ public class GeneralizeConcepts extends FMEAction<GeneralizeConcepts, FlexoObjec
 		return newFlexoConcept;
 	}
 
-	private void createEnd(String roleName, FlexoConcept type) throws FlexoException {
+	private void createEnd(String roleName, FlexoConcept type) throws OpenflexoRuntimeException {
 		CreateFlexoConceptInstanceRole createRole = CreateFlexoConceptInstanceRole.actionType.makeNewEmbeddedAction(newFlexoConcept, null,
 				this);
 		createRole.setRoleName(roleName);
@@ -663,7 +663,7 @@ public class GeneralizeConcepts extends FMEAction<GeneralizeConcepts, FlexoObjec
 	}
 
 	@Override
-	protected void doAction(Object context) throws FlexoException {
+	protected void doAction(Object context) throws OpenflexoRuntimeException {
 
 		List<FlexoConcept> concepts = getConcepts();
 		List<FlexoConcept> commonParents = getCommonParents();

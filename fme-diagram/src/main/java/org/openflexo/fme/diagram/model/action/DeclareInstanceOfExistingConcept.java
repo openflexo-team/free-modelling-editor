@@ -45,7 +45,7 @@ import org.openflexo.fme.diagram.model.FMEDiagramFreeModelInstance;
 import org.openflexo.fme.model.FMEFreeModel;
 import org.openflexo.fme.model.action.AbstractDeclareInstanceOfExistingConcept;
 import org.openflexo.foundation.FlexoEditor;
-import org.openflexo.foundation.FlexoException;
+import org.openflexo.foundation.OpenflexoRuntimeException;
 import org.openflexo.foundation.FlexoObject;
 import org.openflexo.foundation.FlexoObject.FlexoObjectImpl;
 import org.openflexo.foundation.action.FlexoActionFactory;
@@ -140,13 +140,13 @@ public class DeclareInstanceOfExistingConcept
 
 	@Override
 	protected void prepareRepresentation(FlexoConceptInstance grInstance, FlexoConcept grConcept, boolean grConceptWasExisting)
-			throws FlexoException {
+			throws OpenflexoRuntimeException {
 		shapeRepresentation.prepare(grInstance, grConcept, grConceptWasExisting);
 	}
 
 	@Override
 	protected void completeRepresentation(FlexoConceptInstance grInstance, FlexoConcept grConcept, boolean grConceptWasExisting)
-			throws FlexoException {
+			throws OpenflexoRuntimeException {
 		shapeRepresentation.complete(grInstance, grConcept, grConceptWasExisting);
 	}
 

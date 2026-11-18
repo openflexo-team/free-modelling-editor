@@ -42,7 +42,7 @@ import java.util.List;
 import org.openflexo.fme.model.FMEFreeModel;
 import org.openflexo.fme.model.FMEFreeModelInstance;
 import org.openflexo.foundation.FlexoEditor;
-import org.openflexo.foundation.FlexoException;
+import org.openflexo.foundation.OpenflexoRuntimeException;
 import org.openflexo.foundation.FlexoObject;
 import org.openflexo.foundation.InvalidArgumentException;
 import org.openflexo.foundation.action.FlexoActionFactory;
@@ -107,7 +107,7 @@ public abstract class AbstractCreateNewConceptFromLink<A extends AbstractCreateN
 	}
 
 	@Override
-	protected void doAction(Object context) throws FlexoException {
+	protected void doAction(Object context) throws OpenflexoRuntimeException {
 
 		FMI freeModelInstance = getFMEFreeModelInstance();
 		if (freeModelInstance == null) {
@@ -122,7 +122,7 @@ public abstract class AbstractCreateNewConceptFromLink<A extends AbstractCreateN
 		createNewConcept.doAction();
 
 		if (!createNewConcept.hasActionExecutionSucceeded()) {
-			throw new FlexoException("Could not create the relational concept");
+			throw new OpenflexoRuntimeException("Could not create the relational concept");
 		}
 
 		FlexoConcept newFlexoConcept = createNewConcept.getNewFlexoConcept();
@@ -160,13 +160,13 @@ public abstract class AbstractCreateNewConceptFromLink<A extends AbstractCreateN
 	 * Called once the relational concept and its GR concept are created: what the new GR concept takes from the link (the graphical
 	 * representation of a connector...)
 	 */
-	protected abstract void configureRepresentation(FlexoConcept newGRConcept) throws FlexoException;
+	protected abstract void configureRepresentation(FlexoConcept newGRConcept) throws OpenflexoRuntimeException;
 
 	/**
 	 * Creates the instance of the new GR concept standing for the link, in the free model instance, its representation role pointing to
 	 * the focused link. The template then makes it point to the new conceptual instance.
 	 */
-	protected abstract FlexoConceptInstance createRepresentationInstance(FlexoConcept newGRConcept) throws FlexoException;
+	protected abstract FlexoConceptInstance createRepresentationInstance(FlexoConcept newGRConcept) throws OpenflexoRuntimeException;
 
 	/**
 	 * Called last: brings the view of the representation up to date

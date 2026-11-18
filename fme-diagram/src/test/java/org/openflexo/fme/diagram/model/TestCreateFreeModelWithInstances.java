@@ -72,7 +72,7 @@ import org.openflexo.fme.model.FreeModellingProjectNature;
 import org.openflexo.fme.model.action.CreateNewFMEProperty;
 import org.openflexo.fme.model.action.CreateNewRelationalConcept;
 import org.openflexo.foundation.FlexoEditor;
-import org.openflexo.foundation.FlexoException;
+import org.openflexo.foundation.OpenflexoRuntimeException;
 import org.openflexo.foundation.FlexoProject;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.FlexoEnum;
@@ -452,7 +452,7 @@ public class TestCreateFreeModelWithInstances extends OpenflexoProjectAtRunTimeT
 	@Test
 	@TestOrder(11)
 	@Category(UITest.class)
-	public void testReloadProject() throws FileNotFoundException, ResourceLoadingCancelledException, FlexoException {
+	public void testReloadProject() throws FileNotFoundException, ResourceLoadingCancelledException, OpenflexoRuntimeException {
 
 		instanciateTestServiceManager(DiagramTechnologyAdapter.class);
 		editor = loadProject(project.getProjectDirectory());

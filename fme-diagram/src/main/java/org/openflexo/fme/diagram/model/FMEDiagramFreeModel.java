@@ -56,7 +56,7 @@ import org.openflexo.diana.shapes.ShapeSpecification.ShapeType;
 import org.openflexo.fme.model.FMEConceptualModel;
 import org.openflexo.fme.model.FMEFreeModel;
 import org.openflexo.foundation.FlexoEditor;
-import org.openflexo.foundation.FlexoException;
+import org.openflexo.foundation.OpenflexoRuntimeException;
 import org.openflexo.foundation.action.FlexoAction;
 import org.openflexo.foundation.fml.DeletionScheme;
 import org.openflexo.foundation.fml.FlexoBehaviourArgument;
@@ -129,9 +129,9 @@ public interface FMEDiagramFreeModel extends FMEFreeModel {
 	public DiagramSpecification getDiagramSpecification();
 
 	public DiagramPaletteElement createPaletteElementForConcept(FlexoConcept grConcept, FlexoConcept concept,
-			ShapeGraphicalRepresentation gr, FlexoAction<?, ?, ?> ownerAction) throws FlexoException;
+			ShapeGraphicalRepresentation gr, FlexoAction<?, ?, ?> ownerAction) throws OpenflexoRuntimeException;
 
-	public DiagramPalette getConceptsPalette() throws FlexoException;
+	public DiagramPalette getConceptsPalette() throws OpenflexoRuntimeException;
 
 	public abstract class FMEDiagramFreeModelImpl extends FMEFreeModelImpl implements FMEDiagramFreeModel {
 
@@ -150,7 +150,7 @@ public interface FMEDiagramFreeModel extends FMEFreeModel {
 				e.printStackTrace();
 			} catch (ResourceLoadingCancelledException e) {
 				e.printStackTrace();
-			} catch (FlexoException e) {
+			} catch (OpenflexoRuntimeException e) {
 				e.printStackTrace();
 			}
 			return null;
@@ -206,7 +206,7 @@ public interface FMEDiagramFreeModel extends FMEFreeModel {
 		}
 
 		@Override
-		public DiagramPalette getConceptsPalette() throws FlexoException {
+		public DiagramPalette getConceptsPalette() throws OpenflexoRuntimeException {
 			if (getDiagramSpecification().getPalette(PALETTE_NAME) == null) {
 				// Should not happen, but...
 				CreateDiagramPalette createPalette = CreateDiagramPalette.actionType.makeNewAction(getDiagramSpecification(), null, null);
@@ -219,7 +219,7 @@ public interface FMEDiagramFreeModel extends FMEFreeModel {
 
 		@Override
 		public DiagramPaletteElement createPaletteElementForConcept(FlexoConcept grConcept, FlexoConcept concept,
-				ShapeGraphicalRepresentation gr, FlexoAction<?, ?, ?> ownerAction) throws FlexoException {
+				ShapeGraphicalRepresentation gr, FlexoAction<?, ?, ?> ownerAction) throws OpenflexoRuntimeException {
 
 			System.out.println("Hop, on cree le palette element maintenant");
 

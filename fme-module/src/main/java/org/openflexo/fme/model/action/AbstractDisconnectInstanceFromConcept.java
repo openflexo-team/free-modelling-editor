@@ -46,7 +46,7 @@ import org.openflexo.fme.model.FMEFreeModel;
 import org.openflexo.fme.model.FMEFreeModelInstance;
 import org.openflexo.fme.model.FreeModellingProjectNature;
 import org.openflexo.foundation.FlexoEditor;
-import org.openflexo.foundation.FlexoException;
+import org.openflexo.foundation.OpenflexoRuntimeException;
 import org.openflexo.foundation.FlexoObject;
 import org.openflexo.foundation.InvalidArgumentException;
 import org.openflexo.foundation.action.FlexoActionFactory;
@@ -215,7 +215,7 @@ public abstract class AbstractDisconnectInstanceFromConcept<A extends AbstractDi
 	}
 
 	@Override
-	protected void doAction(Object context) throws FlexoException {
+	protected void doAction(Object context) throws OpenflexoRuntimeException {
 
 		FMI freeModelInstance = getFMEFreeModelInstance();
 		if (freeModelInstance == null) {
@@ -257,7 +257,7 @@ public abstract class AbstractDisconnectInstanceFromConcept<A extends AbstractDi
 	 *            the conceptual instance it stood for
 	 */
 	protected abstract void releaseRepresentation(FlexoConceptInstance grInstance, FlexoConceptInstance conceptInstance)
-			throws FlexoException;
+			throws OpenflexoRuntimeException;
 
 	/**
 	 * Called last: brings the view of the representation up to date

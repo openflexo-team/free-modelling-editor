@@ -44,7 +44,7 @@ import org.openflexo.fme.diagram.model.FMEDiagramFreeModel;
 import org.openflexo.fme.diagram.model.FMEDiagramFreeModelInstance;
 import org.openflexo.fme.model.action.AbstractDeclareInstanceOfExistingConcept;
 import org.openflexo.foundation.FlexoEditor;
-import org.openflexo.foundation.FlexoException;
+import org.openflexo.foundation.OpenflexoRuntimeException;
 import org.openflexo.foundation.FlexoObject;
 import org.openflexo.foundation.FlexoObject.FlexoObjectImpl;
 import org.openflexo.foundation.InvalidArgumentException;
@@ -137,7 +137,7 @@ public class DeclareInstanceOfExistingConceptFromDiagramElement extends
 	 * The instance standing for the shape: the one of the NoneGR, created when there is none yet
 	 */
 	@Override
-	protected FlexoConceptInstance retrieveRepresentationInstance(FlexoConcept grConcept) throws FlexoException {
+	protected FlexoConceptInstance retrieveRepresentationInstance(FlexoConcept grConcept) throws OpenflexoRuntimeException {
 		if (!(getFocusedObject() instanceof DiagramShape)) {
 			throw new InvalidArgumentException("Not implemented for " + getFocusedObject());
 		}
@@ -150,13 +150,13 @@ public class DeclareInstanceOfExistingConceptFromDiagramElement extends
 
 	@Override
 	protected void prepareRepresentation(FlexoConceptInstance grInstance, FlexoConcept grConcept, boolean grConceptWasExisting)
-			throws FlexoException {
+			throws OpenflexoRuntimeException {
 		shapeRepresentation.prepare(grInstance, grConcept, grConceptWasExisting);
 	}
 
 	@Override
 	protected void completeRepresentation(FlexoConceptInstance grInstance, FlexoConcept grConcept, boolean grConceptWasExisting)
-			throws FlexoException {
+			throws OpenflexoRuntimeException {
 		shapeRepresentation.complete(grInstance, grConcept, grConceptWasExisting);
 	}
 

@@ -44,7 +44,7 @@ import org.openflexo.fme.model.FMEFreeModel;
 import org.openflexo.fme.model.FMEFreeModelInstance;
 import org.openflexo.fme.model.FMENames;
 import org.openflexo.foundation.FlexoEditor;
-import org.openflexo.foundation.FlexoException;
+import org.openflexo.foundation.OpenflexoRuntimeException;
 import org.openflexo.foundation.FlexoObject;
 import org.openflexo.foundation.InvalidArgumentException;
 import org.openflexo.foundation.action.FlexoActionFactory;
@@ -117,7 +117,7 @@ public abstract class AbstractCreateNewConceptFromElement<A extends AbstractCrea
 	}
 
 	@Override
-	protected void doAction(Object context) throws FlexoException {
+	protected void doAction(Object context) throws OpenflexoRuntimeException {
 
 		FMI freeModelInstance = getFMEFreeModelInstance();
 		if (freeModelInstance == null) {
@@ -192,14 +192,14 @@ public abstract class AbstractCreateNewConceptFromElement<A extends AbstractCrea
 	 * @param grConcept
 	 *            the new GR concept
 	 */
-	protected abstract FlexoConceptInstance retrieveRepresentationInstance(FlexoConcept grConcept) throws FlexoException;
+	protected abstract FlexoConceptInstance retrieveRepresentationInstance(FlexoConcept grConcept) throws OpenflexoRuntimeException;
 
 	/**
 	 * Called once the concept, its GR concept and its instance are created, before the instance standing for the element is made an
 	 * instance of the new GR concept: what the new GR concept takes from the element (a shape, a palette entry...)
 	 */
 	protected abstract void configureRepresentation(FlexoConceptInstance grInstance, FlexoConcept newConcept, FlexoConcept newGRConcept)
-			throws FlexoException;
+			throws OpenflexoRuntimeException;
 
 	/**
 	 * Called last, once the free model instance has notified the new instance: brings the view of the representation up to date

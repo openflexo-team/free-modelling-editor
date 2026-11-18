@@ -57,7 +57,7 @@ import org.openflexo.fme.model.FMEConceptualModel;
 import org.openflexo.fme.model.FMESampleData;
 import org.openflexo.fme.model.FreeModellingProjectNature;
 import org.openflexo.foundation.FlexoEditor;
-import org.openflexo.foundation.FlexoException;
+import org.openflexo.foundation.OpenflexoRuntimeException;
 import org.openflexo.foundation.FlexoProject;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.test.OpenflexoProjectAtRunTimeTestCase;
@@ -118,7 +118,7 @@ public class TestCreateFreeModellingEditorProject extends OpenflexoProjectAtRunT
 	@Test
 	@TestOrder(3)
 	@Category(UITest.class)
-	public void checkConceptualModelEditing() throws FlexoException {
+	public void checkConceptualModelEditing() throws OpenflexoRuntimeException {
 
 		conceptA = conceptualModel.getFlexoConcept("ConceptA", null, editor, null);
 		assertNotNull(conceptA);
@@ -165,7 +165,7 @@ public class TestCreateFreeModellingEditorProject extends OpenflexoProjectAtRunT
 	@TestOrder(6)
 	@Category(UITest.class)
 	public void instantiateNewFMEDiagramFreeModel()
-			throws FlexoException, TypeMismatchException, NullReferenceException, ReflectiveOperationException, InvalidBindingException {
+			throws OpenflexoRuntimeException, TypeMismatchException, NullReferenceException, ReflectiveOperationException, InvalidBindingException {
 
 		InstantiateFMEDiagramFreeModel action = InstantiateFMEDiagramFreeModel.actionType.makeNewAction(diagramModel1, null, editor);
 		action.setFreeModelInstanceName("Instance1");
@@ -190,7 +190,7 @@ public class TestCreateFreeModellingEditorProject extends OpenflexoProjectAtRunT
 	@TestOrder(7)
 	@Category(UITest.class)
 	public void instantiateNewFMEDiagramFreeModelWhileCreatingNewFreeModel()
-			throws FlexoException, TypeMismatchException, NullReferenceException, ReflectiveOperationException, InvalidBindingException {
+			throws OpenflexoRuntimeException, TypeMismatchException, NullReferenceException, ReflectiveOperationException, InvalidBindingException {
 
 		InstantiateFMEDiagramFreeModel action = InstantiateFMEDiagramFreeModel.actionType.makeNewAction(nature, null, editor);
 		action.setFreeModelInstanceName("Instance2");

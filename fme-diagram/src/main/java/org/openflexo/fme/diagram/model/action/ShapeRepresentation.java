@@ -44,7 +44,7 @@ import org.openflexo.fme.diagram.controller.editor.DynamicPalette.GraphicalRepre
 import org.openflexo.fme.diagram.model.FMEDiagramFreeModel;
 import org.openflexo.fme.diagram.model.FMEDiagramFreeModelInstance;
 import org.openflexo.fme.model.action.AbstractDeclareInstanceOfExistingConcept;
-import org.openflexo.foundation.FlexoException;
+import org.openflexo.foundation.OpenflexoRuntimeException;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.rt.FlexoConceptInstance;
 import org.openflexo.technologyadapter.diagram.TypedDiagramModelSlot;
@@ -169,7 +169,7 @@ public class ShapeRepresentation implements HasPropertyChangeSupport {
 	 * Once the instance is an instance of the GR concept: the other instances follow a redefined shape, and a concept without palette
 	 * element gets one
 	 */
-	public void complete(FlexoConceptInstance grInstance, FlexoConcept grConcept, boolean grConceptWasExisting) throws FlexoException {
+	public void complete(FlexoConceptInstance grInstance, FlexoConcept grConcept, boolean grConceptWasExisting) throws OpenflexoRuntimeException {
 
 		FMEDiagramFreeModelInstance freeModelInstance = action.getFMEFreeModelInstance();
 		ShapeRole newShapeRole = (ShapeRole) grConcept.getAccessibleProperty(FMEDiagramFreeModel.SHAPE_ROLE_NAME);

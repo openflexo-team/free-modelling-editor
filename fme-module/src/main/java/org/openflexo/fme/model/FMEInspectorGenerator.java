@@ -46,7 +46,7 @@ import java.util.logging.Logger;
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.type.PrimitiveType;
 import org.openflexo.fml.rt.controller.widget.FIBFlexoConceptInstanceSelector;
-import org.openflexo.foundation.FlexoException;
+import org.openflexo.foundation.OpenflexoRuntimeException;
 import org.openflexo.foundation.fml.FMLTechnologyAdapter;
 import org.openflexo.foundation.fml.FlexoConcept;
 import org.openflexo.foundation.fml.FlexoConceptInstanceRole;
@@ -394,7 +394,7 @@ public class FMEInspectorGenerator {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static <I> FIBComponentResource makeResource(FlexoConcept concept) throws FlexoException {
+	private static <I> FIBComponentResource makeResource(FlexoConcept concept) throws OpenflexoRuntimeException {
 
 		CompilationUnitResource compilationUnitResource = (CompilationUnitResource) concept.getDeclaringCompilationUnit().getResource();
 		FlexoResourceCenter<I> resourceCenter = (FlexoResourceCenter<I>) compilationUnitResource.getResourceCenter();
@@ -409,7 +409,7 @@ public class FMEInspectorGenerator {
 			// No empty contents: the factory would SAVE them right away
 			return factory.makeResource(artefact, resourceCenter, false);
 		} catch (Exception e) {
-			throw new FlexoException("Could not create " + inspectorFileName(concept) + " in " + containerDirectory, e);
+			throw new OpenflexoRuntimeException("Could not create " + inspectorFileName(concept) + " in " + containerDirectory, e);
 		}
 	}
 

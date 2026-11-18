@@ -44,7 +44,7 @@ import org.openflexo.fme.pptx.model.FMEPowerpointFreeModel;
 import org.openflexo.fme.pptx.model.FMEPowerpointFreeModelInstance;
 import org.openflexo.fme.pptx.model.PowerpointAnnotations;
 import org.openflexo.foundation.FlexoEditor;
-import org.openflexo.foundation.FlexoException;
+import org.openflexo.foundation.OpenflexoRuntimeException;
 import org.openflexo.foundation.FlexoObject;
 import org.openflexo.foundation.FlexoObject.FlexoObjectImpl;
 import org.openflexo.foundation.action.FlexoActionFactory;
@@ -114,7 +114,7 @@ public class CreateNewConceptFromShape extends
 	 * A new instance of the new GR concept, standing for the shape
 	 */
 	@Override
-	protected FlexoConceptInstance retrieveRepresentationInstance(FlexoConcept grConcept) throws FlexoException {
+	protected FlexoConceptInstance retrieveRepresentationInstance(FlexoConcept grConcept) throws OpenflexoRuntimeException {
 		return PowerpointAnnotations.createGRInstance(getFMEFreeModelInstance(), getFocusedObject(), grConcept);
 	}
 

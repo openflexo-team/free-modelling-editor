@@ -44,7 +44,7 @@ import java.util.logging.Logger;
 import org.openflexo.connie.DataBinding;
 import org.openflexo.connie.type.PrimitiveType;
 import org.openflexo.foundation.FlexoEditor;
-import org.openflexo.foundation.FlexoException;
+import org.openflexo.foundation.OpenflexoRuntimeException;
 import org.openflexo.foundation.action.FlexoAction;
 import org.openflexo.foundation.fml.DeletionScheme;
 import org.openflexo.foundation.fml.FlexoConcept;
@@ -168,7 +168,7 @@ public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellin
 	 * @param editor
 	 * @param ownerAction
 	 * @return
-	 * @throws FlexoException
+	 * @throws OpenflexoRuntimeException
 	 */
 	public FlexoConcept getGRFlexoConcept(FlexoConcept concept, FlexoConcept containerConceptGR, FlexoEditor editor,
 			FlexoAction<?, ?, ?> ownerAction, boolean createWhenNotExistant);
@@ -256,7 +256,7 @@ public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellin
 	 * @param editor
 	 * @param ownerAction
 	 * @return
-	 * @throws FlexoException
+	 * @throws OpenflexoRuntimeException
 	 */
 	public FlexoConcept getGRRelationalFlexoConcept(FlexoConcept concept, FlexoConcept fromConceptGR, FlexoConcept toConceptGR,
 			FlexoEditor editor, FlexoAction<?, ?, ?> ownerAction, boolean createWhenNotExistant);
@@ -339,7 +339,7 @@ public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellin
 		 * @param editor
 		 * @param ownerAction
 		 * @return
-		 * @throws FlexoException
+		 * @throws OpenflexoRuntimeException
 		 */
 		@Override
 		public FlexoConcept getGRFlexoConcept(FlexoConcept concept, FlexoConcept containerConceptGR, FlexoEditor editor,
@@ -460,7 +460,7 @@ public interface FMEFreeModel extends VirtualModelBasedNatureObject<FreeModellin
 		 * @param editor
 		 * @param ownerAction
 		 * @return
-		 * @throws FlexoException
+		 * @throws OpenflexoRuntimeException
 		 */
 		@Override
 		public FlexoConcept getGRRelationalFlexoConcept(FlexoConcept concept, FlexoConcept fromConceptGR, FlexoConcept toConceptGR,

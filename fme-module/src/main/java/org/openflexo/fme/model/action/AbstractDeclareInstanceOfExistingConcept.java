@@ -44,7 +44,7 @@ import java.util.logging.Logger;
 import org.openflexo.fme.model.FMEFreeModel;
 import org.openflexo.fme.model.FMEFreeModelInstance;
 import org.openflexo.foundation.FlexoEditor;
-import org.openflexo.foundation.FlexoException;
+import org.openflexo.foundation.OpenflexoRuntimeException;
 import org.openflexo.foundation.FlexoObject;
 import org.openflexo.foundation.InvalidArgumentException;
 import org.openflexo.foundation.action.FlexoActionFactory;
@@ -253,7 +253,7 @@ public abstract class AbstractDeclareInstanceOfExistingConcept<A extends Abstrac
 	}
 
 	@Override
-	protected void doAction(Object context) throws FlexoException {
+	protected void doAction(Object context) throws OpenflexoRuntimeException {
 
 		logger.info("Declare " + getFocusedObject() + " as instance of existing concept " + getConcept());
 
@@ -317,7 +317,7 @@ public abstract class AbstractDeclareInstanceOfExistingConcept<A extends Abstrac
 	 * @param grConcept
 	 *            the GR concept of the concept
 	 */
-	protected abstract FlexoConceptInstance retrieveRepresentationInstance(FlexoConcept grConcept) throws FlexoException;
+	protected abstract FlexoConceptInstance retrieveRepresentationInstance(FlexoConcept grConcept) throws OpenflexoRuntimeException;
 
 	/**
 	 * Called once the GR concept is known, before the instance standing for the element is made an instance of it
@@ -330,7 +330,7 @@ public abstract class AbstractDeclareInstanceOfExistingConcept<A extends Abstrac
 	 *            whether the GR concept existed before this action (it was created otherwise)
 	 */
 	protected abstract void prepareRepresentation(FlexoConceptInstance grInstance, FlexoConcept grConcept, boolean grConceptWasExisting)
-			throws FlexoException;
+			throws OpenflexoRuntimeException;
 
 	/**
 	 * Called once the instance standing for the element is an instance of the GR concept, pointing to the conceptual instance
@@ -343,7 +343,7 @@ public abstract class AbstractDeclareInstanceOfExistingConcept<A extends Abstrac
 	 *            whether the GR concept existed before this action (it was created otherwise)
 	 */
 	protected abstract void completeRepresentation(FlexoConceptInstance grInstance, FlexoConcept grConcept, boolean grConceptWasExisting)
-			throws FlexoException;
+			throws OpenflexoRuntimeException;
 
 	/**
 	 * Called last, once the free model instance has notified the new instance: brings the view of the representation up to date

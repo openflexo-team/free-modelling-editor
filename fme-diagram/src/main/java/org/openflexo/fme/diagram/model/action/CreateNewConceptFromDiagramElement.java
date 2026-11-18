@@ -44,7 +44,7 @@ import org.openflexo.fme.diagram.model.FMEDiagramFreeModel;
 import org.openflexo.fme.diagram.model.FMEDiagramFreeModelInstance;
 import org.openflexo.fme.model.action.AbstractCreateNewConceptFromElement;
 import org.openflexo.foundation.FlexoEditor;
-import org.openflexo.foundation.FlexoException;
+import org.openflexo.foundation.OpenflexoRuntimeException;
 import org.openflexo.foundation.FlexoObject;
 import org.openflexo.foundation.FlexoObject.FlexoObjectImpl;
 import org.openflexo.foundation.action.FlexoActionFactory;
@@ -113,7 +113,7 @@ public class CreateNewConceptFromDiagramElement extends
 	 * The instance standing for the shape: the one of the NoneGR, created when there is none yet
 	 */
 	@Override
-	protected FlexoConceptInstance retrieveRepresentationInstance(FlexoConcept grConcept) throws FlexoException {
+	protected FlexoConceptInstance retrieveRepresentationInstance(FlexoConcept grConcept) throws OpenflexoRuntimeException {
 		FlexoConceptInstance existing = getFMEFreeModelInstance().getGRInstance(getFocusedObject());
 		if (existing != null) {
 			return existing;
@@ -123,7 +123,7 @@ public class CreateNewConceptFromDiagramElement extends
 
 	@Override
 	protected void configureRepresentation(FlexoConceptInstance grInstance, FlexoConcept newConcept, FlexoConcept newGRConcept)
-			throws FlexoException {
+			throws OpenflexoRuntimeException {
 		DiagramRepresentations.configureNewConceptShape(getFMEFreeModel(), newGRConcept, newConcept, (DiagramShape) getFocusedObject(),
 				this);
 	}
