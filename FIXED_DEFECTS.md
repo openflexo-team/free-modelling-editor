@@ -12,6 +12,8 @@ existing concept"), rebuilt on the core template `AbstractDeclareInstanceOfExist
 
 ### FME-D-1 — The representation strategy of "declare from diagram element" is bound to the wrong enum  ·  `DONE`
 
+**GitHub:** [openflexo-team/free-modelling-editor#3](https://github.com/openflexo-team/free-modelling-editor/issues/3)
+
 **Fixed (2026-11-03).** The action no longer declares its own `GRStrategy`: it uses the one of `DeclareInstanceOfExistingConcept`,
 which the wizard's radio button list already iterates. Checked by compiling and by the FIB validation of the wizard, not by running
 the wizard in the application.
@@ -32,6 +34,8 @@ instance of existing concept", pick "redefine shape of concept": the concept's s
 **Fix direction.** A single `GRStrategy` enum shared by the two actions.
 
 ### FME-D-2 — "Declare from diagram element" fails when the proposed concept is kept  ·  `DONE`
+
+**GitHub:** [openflexo-team/free-modelling-editor#4](https://github.com/openflexo-team/free-modelling-editor/issues/4)
 
 **Fixed (2026-11-03).** The action is built on the core template, which only uses `getConcept()`. Checked by
 `TestFreeModellingActions.testDeclarePlainShapeKeepingProposedConcept`: a plain shape is declared as an instance of the concept proposed
@@ -55,6 +59,8 @@ shape, run "declare instance of existing concept" and validate the wizard withou
 **Fix direction.** Use `getConcept()` instead of the field (the core template already does).
 
 ### FME-D-3 — A concept first declared through the NoneGR never got its palette element  ·  `DONE`
+
+**GitHub:** [openflexo-team/free-modelling-editor#5](https://github.com/openflexo-team/free-modelling-editor/issues/5)
 
 **Fixed (2026-11-03).** The palette element of a concept is bound to its GR concept (`createPaletteElementForConcept` gives the GR
 concept to `CreateFMLControlledDiagramPaletteElement`), but both "declare" actions looked for it with the conceptual concept, so they

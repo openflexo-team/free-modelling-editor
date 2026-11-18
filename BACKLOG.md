@@ -13,6 +13,8 @@ Status legend: `TODO` · `IN PROGRESS` · `BLOCKED` · `DONE` · `DEFERRED`.
 
 ### FME-F-1 — A generic core and one extension per technology  ·  `DONE`
 
+**GitHub:** [openflexo-team/free-modelling-editor#6](https://github.com/openflexo-team/free-modelling-editor/issues/6)
+
 **Problem.** FME only knew diagrams: the abstract free model and free model instance imported their Diagram subclasses
 (`@Imports`), and the perspective, the module, the action initializer and the nature panel created Diagram objects
 directly. Adding another technology meant editing all of them.
@@ -49,6 +51,8 @@ directly. Adding another technology meant editing all of them.
   the label of the technology of its free model.
 
 ### FME-F-2 — PowerPoint extension (`fme-pptx`)  ·  `IN PROGRESS`
+
+**GitHub:** [openflexo-team/free-modelling-editor#7](https://github.com/openflexo-team/free-modelling-editor/issues/7)
 
 **Problem.** Annotate an existing PowerPoint deck: select shapes in its slides and declare them as instances of new or
 existing concepts of the conceptual model, without modifying the `.pptx`.
@@ -136,6 +140,8 @@ actor is never deleted nor cloned with its instance, and a slideshow view lettin
 the slide: done with lot 2.
 
 ### FME-F-3 — A generic layer of free-modelling actions  ·  `IN PROGRESS`
+
+**GitHub:** [openflexo-team/free-modelling-editor#8](https://github.com/openflexo-team/free-modelling-editor/issues/8)
 
 **Problem.** The actions that make concepts emerge from a representation are generic in intent, but today they are
 written for diagrams and live in `fme-diagram`. The core should state the acts of free modelling once, and each
