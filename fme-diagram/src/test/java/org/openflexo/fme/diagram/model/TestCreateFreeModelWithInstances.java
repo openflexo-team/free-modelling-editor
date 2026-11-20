@@ -223,12 +223,12 @@ public class TestCreateFreeModelWithInstances extends OpenflexoProjectAtRunTimeT
 
 		assertEquals(0, freeModelInstance.getInstances(freeModelInstance.getFreeModel().getNoneFlexoConcept(editor, null)).size());
 
-		System.out.println("concepts: " + nature.getConceptualModel().getAccessedVirtualModel().getFlexoConcepts());
-		assertEquals(1, nature.getConceptualModel().getAccessedVirtualModel().getFlexoConcepts().size());
-		tutuConcept = nature.getConceptualModel().getAccessedVirtualModel().getFlexoConcepts().get(0);
+		System.out.println("concepts: " + nature.getConceptualModel().getAccessedVirtualModel().getAllFlexoConcepts());
+		assertEquals(1, nature.getConceptualModel().getAccessedVirtualModel().getAllFlexoConcepts().size());
+		tutuConcept = nature.getConceptualModel().getAccessedVirtualModel().getAllFlexoConcepts().get(0);
 
-		System.out.println("concepts GR: " + freeModel.getAccessedVirtualModel().getFlexoConcepts());
-		assertEquals(2, freeModel.getAccessedVirtualModel().getFlexoConcepts().size());
+		System.out.println("concepts GR: " + freeModel.getAccessedVirtualModel().getAllFlexoConcepts());
+		assertEquals(2, freeModel.getAccessedVirtualModel().getAllFlexoConcepts().size());
 
 		System.out.println("concepts instances: " + nature.getSampleData().getAccessedVirtualModelInstance().getFlexoConceptInstances());
 		assertEquals(1, nature.getSampleData().getAccessedVirtualModelInstance().getFlexoConceptInstances().size());
@@ -295,11 +295,11 @@ public class TestCreateFreeModelWithInstances extends OpenflexoProjectAtRunTimeT
 		assertEquals("TutuConceptGR", tutu.getFlexoConcept().getName());
 		assertEquals(0, freeModelInstance.getInstances(freeModelInstance.getFreeModel().getNoneFlexoConcept(editor, null)).size());
 
-		System.out.println("concepts: " + nature.getConceptualModel().getAccessedVirtualModel().getFlexoConcepts());
-		assertEquals(1, nature.getConceptualModel().getAccessedVirtualModel().getFlexoConcepts().size());
+		System.out.println("concepts: " + nature.getConceptualModel().getAccessedVirtualModel().getAllFlexoConcepts());
+		assertEquals(1, nature.getConceptualModel().getAccessedVirtualModel().getAllFlexoConcepts().size());
 
-		System.out.println("concepts GR: " + freeModel.getAccessedVirtualModel().getFlexoConcepts());
-		assertEquals(2, freeModel.getAccessedVirtualModel().getFlexoConcepts().size());
+		System.out.println("concepts GR: " + freeModel.getAccessedVirtualModel().getAllFlexoConcepts());
+		assertEquals(2, freeModel.getAccessedVirtualModel().getAllFlexoConcepts().size());
 
 		System.out.println("concepts instances: " + nature.getSampleData().getAccessedVirtualModelInstance().getFlexoConceptInstances());
 		assertEquals(2, nature.getSampleData().getAccessedVirtualModelInstance().getFlexoConceptInstances().size());

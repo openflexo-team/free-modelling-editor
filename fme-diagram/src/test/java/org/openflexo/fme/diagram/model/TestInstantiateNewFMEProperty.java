@@ -122,7 +122,7 @@ public class TestInstantiateNewFMEProperty extends OpenflexoProjectAtRunTimeTest
 		makeConcept.setNewConceptDescription("A description");
 		makeConcept.doAction();
 		assertTrue(makeConcept.hasActionExecutionSucceeded());
-		tutuConcept = nature.getConceptualModel().getAccessedVirtualModel().getFlexoConcepts().get(0);
+		tutuConcept = nature.getConceptualModel().getAccessedVirtualModel().getAllFlexoConcepts().get(0);
 
 		tutu2 = dropShape(56);
 		DeclareInstanceOfExistingConcept declare = DeclareInstanceOfExistingConcept.actionType.makeNewAction(tutu2, null, editor);

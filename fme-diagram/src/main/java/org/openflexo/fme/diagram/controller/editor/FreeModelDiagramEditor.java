@@ -154,7 +154,7 @@ public class FreeModelDiagramEditor extends FMLControlledDiagramEditor {
 		returned.add(dynamicPaletteComponent.getPaletteViewInScrollPane(), "Used shapes", 0);
 
 		if (getDiagram().getShapes().size() > 0) {
-			if (getDiagramFreeModelInstance().getAccessedVirtualModelInstance().getVirtualModel().getFlexoConcepts().size() > 1) {
+			if (getDiagramFreeModelInstance().getAccessedVirtualModelInstance().getVirtualModel().getAllFlexoConcepts().size() > 1) {
 				// In this case, we should activate the concept palette (the second one)
 				returned.setSelectedIndex(1);
 			}

@@ -217,7 +217,7 @@ public class FMEInspectorGenerator {
 		if (freeModelVirtualModel == null) {
 			return;
 		}
-		for (FlexoConcept concept : freeModelVirtualModel.getFlexoConcepts()) {
+		for (FlexoConcept concept : freeModelVirtualModel.getAllFlexoConcepts()) {
 			if (concept instanceof FlexoEnum || !isGRConcept(concept)) {
 				continue;
 			}
@@ -287,7 +287,7 @@ public class FMEInspectorGenerator {
 	private static List<FlexoConcept> conceptsWithoutInspector(VirtualModel virtualModel) {
 		List<FlexoConcept> returned = new ArrayList<>();
 		if (virtualModel != null) {
-			for (FlexoConcept concept : virtualModel.getFlexoConcepts()) {
+			for (FlexoConcept concept : virtualModel.getAllFlexoConcepts()) {
 				if (!(concept instanceof FlexoEnum) && ownInspectorResource(concept) == null) {
 					returned.add(concept);
 				}

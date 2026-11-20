@@ -48,7 +48,7 @@
       </Browser>
       <Browser root="data.freeModel.conceptualModel" iteratorClassName="org.openflexo.foundation.FlexoObject" visibleRowCount="5" rowHeight="18" boundToSelectionManager="true" selectionMode="DiscontiguousTreeSelection" showFooter="true" rootVisible="true" showRootsHandle="true" localize="true" enable="" manageDynamicModel="true" name="flatConceptsBrowser" visible="controller.viewMode.name==&quot;Flat&quot;" index="2" constraints="twocols(expandHorizontally=true;expandVertically=true;location=center)">
          <BrowserElement dataClassName="org.openflexo.fme.model.FMEConceptualModel" label="conceptualModel.name" icon="controller.iconForObject(conceptualModel)" isEditable="false" filtered="false" defaultVisible="true" name="conceptualModel">
-          <Children data="conceptualModel.accessedVirtualModel.flexoConcepts" name="children" />
+          <Children data="conceptualModel.accessedVirtualModel.allFlexoConcepts" name="children" />
         </BrowserElement>
         <BrowserElement dataClassName="org.openflexo.foundation.fml.FlexoConcept" label="flexoConcept.name" icon="controller.iconForObject(flexoConcept)" tooltip="" enabled="" visible="" isEditable="false" editableLabel="" filtered="false" defaultVisible="true" dynamicFont="" name="flexoConcept">
  			<Children data="flexoConcept.flexoProperties"

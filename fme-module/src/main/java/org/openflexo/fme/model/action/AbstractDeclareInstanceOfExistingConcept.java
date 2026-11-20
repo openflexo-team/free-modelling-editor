@@ -106,8 +106,8 @@ public abstract class AbstractDeclareInstanceOfExistingConcept<A extends Abstrac
 	 */
 	public FlexoConcept getConcept() {
 		if (concept == null && getFMEFreeModel() != null
-				&& getFMEFreeModel().getConceptualModel().getAccessedVirtualModel().getFlexoConcepts().size() > 0) {
-			return getFMEFreeModel().getConceptualModel().getAccessedVirtualModel().getFlexoConcepts().get(0);
+				&& getFMEFreeModel().getConceptualModel().getAccessedVirtualModel().getAllFlexoConcepts().size() > 0) {
+			return getFMEFreeModel().getConceptualModel().getAccessedVirtualModel().getAllFlexoConcepts().get(0);
 		}
 		return concept;
 	}
