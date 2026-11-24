@@ -50,7 +50,7 @@ directly. Adding another technology meant editing all of them.
   slideshow"); the dead buttons "Import ppt slide" and "Import excel" are gone. The button of the free model panel takes
   the label of the technology of its free model.
 
-### FME-F-2 — PowerPoint extension (`fme-pptx`)  ·  `IN PROGRESS`
+### FME-F-2 — PowerPoint extension (`fme-pptx`)  ·  `DONE`
 
 **GitHub:** [openflexo-team/free-modelling-editor#7](https://github.com/openflexo-team/free-modelling-editor/issues/7)
 
@@ -78,10 +78,12 @@ existing concepts of the conceptual model, without modifying the `.pptx`.
 - A concept instance can be represented both in a diagram and in a deck (the sample data is shared).
 
 **Plan.** Lot 1, the generic actions in the core and Diagram rebuilt on them (FME-F-3 step 2): done. Lot 2, the `fme-pptx`
-module: done. Lot 3, the actions on glued connectors: `TODO`, postponed by the user on 2026-11-05 (to resume in a later
-session; nothing started). It covers a new relational concept and a new property from a connector glued to two annotated
-shapes, disabled otherwise, on the core templates `CreateNewConceptFromLink` / `CreateNewFMEPropertyFromLink` (FME-F-3), and
-relies on the glued ends that `PowerpointLine` already exposes. FME-F-2 stays `IN PROGRESS` until it is done.
+module: done. Lot 3, the actions on glued connectors: split off into FME-F-4 (2026-11-24).
+
+**Resolution (2026-11-24).** FME-F-2 is closed with lots 1 and 2. Lot 3 (a new relational concept and a new property from a
+connector glued to two annotated shapes, on the core templates `CreateNewConceptFromLink` / `CreateNewFMEPropertyFromLink`)
+had been postponed by the user on 2026-11-05 with nothing started; it is now FME-F-4. Accepted: the contextual menu on a
+shape, the overlay and the declaring wizards were not tried in the running application (see below).
 
 **Done (lot 2, 2026-11-03).**
 - Module `fme-pptx` (`org.openflexo.fme.pptx`), extension `PowerpointFMEExtension`, in the products freemodelling and
@@ -201,3 +203,27 @@ moves between an element and its concept (the `GRStrategy` of the Diagram action
 - Containment from the nesting of elements, when PowerPoint groups need it.
 - Deleting a GR instance (the anonymous deletion scheme of the GR concepts) still deletes the conceptual instance, even
   when another free model instance represents it.
+
+### FME-F-4 — PowerPoint extension: actions on glued connectors  ·  `TODO`
+
+**GitHub:** [openflexo-team/free-modelling-editor#9](https://github.com/openflexo-team/free-modelling-editor/issues/9)
+
+**Problem.** In the PowerPoint extension (`fme-pptx`), a connector glued to two annotated shapes should let the modeler make a
+relation of the conceptual model emerge: a new relational concept, or a new property. Today only the actions on a shape exist
+(new concept, instance of an existing concept, disconnect).
+
+**Scope.**
+- Two actions on a connector glued to two annotated shapes: *new relational concept* and *new property*. Both are disabled
+  otherwise.
+- They are built on the generic templates of the core, `CreateNewConceptFromLink` and `CreateNewFMEPropertyFromLink`
+  (FME-F-3), and rely on the glued ends that `PowerpointLine` already exposes.
+- Out of scope: groups and nesting giving containment (later).
+
+**Status.** Nothing started. This is the former lot 3 of FME-F-2, postponed by the user on 2026-11-05 and split off into this
+entry when FME-F-2 was closed (2026-11-24).
+
+**Acceptance.** A test on CycloCity (`TestPowerpointFreeModel` or a neighbour) covering: each action enabled on a connector
+glued to two annotated shapes and disabled otherwise; the resulting concept or property; save and reload (the annotations
+still point to the same shapes, the `.pptx` is never modified).
+
+**Related.** FME-F-2, FME-F-3.
